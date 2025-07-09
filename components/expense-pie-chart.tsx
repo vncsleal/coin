@@ -1,6 +1,7 @@
 "use client"
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
+import { formatCurrency } from "@/lib/currency"
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8", "#82CA9D"]
 
@@ -17,7 +18,7 @@ export function ExpensePieChart({ data }: ExpensePieChartProps) {
           cx="50%"
           cy="50%"
           labelLine={false}
-          label={({ tag, percent }) => `${tag} ${(percent * 100).toFixed(0)}%`}
+          label={({ tag, percent }) => `${tag} ${((percent || 0) * 100).toFixed(0)}%`}
           outerRadius={80}
           fill="#8884d8"
           dataKey="amount"
@@ -26,7 +27,7 @@ export function ExpensePieChart({ data }: ExpensePieChartProps) {
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value) => `$${value}`} />
+        <Tooltip formatter={(value) => formatCurrency(Number(value))} />
         <Legend />
       </PieChart>
     </ResponsiveContainer>

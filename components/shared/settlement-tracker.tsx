@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { CheckCircle, Clock, DollarSign, Users, Bell, History } from "lucide-react"
+import { formatCurrency } from "@/lib/currency"
 
 interface Settlement {
   id: number
@@ -188,7 +189,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">${settlement.paid_amount.toFixed(2)}</p>
+                        <p className="font-medium">{formatCurrency(settlement.paid_amount)}</p>
                         <Badge variant={settlement.status === 'confirmed' ? 'default' : 'secondary'}>
                           {settlement.status}
                         </Badge>
@@ -216,15 +217,15 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
           
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-green-600">${totalPaid.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-green-600">{formatCurrency(totalPaid)}</p>
               <p className="text-xs text-muted-foreground">Paid</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-orange-600">${(totalOwed - totalPaid).toFixed(2)}</p>
+              <p className="text-2xl font-bold text-orange-600">{formatCurrency(totalOwed - totalPaid)}</p>
               <p className="text-xs text-muted-foreground">Remaining</p>
             </div>
             <div>
-              <p className="text-2xl font-bold">${totalOwed.toFixed(2)}</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalOwed)}</p>
               <p className="text-xs text-muted-foreground">Total</p>
             </div>
           </div>
@@ -255,7 +256,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                       {settlement.participant_name || settlement.participant_email}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Owes ${settlement.share_amount.toFixed(2)}
+                      Owes {formatCurrency(settlement.share_amount)}
                     </p>
                   </div>
                 </div>
@@ -307,7 +308,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                       {settlement.participant_name || settlement.participant_email}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Paid ${settlement.paid_amount.toFixed(2)} • {settlement.paid_at && new Date(settlement.paid_at).toLocaleDateString()}
+                      Paid {formatCurrency(settlement.paid_amount)} • {settlement.paid_at && new Date(settlement.paid_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -349,7 +350,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                       {settlement.participant_name || settlement.participant_email}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      ${settlement.paid_amount.toFixed(2)} • {settlement.paid_at && new Date(settlement.paid_at).toLocaleDateString()}
+                      {formatCurrency(settlement.paid_amount)} • {settlement.paid_at && new Date(settlement.paid_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>

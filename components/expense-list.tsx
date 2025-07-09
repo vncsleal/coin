@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
+import { formatCurrency } from "@/lib/currency"
 import { deleteExpense } from "@/app/actions/expenses"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
@@ -52,7 +53,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
                 <div className="text-sm text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg">${expense.amount.toFixed(2)}</span>
+                <span className="font-bold text-lg">{formatCurrency(expense.amount)}</span>
                 <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>

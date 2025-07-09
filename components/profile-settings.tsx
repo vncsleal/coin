@@ -6,12 +6,15 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
+import { getAvailableCurrencies, DEFAULT_CURRENCY } from "@/lib/currency"
 
 export function ProfileSettings() {
-  const [currency, setCurrency] = useState("USD")
+  const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY)
   const [notifications, setNotifications] = useState(true)
   const [darkMode, setDarkMode] = useState(false)
   const { toast } = useToast()
+
+  const availableCurrencies = getAvailableCurrencies()
 
   function handleSave() {
     // In a real app, you'd save these to a user preferences table
@@ -30,10 +33,11 @@ export function ProfileSettings() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="USD">USD ($)</SelectItem>
-            <SelectItem value="EUR">EUR (€)</SelectItem>
-            <SelectItem value="GBP">GBP (£)</SelectItem>
-            <SelectItem value="JPY">JPY (¥)</SelectItem>
+            {availableCurrencies.map((curr) => (
+              <SelectItem key={curr.code} value={curr.code}>
+                {curr.displayName}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

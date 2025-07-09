@@ -40,6 +40,12 @@ A comprehensive expense tracking application built with Next.js, featuring AI-po
 - **Bulk Actions** - Efficient management of multiple expenses
 - **Status Indicators** - Visual feedback for all expense and settlement states
 
+### 💰 **Currency Support**
+- **Brazilian Reais (BRL)** - Default currency with proper R$ formatting
+- **Multi-currency Ready** - Built-in support for USD, EUR, and BRL
+- **Localized Formatting** - Proper number formatting for Brazilian Portuguese (pt-BR)
+- **Consistent Display** - All amounts displayed with R$ symbol throughout the app
+
 ## Prerequisites
 
 Before running this application, you'll need:
@@ -167,6 +173,7 @@ pnpm start
 ├── lib/                   # Utility functions and configurations
 │   ├── db.ts             # Database connection
 │   ├── types.ts          # TypeScript type definitions
+│   ├── currency.ts       # Currency utilities and BRL support
 │   └── user-management.ts # Clerk user sync utilities
 ├── scripts/               # Database scripts
 │   ├── setup-db.sh       # Automated database setup
@@ -301,12 +308,13 @@ If you encounter any issues or have questions:
 - [ ] **Recurring Expenses** - Automatic expense creation
 - [ ] **Receipt Scanning** - OCR-powered receipt processing
 - [ ] **Bank Integration** - Automatic transaction import
-- [ ] **Multi-currency Support** - International expense tracking
+- [ ] **Extended Multi-currency Support** - Additional international currencies and exchange rates
 - [ ] **Advanced Notifications** - Email and push notifications
 - [ ] **Expense Reports** - Detailed PDF reports
 - [ ] **Team Workspaces** - Organizational expense management
 
 ### Recently Completed ✅
+- [x] **Brazilian Reais (BRL) Support** - Default currency with proper formatting
 - [x] **Friends System** - User discovery and friend management
 - [x] **Smart Expense Splitting** - Multiple splitting methods
 - [x] **Settlement Tracking** - Complete payment workflow

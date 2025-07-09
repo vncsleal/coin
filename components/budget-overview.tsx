@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 import { sql } from "@/lib/db"
 import type { Budget } from "@/lib/types"
 import { Progress } from "@/components/ui/progress"
+import { formatCurrency } from "@/lib/currency"
 
 interface BudgetOverviewProps {
   budget: Budget | null
@@ -46,24 +47,24 @@ export async function BudgetOverview({ budget }: BudgetOverviewProps) {
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
           <div className="text-muted-foreground">Spent</div>
-          <div className="font-bold text-lg">${monthlySpending.toFixed(2)}</div>
+          <div className="font-bold text-lg">{formatCurrency(monthlySpending)}</div>
         </div>
         <div>
           <div className="text-muted-foreground">Remaining</div>
           <div className={`font-bold text-lg ${remaining < 0 ? "text-red-600" : "text-green-600"}`}>
-            ${remaining.toFixed(2)}
+            {formatCurrency(remaining)}
           </div>
         </div>
       </div>
 
       <div className="text-center">
         <div className="text-muted-foreground text-sm">Total Budget</div>
-        <div className="font-bold text-xl">${budget.amount.toFixed(2)}</div>
+        <div className="font-bold text-xl">{formatCurrency(budget.amount)}</div>
       </div>
 
       {remaining < 0 && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
-          ⚠️ You&apos;ve exceeded your budget by ${Math.abs(remaining).toFixed(2)}
+          ⚠️ You&apos;ve exceeded your budget by {formatCurrency(Math.abs(remaining))}
         </div>
       )}
     </div>

@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts"
 import type { Expense } from "@/lib/types"
+import { formatCurrency } from "@/lib/currency"
 
 interface ExpenseAnalyticsProps {
   expenses: Expense[]
@@ -63,8 +64,8 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
             <LineChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis tickFormatter={(value) => `$${value}`} />
-              <Tooltip formatter={(value) => [`$${value}`, "Amount"]} />
+              <YAxis tickFormatter={(value) => formatCurrency(Number(value))} />
+              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} />
               <Line type="monotone" dataKey="amount" stroke="#8884d8" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
@@ -80,9 +81,9 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={categoryData} layout="horizontal">
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" tickFormatter={(value) => `$${value}`} />
+              <XAxis type="number" tickFormatter={(value) => formatCurrency(Number(value))} />
               <YAxis dataKey="category" type="category" width={100} />
-              <Tooltip formatter={(value) => [`$${value}`, "Amount"]} />
+              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} />
               <Bar dataKey="amount" fill="#8884d8" />
             </BarChart>
           </ResponsiveContainer>
@@ -99,8 +100,8 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
             <BarChart data={weeklyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
-              <YAxis tickFormatter={(value) => `$${value}`} />
-              <Tooltip formatter={(value) => [`$${value}`, "Amount"]} />
+              <YAxis tickFormatter={(value) => formatCurrency(Number(value))} />
+              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} />
               <Bar dataKey="amount" fill="#82ca9d" />
             </BarChart>
           </ResponsiveContainer>
@@ -117,22 +118,21 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
             <div className="flex justify-between">
               <span className="text-sm font-medium">Total Expenses</span>
               <span className="text-sm font-bold">
-                ${expenses.reduce((sum, exp) => sum + exp.amount, 0).toFixed(2)}
+                {formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0))}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium">Average per Transaction</span>
               <span className="text-sm font-bold">
-                $
                 {expenses.length > 0
-                  ? (expenses.reduce((sum, exp) => sum + exp.amount, 0) / expenses.length).toFixed(2)
-                  : "0.00"}
+                  ? formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0) / expenses.length)
+                  : formatCurrency(0)}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium">Highest Single Expense</span>
               <span className="text-sm font-bold">
-                ${expenses.length > 0 ? Math.max(...expenses.map((exp) => exp.amount)).toFixed(2) : "0.00"}
+                {expenses.length > 0 ? formatCurrency(Math.max(...expenses.map((exp) => exp.amount))) : formatCurrency(0)}
               </span>
             </div>
             <div className="flex justify-between">

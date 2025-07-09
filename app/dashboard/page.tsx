@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ExpenseChart } from "@/components/expense-chart"
 import { ExpensePieChart } from "@/components/expense-pie-chart"
 import { DollarSign, TrendingUp, Calendar, Target } from "lucide-react"
+import { formatCurrency } from "@/lib/currency"
 
 async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const currentDate = new Date()
@@ -108,7 +109,7 @@ export default async function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.monthlyExpenditure.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.monthlyExpenditure)}</div>
           </CardContent>
         </Card>
 
@@ -118,7 +119,7 @@ export default async function DashboardPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.dailyAverage.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.dailyAverage)}</div>
           </CardContent>
         </Card>
 
@@ -128,7 +129,7 @@ export default async function DashboardPage() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.currentBudget.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.currentBudget)}</div>
           </CardContent>
         </Card>
 
@@ -139,7 +140,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${stats.remainingBudget < 0 ? "text-red-600" : "text-green-600"}`}>
-              ${stats.remainingBudget.toFixed(2)}
+              {formatCurrency(stats.remainingBudget)}
             </div>
           </CardContent>
         </Card>

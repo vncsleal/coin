@@ -1,6 +1,7 @@
 "use client"
 
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { formatCurrency } from "@/lib/currency"
 
 interface ExpenseChartProps {
   data: { date: string; amount: number }[]
@@ -16,9 +17,9 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => formatCurrency(Number(value))}
         />
-        <Tooltip formatter={(value) => [`$${value}`, "Amount"]} labelFormatter={(label) => `Date: ${label}`} />
+        <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} labelFormatter={(label) => `Date: ${label}`} />
         <Area type="monotone" dataKey="amount" stroke="#8884d8" fill="#8884d8" fillOpacity={0.2} />
       </AreaChart>
     </ResponsiveContainer>

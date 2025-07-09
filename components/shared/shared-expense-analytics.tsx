@@ -30,6 +30,7 @@ import {
   Bar,
   Legend
 } from 'recharts';
+import { formatCurrency } from '@/lib/currency';
 
 interface AnalyticsData {
   monthlyTrends: Array<{
@@ -139,7 +140,7 @@ export function SharedExpenseAnalytics() {
           <CardContent>
             <div className="text-2xl font-bold">{data.summary.totalExpenses}</div>
             <p className="text-xs text-muted-foreground">
-              ${data.summary.totalAmount.toFixed(2)} total amount
+              {formatCurrency(data.summary.totalAmount)} total amount
             </p>
           </CardContent>
         </Card>
@@ -150,7 +151,7 @@ export function SharedExpenseAnalytics() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${data.summary.averageExpense.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(data.summary.averageExpense)}</div>
             <p className="text-xs text-muted-foreground">
               Per shared expense
             </p>
@@ -208,7 +209,7 @@ export function SharedExpenseAnalytics() {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip 
-                    formatter={(value, name) => [`$${Number(value).toFixed(2)}`, name]}
+                    formatter={(value, name) => [formatCurrency(Number(value)), name]}
                   />
                   <Legend />
                   <Line 
@@ -262,7 +263,7 @@ export function SharedExpenseAnalytics() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [`$${Number(value).toFixed(2)}`, 'Amount']} />
+                    <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Amount']} />
                   </RechartsPieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -285,7 +286,7 @@ export function SharedExpenseAnalytics() {
                         <span className="font-medium">{category.category}</span>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold">${category.amount.toFixed(2)}</div>
+                        <div className="font-bold">{formatCurrency(category.amount)}</div>
                         <div className="text-xs text-muted-foreground">
                           {category.count} expenses
                         </div>
@@ -322,12 +323,12 @@ export function SharedExpenseAnalytics() {
                         </div>
                       </div>
                       <div className="text-right space-y-1">
-                        <div className="font-bold text-lg">${friend.totalShared.toFixed(2)}</div>
+                        <div className="font-bold text-lg">{formatCurrency(friend.totalShared)}</div>
                         <div className="text-xs text-muted-foreground">
-                          Settled: ${friend.settledAmount.toFixed(2)}
+                          Settled: {formatCurrency(friend.settledAmount)}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Pending: ${friend.pendingAmount.toFixed(2)}
+                          Pending: {formatCurrency(friend.pendingAmount)}
                         </div>
                       </div>
                     </div>
@@ -359,13 +360,13 @@ export function SharedExpenseAnalytics() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
-                      ${data.settlementOverview.totalOwed.toFixed(2)}
+                      {formatCurrency(data.settlementOverview.totalOwed)}
                     </div>
                     <div className="text-sm text-green-600">You're Owed</div>
                   </div>
                   <div className="text-center p-4 bg-red-50 rounded-lg">
                     <div className="text-2xl font-bold text-red-600">
-                      ${data.settlementOverview.totalOwing.toFixed(2)}
+                      {formatCurrency(data.settlementOverview.totalOwing)}
                     </div>
                     <div className="text-sm text-red-600">You Owe</div>
                   </div>
@@ -374,7 +375,7 @@ export function SharedExpenseAnalytics() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Total Settled</span>
-                    <span className="font-bold">${data.settlementOverview.totalSettled.toFixed(2)}</span>
+                    <span className="font-bold">{formatCurrency(data.settlementOverview.totalSettled)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Pending Settlements</span>
@@ -401,7 +402,7 @@ export function SharedExpenseAnalytics() {
                     <YAxis />
                     <Tooltip 
                       formatter={(value, name) => [
-                        name === 'settlementRate' ? `${Number(value).toFixed(1)}%` : `$${Number(value).toFixed(2)}`,
+                        name === 'settlementRate' ? `${Number(value).toFixed(1)}%` : formatCurrency(Number(value)),
                         name === 'settlementRate' ? 'Settlement Rate' : name
                       ]}
                     />

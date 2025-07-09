@@ -36,6 +36,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatCurrency } from '@/lib/currency';
 
 interface EnhancedSharedExpense {
   id: number;
@@ -173,7 +174,7 @@ export function EnhancedExpenseCard({
                     </div>
                     <div className="flex items-center gap-1">
                       <DollarSign className="w-3 h-3" />
-                      Your share: ${userParticipant?.share_amount.toFixed(2) || '0.00'}
+                      Your share: {formatCurrency(userParticipant?.share_amount || 0)}
                     </div>
                   </div>
                 </div>
@@ -181,7 +182,7 @@ export function EnhancedExpenseCard({
               
               <div className="flex items-center gap-2">
                 <div className="text-right">
-                  <div className="font-bold text-lg">${expense.total_amount.toFixed(2)}</div>
+                  <div className="font-bold text-lg">{formatCurrency(expense.total_amount)}</div>
                 </div>
                 
                 {showActions && (
@@ -230,7 +231,7 @@ export function EnhancedExpenseCard({
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Settlement Progress</span>
-                  <span>${totalPaid.toFixed(2)} / ${totalOwed.toFixed(2)}</span>
+                  <span>{formatCurrency(totalPaid)} / {formatCurrency(totalOwed)}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 

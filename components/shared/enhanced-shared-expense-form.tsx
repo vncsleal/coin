@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { UserBrowser } from "./user-browser"
 import { toast } from "sonner"
 import { Plus, X, Users, Calculator, Receipt, DollarSign } from "lucide-react"
+import { formatCurrency, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency"
 
 const EXPENSE_TAGS = [
   "Food & Dining",
@@ -350,7 +351,7 @@ export function EnhancedSharedExpenseForm() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <Badge variant="outline">
-                              ${(participant.amount || 0).toFixed(2)}
+                              {formatCurrency(participant.amount || 0)}
                             </Badge>
                             <Button
                               type="button"
@@ -457,7 +458,7 @@ export function EnhancedSharedExpenseForm() {
                               </p>
                             </div>
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm">$</span>
+                              <span className="text-sm">{getCurrencySymbol()}</span>
                               <Input
                                 type="number"
                                 step="0.01"
@@ -554,18 +555,18 @@ export function EnhancedSharedExpenseForm() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>Total Amount:</span>
-                        <span className="font-semibold">${totalAmount.toFixed(2)}</span>
+                        <span className="font-semibold">{formatCurrency(totalAmount)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Assigned:</span>
                         <span className={totalAssigned > totalAmount ? 'text-red-600' : 'text-green-600'}>
-                          ${totalAssigned.toFixed(2)}
+                          {formatCurrency(totalAssigned)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Difference:</span>
                         <span className={Math.abs(totalAssigned - totalAmount) > 0.01 ? 'text-red-600' : 'text-green-600'}>
-                          ${Math.abs(totalAssigned - totalAmount).toFixed(2)}
+                          {formatCurrency(Math.abs(totalAssigned - totalAmount))}
                         </span>
                       </div>
                       {!isBalanced && (

@@ -9,6 +9,7 @@ import { EnhancedExpenseCard } from "@/components/shared/enhanced-expense-card"
 import { BulkOperations } from "@/components/shared/bulk-operations"
 import { Filter, Search } from "lucide-react"
 import { toast } from "sonner"
+import { formatCurrency } from "@/lib/currency"
 
 interface EnhancedSharedExpense {
   id: number;
