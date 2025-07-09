@@ -1,15 +1,44 @@
 # Expense Tracker
 
-A modern expense tracking application built with Next.js, featuring AI-powered insights, shared expenses, and comprehensive budget tracking.
+A comprehensive expense tracking application built with Next.js, featuring AI-powered insights, advanced shared expenses with smart splitting, friends management, settlement tracking, and detailed analytics.
 
-## Features
+## ✨ Features
 
-- 📊 **Smart Analytics** - Visualize spending patterns with interactive charts
-- 💰 **Budget Tracking** - Set and monitor monthly budgets
-- 👥 **Shared Expenses** - Split bills and expenses with friends
-- 🤖 **AI Counseling** - Get AI-powered financial insights and advice
-- 📱 **Responsive Design** - Works seamlessly on desktop and mobile
-- 🔐 **Secure Authentication** - Powered by Clerk
+### 📊 **Core Expense Management**
+- **Smart Analytics** - Interactive charts and spending pattern visualization
+- **Budget Tracking** - Set and monitor monthly budgets with alerts
+- **Expense Categories** - Organize expenses with custom tags
+- **Advanced Search** - Filter and search through your expense history
+
+### 👥 **Advanced Shared Expenses**
+- **Friends System** - Add friends, manage relationships, and browse users
+- **Smart Expense Splitting** - Multiple splitting methods:
+  - **Equal Split** - Divide expenses equally among participants
+  - **Percentage Split** - Set custom percentages for each person
+  - **Custom Amount** - Specify exact amounts per participant
+  - **Item-wise Split** - Add receipt items and assign to specific people
+- **Settlement Tracking** - Complete payment workflow with progress visualization
+- **Payment Management** - Mark payments, confirm receipts, send reminders
+- **Bulk Operations** - Manage multiple expenses at once
+
+### 📈 **Analytics & Insights**
+- **Monthly Trends** - Track spending patterns over time
+- **Category Breakdown** - Detailed analysis by expense categories
+- **Friend Analysis** - See spending patterns with different friends
+- **Settlement Analytics** - Monitor payment completion rates
+- **Export Features** - Download data as CSV for external analysis
+
+### 🤖 **AI-Powered Features**
+- **AI Financial Counseling** - Get personalized financial advice
+- **Spending Insights** - AI-powered analysis of your expenses
+- **Budget Recommendations** - Smart suggestions for budget optimization
+
+### 🔐 **Security & UX**
+- **Secure Authentication** - Powered by Clerk with full user management
+- **Responsive Design** - Seamless experience across all devices
+- **Real-time Updates** - Live settlement tracking and notifications
+- **Bulk Actions** - Efficient management of multiple expenses
+- **Status Indicators** - Visual feedback for all expense and settlement states
 
 ## Prerequisites
 
@@ -73,9 +102,10 @@ chmod +x scripts/setup-db.sh
 ```
 
 The setup script will create all necessary tables including:
-- Core tables: `users`, `budgets`, `expenses`, `shared_expenses`
-- Friends system: `friends`, `user_privacy_settings` 
-- Advanced features: `shared_expense_settlements`
+- **Core tables**: `users`, `budgets`, `expenses`, `shared_expenses`, `shared_expense_participants`
+- **Friends system**: `friends`, `user_privacy_settings` 
+- **Settlement tracking**: `shared_expense_settlements` with debtor/creditor relationships
+- **Analytics support**: Optimized indexes for performance
 
 ### 5. Set up Clerk Authentication
 
@@ -104,33 +134,85 @@ pnpm build
 pnpm start
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-├── app/                    # Next.js 13+ App Router
+├── app/                    # Next.js 15+ App Router
 │   ├── api/               # API routes
-│   ├── dashboard/         # Dashboard pages
+│   │   ├── shared-expenses/   # Shared expense APIs
+│   │   │   ├── analytics/     # Analytics endpoints
+│   │   │   ├── bulk/          # Bulk operations
+│   │   │   └── [id]/          # Individual expense operations
+│   │   ├── settlements/       # Settlement management APIs
+│   │   ├── friends/           # Friends system APIs
+│   │   └── users/            # User management APIs
+│   ├── dashboard/         # Protected dashboard pages
+│   │   ├── shared/           # Shared expenses pages
+│   │   │   └── analytics/    # Shared expense analytics
+│   │   ├── friends/          # Friends management
+│   │   ├── expenses/         # Personal expenses
+│   │   └── analytics/        # Personal analytics
 │   └── globals.css        # Global styles
 ├── components/            # React components
-│   └── ui/               # Reusable UI components
+│   ├── shared/           # Shared expense components
+│   │   ├── enhanced-shared-expense-form.tsx
+│   │   ├── settlement-tracker.tsx
+│   │   ├── shared-expense-analytics.tsx
+│   │   ├── friends-manager.tsx
+│   │   ├── user-browser.tsx
+│   │   ├── enhanced-expense-card.tsx
+│   │   └── bulk-operations.tsx
+│   └── ui/               # Reusable UI components (shadcn/ui)
 ├── hooks/                 # Custom React hooks
 ├── lib/                   # Utility functions and configurations
+│   ├── db.ts             # Database connection
+│   ├── types.ts          # TypeScript type definitions
+│   └── user-management.ts # Clerk user sync utilities
 ├── scripts/               # Database scripts
+│   ├── setup-db.sh       # Automated database setup
+│   └── 001-create-tables.sql # Database schema
 └── public/               # Static assets
 ```
 
-## Technologies Used
+## 🛠️ Technologies Used
 
-- **Framework**: Next.js 15
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
-- **Authentication**: Clerk
-- **Database**: PostgreSQL (Neon)
-- **AI**: Google Generative AI
-- **Charts**: Recharts
-- **Forms**: React Hook Form
-- **Validation**: Zod
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: Radix UI + shadcn/ui component library
+- **Authentication**: Clerk (complete user management)
+- **Database**: PostgreSQL (hosted on Neon)
+- **ORM/Query**: Raw SQL with tagged template literals
+- **AI Integration**: Google Generative AI
+- **Charts & Visualization**: Recharts
+- **Forms**: React Hook Form with Zod validation
+- **State Management**: React hooks + Context API
+- **Notifications**: Sonner toast library
+- **Icons**: Lucide React
+- **Build Tool**: Next.js built-in bundler
+- **Package Manager**: pnpm
+
+## 🗃️ Database Schema
+
+### Core Tables
+- **users** - User profiles synced from Clerk
+- **expenses** - Personal expense records
+- **budgets** - Monthly budget tracking
+
+### Shared Expenses System
+- **shared_expenses** - Shared expense records with split method support
+- **shared_expense_participants** - User participation in shared expenses
+- **shared_expense_settlements** - Settlement tracking with debtor/creditor relationships
+
+### Friends System
+- **friends** - Friend relationships and requests
+- **user_privacy_settings** - User discoverability settings
+
+### Key Features
+- Optimized indexes for performance
+- Cascading deletes for data integrity
+- JSONB support for flexible item-wise splitting
+- Timestamp tracking for audit trails
 
 ## Environment Variables Reference
 
@@ -145,14 +227,103 @@ pnpm start
 | `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | Redirect after sign-in | No |
 | `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | Redirect after sign-up | No |
 
-## Contributing
+## 🚀 Quick Start Guide
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### For New Users
 
-## License
+1. **Sign up** using the authentication system
+2. **Set up your profile** and privacy settings
+3. **Add friends** to start sharing expenses
+4. **Create your first shared expense** with smart splitting
+5. **Track settlements** and manage payments
+6. **View analytics** to understand your spending patterns
 
-This project is licensed under the MIT License.
+### Key Pages & Features
+
+- **Dashboard** (`/dashboard`) - Overview of your finances
+- **Expenses** (`/dashboard/expenses`) - Personal expense management
+- **Shared Expenses** (`/dashboard/shared`) - Advanced shared expense creation and management
+- **Shared Analytics** (`/dashboard/shared/analytics`) - Detailed insights into shared spending
+- **Friends** (`/dashboard/friends`) - Friend management and user discovery
+- **Budget** (`/dashboard/budget`) - Monthly budget tracking
+- **AI Counseling** (`/dashboard/ai-counseling`) - Personalized financial advice
+
+## 💡 Advanced Features
+
+### Smart Expense Splitting
+
+The application supports four different splitting methods:
+
+1. **Equal Split** - Default method that divides the total equally
+2. **Percentage Split** - Assign specific percentages to each participant
+3. **Custom Amount** - Set exact amounts for each person
+4. **Item-wise Split** - Add individual items and assign them to specific participants
+
+### Settlement Workflow
+
+1. **Payment Initiation** - Debtor marks payment as "paid"
+2. **Confirmation** - Creditor confirms receipt 
+3. **Completion** - Settlement marked as "confirmed"
+4. **Reminders** - Automated reminder system for pending payments
+
+### Bulk Operations
+
+Efficiently manage multiple expenses with bulk actions:
+- **Bulk Settle** - Mark multiple payments as paid
+- **Bulk Remind** - Send payment reminders for selected expenses
+- **Bulk Export** - Download expense data as CSV
+- **Bulk Delete** - Remove multiple expenses (with confirmation)
+
+### Analytics Features
+
+- **Time-based Analysis** - 3 months, 6 months, or 1 year views
+- **Settlement Rate Tracking** - Monitor payment completion rates
+- **Friend Spending Analysis** - See expense patterns with different friends
+- **Category Insights** - Understand spending by category
+- **Export Capabilities** - Download analytics data for external use
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+
+1. **Check the troubleshooting section** above
+2. **Search existing issues** on GitHub
+3. **Create a new issue** with detailed information including:
+   - Error messages
+   - Steps to reproduce
+   - Environment details (OS, Node.js version, etc.)
+   - Screenshots if applicable
+
+## 🗺️ Roadmap
+
+### Upcoming Features
+- [ ] **Mobile App** - React Native implementation
+- [ ] **Recurring Expenses** - Automatic expense creation
+- [ ] **Receipt Scanning** - OCR-powered receipt processing
+- [ ] **Bank Integration** - Automatic transaction import
+- [ ] **Multi-currency Support** - International expense tracking
+- [ ] **Advanced Notifications** - Email and push notifications
+- [ ] **Expense Reports** - Detailed PDF reports
+- [ ] **Team Workspaces** - Organizational expense management
+
+### Recently Completed ✅
+- [x] **Friends System** - User discovery and friend management
+- [x] **Smart Expense Splitting** - Multiple splitting methods
+- [x] **Settlement Tracking** - Complete payment workflow
+- [x] **Bulk Operations** - Efficient expense management
+- [x] **Advanced Analytics** - Comprehensive spending insights
+- [x] **Enhanced UX** - Status indicators and quick actions
+
+## 🙏 Acknowledgments
+
+- **shadcn/ui** for the excellent component library
+- **Vercel** for seamless deployment platform
+- **Neon** for reliable PostgreSQL hosting
+- **Clerk** for robust authentication
+- **Google AI** for intelligent insights
+
+---
+
+**Made with ❤️ by the Expense Tracker team**
+
+For more information, visit our [documentation](https://github.com/yourusername/expense-tracker/wiki) or check out the [live demo](https://expense-tracker-demo.vercel.app).
