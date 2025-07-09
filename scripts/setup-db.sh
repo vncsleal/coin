@@ -37,7 +37,11 @@ if psql "$DATABASE_URL" -f scripts/001-create-tables.sql; then
     
     # Verify tables were created
     echo "🔍 Verifying tables..."
-    psql "$DATABASE_URL" -c "\dt" | head -10
+    psql "$DATABASE_URL" -c "\dt" | head -15
+    
+    echo "📋 Table details:"
+    echo "Main tables: users, budgets, expenses, shared_expenses, shared_expense_participants"
+    echo "Friends system: friends, user_privacy_settings, shared_expense_settlements"
     
     echo "🎉 Database setup complete!"
     echo ""
@@ -45,6 +49,7 @@ if psql "$DATABASE_URL" -f scripts/001-create-tables.sql; then
     echo "1. Make sure your Clerk credentials are set in .env.local"
     echo "2. Set up your Google AI API key for AI counseling"
     echo "3. Run 'pnpm dev' to start the development server"
+    echo "4. When users sign up via Clerk, their profile data will be automatically added to the users table"
 else
     echo "❌ ERROR: Failed to create database tables."
     echo "Please check your DATABASE_URL and try again."

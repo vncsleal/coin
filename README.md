@@ -65,9 +65,17 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key_here
 3. Run the database setup script:
 
 ```bash
-# Connect to your Neon database and run the SQL script
-psql your_database_url -f scripts/001-create-tables.sql
+# Make the script executable (if not already)
+chmod +x scripts/setup-db.sh
+
+# Run the automated setup script
+./scripts/setup-db.sh
 ```
+
+The setup script will create all necessary tables including:
+- Core tables: `users`, `budgets`, `expenses`, `shared_expenses`
+- Friends system: `friends`, `user_privacy_settings` 
+- Advanced features: `shared_expense_settlements`
 
 ### 5. Set up Clerk Authentication
 

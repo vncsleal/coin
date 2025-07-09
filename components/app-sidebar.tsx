@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, Receipt, Wallet, Users, Brain, Download, Search, BarChart3, User } from "lucide-react"
+import { LayoutDashboard, Receipt, Wallet, Users, Brain, Download, Search, BarChart3, User, UserPlus, PieChart } from "lucide-react"
 import Link from "next/link"
 
 const items = [
@@ -41,6 +41,16 @@ const items = [
     title: "Shared Expenses",
     url: "/dashboard/shared",
     icon: Users,
+  },
+  {
+    title: "Shared Analytics",
+    url: "/dashboard/shared/analytics",
+    icon: PieChart,
+  },
+  {
+    title: "Friends",
+    url: "/dashboard/friends",
+    icon: UserPlus,
   },
   {
     title: "AI Counseling",

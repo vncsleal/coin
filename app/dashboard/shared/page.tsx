@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { SharedExpenseForm } from "@/components/shared-expense-form"
+import { EnhancedSharedExpenseForm } from "@/components/shared/enhanced-shared-expense-form"
 import { SharedExpenseList } from "@/components/shared-expense-list"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -22,10 +22,10 @@ export default async function SharedExpensesPage() {
         <Card>
           <CardHeader>
             <CardTitle>Create Shared Expense</CardTitle>
-            <CardDescription>Add a new expense to split with others</CardDescription>
+            <CardDescription>Add expenses with smart splitting - equal, percentage, custom amounts, or item-wise</CardDescription>
           </CardHeader>
           <CardContent>
-            <SharedExpenseForm />
+            <EnhancedSharedExpenseForm />
           </CardContent>
         </Card>
 
