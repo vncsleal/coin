@@ -59,7 +59,7 @@ export async function GET() {
 
     // New Friend Requests
     const friendRequests = await sql`
-      SELECT f.id, u.name, u.email
+      SELECT f.id, u.display_name, u.email
       FROM friends f
       JOIN users u ON f.user_id = u.id
       WHERE f.friend_user_id = ${userId} AND f.status = 'pending'
@@ -77,11 +77,11 @@ export async function GET() {
 
     // Pending Shared Expense Settlements
     const pendingSettlements = await sql`
-      SELECT ses.id, se.name as expense_name, u.name as payer_name, u.email as payer_email
+      SELECT ses.id, se.name as expense_name, debtor_user.display_name as payer_name, debtor_user.email as payer_email
       FROM shared_expense_settlements ses
       JOIN shared_expenses se ON ses.shared_expense_id = se.id
-      JOIN users u ON se.created_by = u.id
-      WHERE ses.participant_id = ${userId} AND ses.status = 'pending'
+      JOIN users debtor_user ON ses.debtor_id = debtor_user.id
+      WHERE ses.debtor_id = ${userId} AND ses.status = 'pending'
     `
 
     pendingSettlements.forEach(settlement => {
