@@ -42,22 +42,57 @@ export async function GET() {
         notifications.push({
           id: "budget-90",
           type: "warning",
-          title: "Budget Alert",
-          message: `You've spent ${percentage.toFixed(1)}% of your monthly budget`,
-          timestamp: new Date(),
-          read: false,
+          title: "Alerta de Orçamento",
+          message: `Você gastou ${percentage.toFixed(1)}% do seu orçamento mensal`,
+          timestamp: new Date().toISOString(),
         })
       } else if (percentage >= 75) {
         notifications.push({
           id: "budget-75",
           type: "info",
-          title: "Budget Update",
-          message: `You've spent ${percentage.toFixed(1)}% of your monthly budget`,
-          timestamp: new Date(),
-          read: false,
+          title: "Atualização de Orçamento",
+          message: `Você gastou ${percentage.toFixed(1)}% do seu orçamento mensal`,
+          timestamp: new Date().toISOString(),
         })
       }
     }
+
+    // New Friend Requests
+    const friendRequests = await sql`
+      SELECT f.id, u.name, u.email
+      FROM friends f
+      JOIN users u ON f.user_id = u.id
+      WHERE f.friend_user_id = ${userId} AND f.status = 'pending'
+    `
+
+    friendRequests.forEach(request => {
+      notifications.push({
+        id: `friend-request-${request.id}`,
+        type: "info",
+        title: "Nova Solicitação de Amizade",
+        message: `${request.name || request.email} enviou uma solicitação de amizade.`,
+        timestamp: new Date().toISOString(),
+      })
+    })
+
+    // Pending Shared Expense Settlements
+    const pendingSettlements = await sql`
+      SELECT ses.id, se.name as expense_name, u.name as payer_name, u.email as payer_email
+      FROM shared_expense_settlements ses
+      JOIN shared_expenses se ON ses.shared_expense_id = se.id
+      JOIN users u ON se.created_by = u.id
+      WHERE ses.participant_id = ${userId} AND ses.status = 'pending'
+    `
+
+    pendingSettlements.forEach(settlement => {
+      notifications.push({
+        id: `settlement-pending-${settlement.id}`,
+        type: "warning",
+        title: "Liquidação Pendente",
+        message: `Você tem uma liquidação pendente para a despesa "${settlement.expense_name}" com ${settlement.payer_name || settlement.payer_email}.`,
+        timestamp: new Date().toISOString(),
+      })
+    })
 
     return NextResponse.json(notifications)
   } catch (error) {
