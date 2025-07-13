@@ -97,44 +97,44 @@ export function EnhancedExpenseCard({
 
   const getStatusBadge = () => {
     if (isFullySettled) {
-      return <Badge className="bg-green-100 text-green-800"><Check className="w-3 h-3 mr-1" />Settled</Badge>;
+      return <Badge className="bg-green-100 text-green-800"><Check className="w-3 h-3 mr-1" />Liquidado</Badge>;
     }
     if (hasOverduePayments) {
-      return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Overdue</Badge>;
+      return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Atrasado</Badge>;
     }
     if (hasPendingPayments) {
-      return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+      return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Pendente</Badge>;
     }
-    return <Badge variant="secondary">Active</Badge>;
+    return <Badge variant="secondary">Ativo</Badge>;
   };
 
   const handleQuickSettle = async () => {
     try {
       await onSettle?.(expense.id);
-      toast.success('Settlement initiated');
+      toast.success('Liquidação iniciada');
     } catch (error) {
-      toast.error('Failed to settle expense');
+      toast.error('Falha ao liquidar despesa');
     }
   };
 
   const handleSendReminder = async () => {
     try {
       await onRemind?.(expense.id);
-      toast.success('Reminder sent');
+      toast.success('Lembrete enviado');
     } catch (error) {
-      toast.error('Failed to send reminder');
+      toast.error('Falha ao enviar lembrete');
     }
   };
 
   const handleDuplicate = () => {
     onDuplicate?.(expense);
-    toast.success('Expense duplicated');
+    toast.success('Despesa duplicada');
   };
 
   const handleDelete = () => {
     onDelete?.(expense.id);
     setDeleteDialogOpen(false);
-    toast.success('Expense deleted');
+    toast.success('Despesa excluída');
   };
 
   return (
@@ -170,11 +170,11 @@ export function EnhancedExpenseCard({
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
-                      {expense.participants.length} participants
+                      {expense.participants.length} participantes
                     </div>
                     <div className="flex items-center gap-1">
                       <DollarSign className="w-3 h-3" />
-                      Your share: {formatCurrency(userParticipant?.share_amount || 0)}
+                      Sua parte: {formatCurrency(userParticipant?.share_amount || 0)}
                     </div>
                   </div>
                 </div>
@@ -197,12 +197,12 @@ export function EnhancedExpenseCard({
                         <>
                           <DropdownMenuItem onClick={handleQuickSettle}>
                             <CreditCard className="w-4 h-4 mr-2" />
-                            Quick Settle
+                            Liquidação Rápida
                           </DropdownMenuItem>
                           {hasPendingPayments && (
                             <DropdownMenuItem onClick={handleSendReminder}>
                               <MessageSquare className="w-4 h-4 mr-2" />
-                              Send Reminder
+                              Enviar Lembrete
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
@@ -210,7 +210,7 @@ export function EnhancedExpenseCard({
                       )}
                       <DropdownMenuItem onClick={handleDuplicate}>
                         <Copy className="w-4 h-4 mr-2" />
-                        Duplicate
+                        Duplicar
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem 
@@ -218,7 +218,7 @@ export function EnhancedExpenseCard({
                         className="text-red-600"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
+                        Excluir
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -230,7 +230,7 @@ export function EnhancedExpenseCard({
             {!isFullySettled && (
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Settlement Progress</span>
+                  <span>Progresso da Liquidação</span>
                   <span>{formatCurrency(totalPaid)} / {formatCurrency(totalOwed)}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -249,13 +249,13 @@ export function EnhancedExpenseCard({
               {!isFullySettled && (
                 <Button size="sm" variant="outline" onClick={handleQuickSettle} className="flex-1">
                   <CreditCard className="w-3 h-3 mr-1" />
-                  Settle
+                  Liquidar
                 </Button>
               )}
               {hasPendingPayments && (
                 <Button size="sm" variant="outline" onClick={handleSendReminder} className="flex-1">
                   <MessageSquare className="w-3 h-3 mr-1" />
-                  Remind
+                  Lembrar
                 </Button>
               )}
             </div>
@@ -267,15 +267,15 @@ export function EnhancedExpenseCard({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Shared Expense</AlertDialogTitle>
+            <AlertDialogTitle>Excluir Despesa Compartilhada</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{expense.name}"? This action cannot be undone and will affect all participants.
+              Tem certeza de que deseja excluir "{expense.name}"? Esta ação não pode ser desfeita e afetará todos os participantes.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-              Delete
+              Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

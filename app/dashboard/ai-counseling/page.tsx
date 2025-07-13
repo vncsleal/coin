@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { AICounseling } from "@/components/ai-counseling"
@@ -13,15 +14,15 @@ export default async function AICounselingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Financial Counseling</h1>
-        <p className="text-muted-foreground">Get personalized financial advice based on your spending patterns</p>
+        <h1 className="text-3xl font-bold tracking-tight">Aconselhamento Financeiro com IA</h1>
+        <p className="text-muted-foreground">Receba conselhos financeiros personalizados com base em seus padrões de gastos</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Financial Analysis & Advice</CardTitle>
+          <CardTitle>Análise e Aconselhamento Financeiro</CardTitle>
           <CardDescription>
-            Our AI analyzes your spending habits and provides personalized recommendations
+            Nossa IA analisa seus hábitos de consumo e fornece recomendações personalizadas
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -31,3 +32,4 @@ export default async function AICounselingPage() {
     </div>
   )
 }
+

@@ -79,10 +79,10 @@ export function FriendsManager() {
         await fetchFriends();
         
         const actionMessages = {
-          accept: 'Friend request accepted',
-          decline: 'Friend request declined',
-          remove: 'Friend removed',
-          block: 'User blocked'
+          accept: 'Solicitação de amizade aceita',
+          decline: 'Solicitação de amizade recusada',
+          remove: 'Amigo removido',
+          block: 'Usuário bloqueado'
         };
         
         toast.success(actionMessages[action]);
@@ -118,7 +118,7 @@ export function FriendsManager() {
               </p>
               {friend.status === 'pending' && (
                 <p className="text-xs text-muted-foreground">
-                  {friend.initiated_by === friend.user_id ? 'Request sent' : 'Request received'}
+                  {friend.initiated_by === friend.user_id ? 'Solicitação enviada' : 'Solicitação recebida'}
                 </p>
               )}
             </div>
@@ -128,14 +128,14 @@ export function FriendsManager() {
             {friend.status === 'accepted' && (
               <Badge variant="secondary" className="text-green-600">
                 <Check className="w-3 h-3 mr-1" />
-                Friends
+                Amigos
               </Badge>
             )}
             
             {friend.status === 'pending' && (
               <Badge variant="outline">
                 <Clock className="w-3 h-3 mr-1" />
-                Pending
+                Pendente
               </Badge>
             )}
 
@@ -154,14 +154,14 @@ export function FriendsManager() {
                         className="text-green-600"
                       >
                         <Check className="w-4 h-4 mr-2" />
-                        Accept Request
+                        Aceitar Solicitação
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleFriendAction(friend.id, 'decline')}
                         className="text-red-600"
                       >
                         <X className="w-4 h-4 mr-2" />
-                        Decline Request
+                        Recusar Solicitação
                       </DropdownMenuItem>
                     </>
                   )}
@@ -170,14 +170,14 @@ export function FriendsManager() {
                     <>
                       <DropdownMenuItem>
                         <MessageSquare className="w-4 h-4 mr-2" />
-                        Send Message
+                        Enviar Mensagem
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleFriendAction(friend.id, 'remove')}
                         className="text-red-600"
                       >
                         <X className="w-4 h-4 mr-2" />
-                        Remove Friend
+                        Remover Amigo
                       </DropdownMenuItem>
                     </>
                   )}
@@ -187,7 +187,7 @@ export function FriendsManager() {
                     className="text-red-600"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Block User
+                    Bloquear Usuário
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -212,7 +212,7 @@ export function FriendsManager() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Friends</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de Amigos</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -222,7 +222,7 @@ export function FriendsManager() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
+            <CardTitle className="text-sm font-medium">Solicitações Pendentes</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -234,7 +234,7 @@ export function FriendsManager() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sent Requests</CardTitle>
+            <CardTitle className="text-sm font-medium">Solicitações Enviadas</CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -249,39 +249,39 @@ export function FriendsManager() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="friends">
-            My Friends ({acceptedFriends.length})
+            Meus Amigos ({acceptedFriends.length})
           </TabsTrigger>
           <TabsTrigger value="requests">
-            Requests ({pendingRequests.filter(f => f.initiated_by !== f.user_id).length})
+            Solicitações ({pendingRequests.filter(f => f.initiated_by !== f.user_id).length})
           </TabsTrigger>
           <TabsTrigger value="discover">
             <UserPlus className="w-4 h-4 mr-2" />
-            Find Friends
+            Encontrar Amigos
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="friends" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>My Friends</CardTitle>
+              <CardTitle>Meus Amigos</CardTitle>
               <CardDescription>
-                People you're connected with for sharing expenses.
+                Pessoas com quem você está conectado para compartilhar despesas.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {acceptedFriends.length === 0 ? (
                 <div className="text-center py-8">
                   <Users className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-2 text-sm font-semibold">No friends yet</h3>
+                  <h3 className="mt-2 text-sm font-semibold">Nenhum amigo ainda</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Start by finding and adding friends to share expenses with.
+                    Comece encontrando e adicionando amigos para compartilhar despesas.
                   </p>
                   <Button 
                     className="mt-4" 
                     onClick={() => setActiveTab('discover')}
                   >
                     <UserPlus className="w-4 h-4 mr-2" />
-                    Find Friends
+                    Encontrar Amigos
                   </Button>
                 </div>
               ) : (
@@ -298,18 +298,18 @@ export function FriendsManager() {
         <TabsContent value="requests" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Friend Requests</CardTitle>
+              <CardTitle>Solicitações de Amizade</CardTitle>
               <CardDescription>
-                Pending friend requests that need your response.
+                Solicitações de amizade pendentes que precisam da sua resposta.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {pendingRequests.filter(f => f.initiated_by !== f.user_id).length === 0 ? (
                 <div className="text-center py-8">
                   <Clock className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-2 text-sm font-semibold">No pending requests</h3>
+                  <h3 className="mt-2 text-sm font-semibold">Nenhuma solicitação pendente</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    You don't have any friend requests at the moment.
+                    Você não tem nenhuma solicitação de amizade no momento.
                   </p>
                 </div>
               ) : (
@@ -325,7 +325,7 @@ export function FriendsManager() {
               {/* Sent Requests Section */}
               {pendingRequests.filter(f => f.initiated_by === f.user_id).length > 0 && (
                 <div className="mt-8">
-                  <h3 className="text-lg font-semibold mb-4">Sent Requests</h3>
+                  <h3 className="text-lg font-semibold mb-4">Solicitações Enviadas</h3>
                   <div className="space-y-3">
                     {pendingRequests
                       .filter(f => f.initiated_by === f.user_id)
@@ -342,9 +342,9 @@ export function FriendsManager() {
         <TabsContent value="discover" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Find Friends</CardTitle>
+              <CardTitle>Encontrar Amigos</CardTitle>
               <CardDescription>
-                Search for users and send friend requests to start sharing expenses.
+                Procure usuários e envie solicitações de amizade para começar a compartilhar despesas.
               </CardDescription>
             </CardHeader>
             <CardContent>

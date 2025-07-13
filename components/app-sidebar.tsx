@@ -13,57 +13,57 @@ import Link from "next/link"
 
 const items = [
   {
-    title: "Dashboard",
+    title: "Painel",
     url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "Expenses",
+    title: "Despesas",
     url: "/dashboard/expenses",
     icon: Receipt,
   },
   {
-    title: "Advanced Search",
+    title: "Pesquisa Avançada",
     url: "/dashboard/expenses/advanced",
     icon: Search,
   },
   {
-    title: "Analytics",
+    title: "Análises",
     url: "/dashboard/analytics",
     icon: BarChart3,
   },
   {
-    title: "Budget",
+    title: "Orçamento",
     url: "/dashboard/budget",
     icon: Wallet,
   },
   {
-    title: "Shared Expenses",
+    title: "Despesas Compartilhadas",
     url: "/dashboard/shared",
     icon: Users,
   },
   {
-    title: "Shared Analytics",
+    title: "Análises Compartilhadas",
     url: "/dashboard/shared/analytics",
     icon: PieChart,
   },
   {
-    title: "Friends",
+    title: "Amigos",
     url: "/dashboard/friends",
     icon: UserPlus,
   },
   {
-    title: "AI Counseling",
+    title: "Aconselhamento com IA",
     url: "/dashboard/ai-counseling",
     icon: Brain,
   },
   {
-    title: "Export Data",
+    title: "Exportar Dados",
     url: "/dashboard/export",
     icon: Download,
   },
   {
-    title: "Profile",
+    title: "Perfil",
     url: "/dashboard/profile",
     icon: User,
   },
@@ -74,7 +74,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Expense Tracker</SidebarGroupLabel>
+          <SidebarGroupLabel>Rastreador de Despesas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

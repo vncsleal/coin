@@ -105,11 +105,11 @@ export function UserBrowser({ onSelectUser, selectedUsers = [], showFriendAction
   const getFriendshipBadge = (status: string) => {
     switch (status) {
       case 'accepted':
-        return <Badge variant="secondary" className="text-green-600"><Check className="w-3 h-3 mr-1" />Friends</Badge>;
+        return <Badge variant="secondary" className="text-green-600"><Check className="w-3 h-3 mr-1" />Amigos</Badge>;
       case 'pending':
-        return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
+        return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Pendente</Badge>;
       case 'blocked':
-        return <Badge variant="destructive"><X className="w-3 h-3 mr-1" />Blocked</Badge>;
+        return <Badge variant="destructive"><X className="w-3 h-3 mr-1" />Bloqueado</Badge>;
       default:
         return null;
     }
@@ -126,7 +126,7 @@ export function UserBrowser({ onSelectUser, selectedUsers = [], showFriendAction
       <div className="relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search users by name or email..."
+          placeholder="Pesquisar usuários por nome ou email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -143,18 +143,18 @@ export function UserBrowser({ onSelectUser, selectedUsers = [], showFriendAction
         {!loading && users.length === 0 && search && (
           <div className="text-center py-8 text-muted-foreground">
             <Search className="mx-auto h-12 w-12 mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">No users found</h3>
-            <p>No users match your search "{search}"</p>
-            <p className="text-sm mt-2">Try a different search term or check the spelling.</p>
+            <h3 className="text-lg font-medium mb-2">Nenhum usuário encontrado</h3>
+            <p>Nenhum usuário corresponde à sua pesquisa "{search}"</p>
+            <p className="text-sm mt-2">Tente um termo de pesquisa diferente ou verifique a ortografia.</p>
           </div>
         )}
 
         {!loading && users.length === 0 && !search && (
           <div className="text-center py-8 text-muted-foreground">
             <Users className="mx-auto h-12 w-12 mb-4 opacity-50" />
-            <h3 className="text-lg font-medium mb-2">No users available</h3>
-            <p>There are no other users in the system yet.</p>
-            <p className="text-sm mt-2">Users will appear here as they join the platform.</p>
+            <h3 className="text-lg font-medium mb-2">Nenhum usuário disponível</h3>
+            <p>Ainda não há outros usuários no sistema.</p>
+            <p className="text-sm mt-2">Os usuários aparecerão aqui à medida que entrarem na plataforma.</p>
           </div>
         )}
 
@@ -203,7 +203,7 @@ export function UserBrowser({ onSelectUser, selectedUsers = [], showFriendAction
                       }}
                     >
                       <UserPlus className="w-4 h-4 mr-1" />
-                      Add Friend
+                      Adicionar Amigo
                     </Button>
                   )}
                 </div>
@@ -224,7 +224,7 @@ export function UserBrowser({ onSelectUser, selectedUsers = [], showFriendAction
             onClick={loadMore}
             className="w-full"
           >
-            Load More Users
+            Carregar Mais Usuários
           </Button>
         )}
       </div>

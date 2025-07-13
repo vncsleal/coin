@@ -140,11 +140,11 @@ export function SharedExpenseList() {
   }
 
   if (isLoading) {
-    return <div className="text-center py-8 text-muted-foreground">Loading shared expenses...</div>
+    return <div className="text-center py-8 text-muted-foreground">Carregando despesas compartilhadas...</div>
   }
 
   if (sharedExpenses.length === 0) {
-    return <div className="text-center py-8 text-muted-foreground">No shared expenses yet</div>
+    return <div className="text-center py-8 text-muted-foreground">Nenhuma despesa compartilhada ainda</div>
   }
 
   return (
@@ -154,8 +154,8 @@ export function SharedExpenseList() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Your Shared Expenses</CardTitle>
-              <CardDescription>Manage and track your shared expenses</CardDescription>
+              <CardTitle>Suas Despesas Compartilhadas</CardTitle>
+              <CardDescription>Gerencie e acompanhe suas despesas compartilhadas</CardDescription>
             </div>
             <Button 
               variant={showBulkMode ? "default" : "outline"}
@@ -164,7 +164,7 @@ export function SharedExpenseList() {
                 if (showBulkMode) clearSelection()
               }}
             >
-              {showBulkMode ? "Exit Bulk Mode" : "Bulk Actions"}
+              {showBulkMode ? "Sair do Modo em Massa" : "Ações em Massa"}
             </Button>
           </div>
         </CardHeader>
@@ -174,7 +174,7 @@ export function SharedExpenseList() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search expenses..."
+                  placeholder="Pesquisar despesas..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-9"
@@ -187,16 +187,16 @@ export function SharedExpenseList() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Expenses</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="pending">Pending Payment</SelectItem>
-                <SelectItem value="settled">Fully Settled</SelectItem>
+                <SelectItem value="all">Todas as Despesas</SelectItem>
+                <SelectItem value="active">Ativas</SelectItem>
+                <SelectItem value="pending">Pagamento Pendente</SelectItem>
+                <SelectItem value="settled">Totalmente Liquidadas</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="text-sm text-muted-foreground">
-            Showing {filteredExpenses.length} of {sharedExpenses.length} expenses
+            Mostrando {filteredExpenses.length} de {sharedExpenses.length} despesas
           </div>
         </CardContent>
       </Card>
@@ -226,11 +226,11 @@ export function SharedExpenseList() {
             onUpdate={fetchSharedExpenses}
             onDelete={(id) => {
               setSharedExpenses(prev => prev.filter(exp => exp.id !== id))
-              toast.success('Expense deleted')
+              toast.success('Despesa excluída')
             }}
             onDuplicate={(expense) => {
               // Handle expense duplication
-              toast.success('Expense duplicated')
+              toast.success('Despesa duplicada')
             }}
             onSettle={async (id) => {
               // Handle quick settle
@@ -240,7 +240,7 @@ export function SharedExpenseList() {
             onRemind={async (id) => {
               // Handle send reminder
               await new Promise(resolve => setTimeout(resolve, 1000))
-              toast.success('Reminder sent')
+              toast.success('Lembrete enviado')
             }}
             showActions={true}
             showSelection={showBulkMode}

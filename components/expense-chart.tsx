@@ -19,7 +19,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
           axisLine={false}
           tickFormatter={(value) => formatCurrency(Number(value))}
         />
-        <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} labelFormatter={(label) => `Date: ${label}`} />
+        <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Valor"]} labelFormatter={(label) => `Data: ${label}`} />
         <Area type="monotone" dataKey="amount" stroke="#8884d8" fill="#8884d8" fillOpacity={0.2} />
       </AreaChart>
     </ResponsiveContainer>

@@ -42,7 +42,7 @@ export function BudgetForm({ currentBudget }: BudgetFormProps) {
   return (
     <form action={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="amount">Monthly Budget Amount</Label>
+        <Label htmlFor="amount">Valor do Orçamento Mensal</Label>
         <Input
           id="amount"
           name="amount"
@@ -55,7 +55,7 @@ export function BudgetForm({ currentBudget }: BudgetFormProps) {
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? "Saving..." : currentBudget ? "Update Budget" : "Set Budget"}
+        {isLoading ? "Salvando..." : currentBudget ? "Atualizar Orçamento" : "Definir Orçamento"}
       </Button>
     </form>
   )

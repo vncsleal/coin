@@ -66,7 +66,7 @@ export function BulkOperations({
       toast.success(successMessage);
       clearSelectionAction();
     } catch (error) {
-      toast.error('Operation failed');
+      toast.error('Operação falhou');
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export function BulkOperations({
   const handleBulkDelete = async () => {
     await handleBulkOperation(
       () => bulkDeleteAction(selectedExpenses),
-      `${selectedCount} expense(s) deleted`
+      `${selectedCount} despesa(s) excluída(s)`
     );
     setDeleteDialogOpen(false);
   };
@@ -85,14 +85,14 @@ export function BulkOperations({
       <div className="flex items-center justify-between p-4 bg-primary/5 border rounded-lg">
         <div className="flex items-center gap-3">
           <Badge variant="secondary">
-            {selectedCount} selected
+            {selectedCount} selecionado(s)
           </Badge>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={clearSelectionAction}
           >
-            Clear selection
+            Limpar seleção
           </Button>
         </div>
 
@@ -102,12 +102,12 @@ export function BulkOperations({
             size="sm"
             onClick={() => handleBulkOperation(
               () => bulkSettleAction(selectedExpenses),
-              'Settlement process initiated for selected expenses'
+              'Processo de liquidação iniciado para as despesas selecionadas'
             )}
             disabled={loading}
           >
             <CreditCard className="w-4 h-4 mr-2" />
-            Settle All
+            Liquidar Tudo
           </Button>
 
           <Button
@@ -115,19 +115,19 @@ export function BulkOperations({
             variant="outline"
             onClick={() => handleBulkOperation(
               () => bulkRemindAction(selectedExpenses),
-              'Reminders sent for selected expenses'
+              'Lembretes enviados para as despesas selecionadas'
             )}
             disabled={loading}
           >
             <MessageSquare className="w-4 h-4 mr-2" />
-            Send Reminders
+            Enviar Lembretes
           </Button>
 
           {/* More Actions Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="outline" disabled={loading}>
-                More Actions
+                Mais Ações
                 <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
             </DropdownMenuTrigger>
@@ -135,21 +135,21 @@ export function BulkOperations({
               <DropdownMenuItem
                 onClick={() => handleBulkOperation(
                   () => bulkMarkSettledAction(selectedExpenses),
-                  'Selected expenses marked as settled'
+                  'Despesas selecionadas marcadas como liquidadas'
                 )}
               >
                 <CheckCircle className="w-4 h-4 mr-2" />
-                Mark as Settled
+                Marcar como Liquidado
               </DropdownMenuItem>
               
               <DropdownMenuItem
                 onClick={() => handleBulkOperation(
                   () => bulkExportAction(selectedExpenses),
-                  'Export completed'
+                  'Exportação concluída'
                 )}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Export to CSV
+                Exportar para CSV
               </DropdownMenuItem>
               
               <DropdownMenuSeparator />
@@ -159,7 +159,7 @@ export function BulkOperations({
                 className="text-red-600"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Delete Selected
+                Excluir Selecionados
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -170,19 +170,19 @@ export function BulkOperations({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Selected Expenses</AlertDialogTitle>
+            <AlertDialogTitle>Excluir Despesas Selecionadas</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {selectedCount} selected expense(s)? 
-              This action cannot be undone and will affect all participants.
+              Tem certeza de que deseja excluir {selectedCount} despesa(s) selecionada(s)? 
+              Esta ação não pode ser desfeita e afetará todos os participantes.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleBulkDelete} 
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete {selectedCount} Expense(s)
+              Excluir {selectedCount} Despesa(s)
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -30,19 +30,19 @@ export function ExportForm() {
       const a = document.createElement("a")
       a.style.display = "none"
       a.href = url
-      a.download = `expenses-${new Date().toISOString().split("T")[0]}.csv`
+      a.download = `despesas-${new Date().toISOString().split("T")[0]}.csv`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
 
       toast({
-        title: "Success",
-        description: "Expenses exported successfully",
+        title: "Sucesso",
+        description: "Despesas exportadas com sucesso",
       })
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to export expenses",
+        title: "Erro",
+        description: "Falha ao exportar despesas",
         variant: "destructive",
       })
     } finally {
@@ -53,17 +53,17 @@ export function ExportForm() {
   return (
     <form action={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="startDate">Start Date</Label>
+        <Label htmlFor="startDate">Data de Início</Label>
         <Input id="startDate" name="startDate" type="date" required />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="endDate">End Date</Label>
+        <Label htmlFor="endDate">Data de Término</Label>
         <Input id="endDate" name="endDate" type="date" defaultValue={new Date().toISOString().split("T")[0]} required />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="format">Export Format</Label>
+        <Label htmlFor="format">Formato de Exportação</Label>
         <Select name="format" defaultValue="csv">
           <SelectTrigger>
             <SelectValue />
@@ -77,7 +77,7 @@ export function ExportForm() {
 
       <Button type="submit" disabled={isLoading} className="w-full">
         <Download className="mr-2 h-4 w-4" />
-        {isLoading ? "Exporting..." : "Export Data"}
+        {isLoading ? "Exportando..." : "Exportar Dados"}
       </Button>
     </form>
   )

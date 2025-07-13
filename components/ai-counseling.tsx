@@ -20,15 +20,15 @@ export function AICounseling() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to get analysis")
+        throw new Error("Falha ao obter análise")
       }
 
       const data = await response.json()
       setAnalysis(data.analysis)
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to get AI analysis",
+        title: "Erro",
+        description: "Falha ao obter análise de IA",
         variant: "destructive",
       })
     } finally {
@@ -42,12 +42,12 @@ export function AICounseling() {
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Analyzing your finances...
+            Analisando suas finanças...
           </>
         ) : (
           <>
             <Brain className="mr-2 h-4 w-4" />
-            Get AI Financial Analysis
+            Obter Análise Financeira com IA
           </>
         )}
       </Button>

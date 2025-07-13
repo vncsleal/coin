@@ -108,7 +108,7 @@ export function SharedExpenseAnalytics() {
   if (!data) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground">No analytics data available</p>
+        <p className="text-muted-foreground">Nenhum dado de análise disponível</p>
       </div>
     );
   }
@@ -118,14 +118,14 @@ export function SharedExpenseAnalytics() {
       {/* Time Range Selector */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Shared Expense Analytics</h2>
-          <p className="text-muted-foreground">Insights into your shared spending patterns</p>
+          <h2 className="text-2xl font-bold">Análise de Despesas Compartilhadas</h2>
+          <p className="text-muted-foreground">Insights sobre seus padrões de gastos compartilhados</p>
         </div>
         <Tabs value={timeRange} onValueChange={setTimeRange}>
           <TabsList>
-            <TabsTrigger value="3months">3 Months</TabsTrigger>
-            <TabsTrigger value="6months">6 Months</TabsTrigger>
-            <TabsTrigger value="1year">1 Year</TabsTrigger>
+            <TabsTrigger value="3months">3 Meses</TabsTrigger>
+            <TabsTrigger value="6months">6 Meses</TabsTrigger>
+            <TabsTrigger value="1year">1 Ano</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -134,52 +134,52 @@ export function SharedExpenseAnalytics() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de Despesas</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.summary.totalExpenses}</div>
             <p className="text-xs text-muted-foreground">
-              {formatCurrency(data.summary.totalAmount)} total amount
+              {formatCurrency(data.summary.totalAmount)} valor total
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Expense</CardTitle>
+            <CardTitle className="text-sm font-medium">Média de Despesa</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(data.summary.averageExpense)}</div>
             <p className="text-xs text-muted-foreground">
-              Per shared expense
+              Por despesa compartilhada
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Settlement Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Taxa de Liquidação</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.summary.settlementRate.toFixed(1)}%</div>
             <p className="text-xs text-muted-foreground">
-              Expenses fully settled
+              Despesas totalmente liquidadas
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Top Category</CardTitle>
+            <CardTitle className="text-sm font-medium">Categoria Principal</CardTitle>
             <PieChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.summary.topCategory || 'N/A'}</div>
             <p className="text-xs text-muted-foreground">
-              Most frequent category
+              Categoria mais frequente
             </p>
           </CardContent>
         </Card>
@@ -188,18 +188,18 @@ export function SharedExpenseAnalytics() {
       {/* Charts Section */}
       <Tabs defaultValue="trends" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="trends">Monthly Trends</TabsTrigger>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="friends">Friends</TabsTrigger>
-          <TabsTrigger value="settlements">Settlements</TabsTrigger>
+          <TabsTrigger value="trends">Tendências Mensais</TabsTrigger>
+          <TabsTrigger value="categories">Categorias</TabsTrigger>
+          <TabsTrigger value="friends">Amigos</TabsTrigger>
+          <TabsTrigger value="settlements">Liquidações</TabsTrigger>
         </TabsList>
 
         <TabsContent value="trends" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Expense Trends</CardTitle>
+              <CardTitle>Tendências de Despesas Mensais</CardTitle>
               <CardDescription>
-                Track your shared expenses and settlement patterns over time
+                Acompanhe suas despesas compartilhadas e padrões de liquidação ao longo do tempo
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -216,21 +216,21 @@ export function SharedExpenseAnalytics() {
                     type="monotone" 
                     dataKey="totalAmount" 
                     stroke="#8884d8" 
-                    name="Total Amount"
+                    name="Valor Total"
                     strokeWidth={2}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="settledAmount" 
                     stroke="#82ca9d" 
-                    name="Settled Amount"
+                    name="Valor Liquidado"
                     strokeWidth={2}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="pendingAmount" 
                     stroke="#ffc658" 
-                    name="Pending Amount"
+                    name="Valor Pendente"
                     strokeWidth={2}
                   />
                 </LineChart>
@@ -243,8 +243,8 @@ export function SharedExpenseAnalytics() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Category Distribution</CardTitle>
-                <CardDescription>Breakdown by expense categories</CardDescription>
+                <CardTitle>Distribuição por Categoria</CardTitle>
+                <CardDescription>Detalhamento por categorias de despesas</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -263,7 +263,7 @@ export function SharedExpenseAnalytics() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Amount']} />
+                    <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Valor']} />
                   </RechartsPieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -271,8 +271,8 @@ export function SharedExpenseAnalytics() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Category Details</CardTitle>
-                <CardDescription>Detailed breakdown by category</CardDescription>
+                <CardTitle>Detalhes da Categoria</CardTitle>
+                <CardDescription>Detalhamento por categoria</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {data.categoryBreakdown.map((category, index) => (
@@ -288,7 +288,7 @@ export function SharedExpenseAnalytics() {
                       <div className="text-right">
                         <div className="font-bold">{formatCurrency(category.amount)}</div>
                         <div className="text-xs text-muted-foreground">
-                          {category.count} expenses
+                          {category.count} despesas
                         </div>
                       </div>
                     </div>
@@ -303,9 +303,9 @@ export function SharedExpenseAnalytics() {
         <TabsContent value="friends" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Friend-wise Analysis</CardTitle>
+              <CardTitle>Análise por Amigo</CardTitle>
               <CardDescription>
-                See who you share expenses with most frequently
+                Veja com quem você compartilha despesas com mais frequência
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -316,7 +316,7 @@ export function SharedExpenseAnalytics() {
                       <div className="space-y-1">
                         <div className="flex items-center space-x-2">
                           <div className="font-medium">{friend.friendName || friend.friendEmail}</div>
-                          <Badge variant="outline">{friend.expenseCount} expenses</Badge>
+                          <Badge variant="outline">{friend.expenseCount} despesas</Badge>
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {friend.friendEmail}
@@ -325,16 +325,16 @@ export function SharedExpenseAnalytics() {
                       <div className="text-right space-y-1">
                         <div className="font-bold text-lg">{formatCurrency(friend.totalShared)}</div>
                         <div className="text-xs text-muted-foreground">
-                          Settled: {formatCurrency(friend.settledAmount)}
+                          Liquidado: {formatCurrency(friend.settledAmount)}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Pending: {formatCurrency(friend.pendingAmount)}
+                          Pendente: {formatCurrency(friend.pendingAmount)}
                         </div>
                       </div>
                     </div>
                     <div className="mt-3">
                       <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                        <span>Settlement Progress</span>
+                        <span>Progresso da Liquidação</span>
                         <span>{friend.totalShared > 0 ? ((friend.settledAmount / friend.totalShared) * 100).toFixed(1) : 0}%</span>
                       </div>
                       <Progress 
@@ -353,8 +353,8 @@ export function SharedExpenseAnalytics() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Settlement Overview</CardTitle>
-                <CardDescription>Current settlement status summary</CardDescription>
+                <CardTitle>Visão Geral da Liquidação</CardTitle>
+                <CardDescription>Resumo do status atual da liquidação</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -362,27 +362,27 @@ export function SharedExpenseAnalytics() {
                     <div className="text-2xl font-bold text-green-600">
                       {formatCurrency(data.settlementOverview.totalOwed)}
                     </div>
-                    <div className="text-sm text-green-600">You're Owed</div>
+                    <div className="text-sm text-green-600">Você Deve</div>
                   </div>
                   <div className="text-center p-4 bg-red-50 rounded-lg">
                     <div className="text-2xl font-bold text-red-600">
                       {formatCurrency(data.settlementOverview.totalOwing)}
                     </div>
-                    <div className="text-sm text-red-600">You Owe</div>
+                    <div className="text-sm text-red-600">Você Deve</div>
                   </div>
                 </div>
                 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Total Settled</span>
+                    <span className="text-sm">Total Liquidado</span>
                     <span className="font-bold">{formatCurrency(data.settlementOverview.totalSettled)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Pending Settlements</span>
+                    <span className="text-sm">Liquidações Pendentes</span>
                     <Badge variant="outline">{data.settlementOverview.pendingCount}</Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Overdue Payments</span>
+                    <span className="text-sm">Pagamentos Atrasados</span>
                     <Badge variant="destructive">{data.settlementOverview.overdueCount}</Badge>
                   </div>
                 </div>
@@ -391,8 +391,8 @@ export function SharedExpenseAnalytics() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Settlement Rate Trend</CardTitle>
-                <CardDescription>How quickly settlements are completed</CardDescription>
+                <CardTitle>Tendência da Taxa de Liquidação</CardTitle>
+                <CardDescription>Com que rapidez as liquidações são concluídas</CardDescription>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={200}>
@@ -403,18 +403,18 @@ export function SharedExpenseAnalytics() {
                     <Tooltip 
                       formatter={(value, name) => [
                         name === 'settlementRate' ? `${Number(value).toFixed(1)}%` : formatCurrency(Number(value)),
-                        name === 'settlementRate' ? 'Settlement Rate' : name
+                        name === 'settlementRate' ? 'Taxa de Liquidação' : name
                       ]}
                     />
                     <Bar 
                       dataKey="settledAmount" 
                       fill="#82ca9d" 
-                      name="Settled Amount"
+                      name="Valor Liquidado"
                     />
                     <Bar 
                       dataKey="pendingAmount" 
                       fill="#ffc658" 
-                      name="Pending Amount"
+                      name="Valor Pendente"
                     />
                   </BarChart>
                 </ResponsiveContainer>

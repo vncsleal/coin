@@ -17,15 +17,15 @@ import { Plus, X, Users, Calculator, Receipt, DollarSign } from "lucide-react"
 import { formatCurrency, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency"
 
 const EXPENSE_TAGS = [
-  "Food & Dining",
-  "Transportation", 
-  "Shopping",
-  "Entertainment",
-  "Bills & Utilities",
-  "Healthcare",
-  "Education",
-  "Travel",
-  "Other",
+  "Alimentação e Refeições",
+  "Transporte", 
+  "Compras",
+  "Entretenimento",
+  "Contas e Utilidades",
+  "Saúde",
+  "Educação",
+  "Viagem",
+  "Outros",
 ]
 
 interface Participant {
@@ -234,9 +234,9 @@ export function EnhancedSharedExpenseForm() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Create Shared Expense</CardTitle>
+          <CardTitle>Criar Despesa Compartilhada</CardTitle>
           <CardDescription>
-            Split expenses with friends using various splitting methods.
+            Divida despesas com amigos usando vários métodos de divisão.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -244,17 +244,17 @@ export function EnhancedSharedExpenseForm() {
             {/* Basic Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Expense Name</Label>
+                <Label htmlFor="name">Nome da Despesa</Label>
                 <Input
                   id="name"
                   name="name"
-                  placeholder="e.g., Dinner at Italian Restaurant"
+                  placeholder="Ex: Jantar no Restaurante Italiano"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date">Data</Label>
                 <Input
                   id="date"
                   name="date"
@@ -265,10 +265,10 @@ export function EnhancedSharedExpenseForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tag">Category</Label>
+                <Label htmlFor="tag">Categoria</Label>
                 <Select name="tag" required>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Selecionar categoria" />
                   </SelectTrigger>
                   <SelectContent>
                     {EXPENSE_TAGS.map((tag) => (
@@ -282,7 +282,7 @@ export function EnhancedSharedExpenseForm() {
 
               {splitMethod !== 'itemwise' && (
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Total Amount</Label>
+                  <Label htmlFor="amount">Valor Total</Label>
                   <Input
                     id="amount"
                     name="amount"
@@ -301,21 +301,21 @@ export function EnhancedSharedExpenseForm() {
             {/* Participants Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Participants</h3>
+                <h3 className="text-lg font-semibold">Participantes</h3>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowUserBrowser(!showUserBrowser)}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Friends
+                  Adicionar Amigos
                 </Button>
               </div>
 
               {showUserBrowser && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Select Friends</CardTitle>
+                    <CardTitle className="text-base">Selecionar Amigos</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <UserBrowser
@@ -374,36 +374,36 @@ export function EnhancedSharedExpenseForm() {
               <>
                 {/* Split Method Selection */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Split Method</h3>
+                  <h3 className="text-lg font-semibold">Método de Divisão</h3>
                   <Tabs value={splitMethod} onValueChange={(value) => setSplitMethod(value as SplitMethod)}>
                     <TabsList className="grid w-full grid-cols-4">
                       <TabsTrigger value="equal">
                         <Users className="w-4 h-4 mr-2" />
-                        Equal
+                        Igual
                       </TabsTrigger>
                       <TabsTrigger value="percentage">
                         <Calculator className="w-4 h-4 mr-2" />
-                        Percentage
+                        Porcentagem
                       </TabsTrigger>
                       <TabsTrigger value="custom">
                         <DollarSign className="w-4 h-4 mr-2" />
-                        Custom
+                        Personalizado
                       </TabsTrigger>
                       <TabsTrigger value="itemwise">
                         <Receipt className="w-4 h-4 mr-2" />
-                        By Items
+                        Por Itens
                       </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="equal" className="space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Amount will be split equally among all participants.
+                        O valor será dividido igualmente entre todos os participantes.
                       </p>
                     </TabsContent>
 
                     <TabsContent value="percentage" className="space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Specify percentage for each participant.
+                        Especifique a porcentagem para cada participante.
                       </p>
                       <div className="space-y-3">
                         {participants.map((participant) => (
@@ -441,7 +441,7 @@ export function EnhancedSharedExpenseForm() {
 
                     <TabsContent value="custom" className="space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Set custom amount for each participant.
+                        Defina um valor personalizado para cada participante.
                       </p>
                       <div className="space-y-3">
                         {participants.map((participant) => (
@@ -478,7 +478,7 @@ export function EnhancedSharedExpenseForm() {
 
                     <TabsContent value="itemwise" className="space-y-4">
                       <p className="text-sm text-muted-foreground">
-                        Split by individual items or services.
+                        Dividir por itens ou serviços individuais.
                       </p>
                       
                       <div className="space-y-4">
@@ -488,7 +488,7 @@ export function EnhancedSharedExpenseForm() {
                               <div className="flex items-center space-x-3">
                                 <div className="flex-1 grid grid-cols-2 gap-3">
                                   <Input
-                                    placeholder="Item name"
+                                    placeholder="Nome do item"
                                     value={item.name}
                                     onChange={(e) => updateExpenseItem(item.id, { name: e.target.value })}
                                   />
@@ -496,7 +496,7 @@ export function EnhancedSharedExpenseForm() {
                                     type="number"
                                     step="0.01"
                                     min="0"
-                                    placeholder="Amount"
+                                    placeholder="Valor"
                                     value={item.amount || ''}
                                     onChange={(e) => updateExpenseItem(item.id, { amount: parseFloat(e.target.value) || 0 })}
                                   />
@@ -514,7 +514,7 @@ export function EnhancedSharedExpenseForm() {
                               </div>
                               
                               <div className="space-y-2">
-                                <Label className="text-sm">Who shares this item?</Label>
+                                <Label className="text-sm">Quem compartilha este item?</Label>
                                 <div className="flex flex-wrap gap-2">
                                   {participants.map((participant) => (
                                     <Button
@@ -539,7 +539,7 @@ export function EnhancedSharedExpenseForm() {
                           onClick={addExpenseItem}
                         >
                           <Plus className="w-4 h-4 mr-2" />
-                          Add Item
+                          Adicionar Item
                         </Button>
                       </div>
                     </TabsContent>
@@ -549,29 +549,29 @@ export function EnhancedSharedExpenseForm() {
                 {/* Summary */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Summary</CardTitle>
+                    <CardTitle className="text-base">Resumo</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span>Total Amount:</span>
+                        <span>Valor Total:</span>
                         <span className="font-semibold">{formatCurrency(totalAmount)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Assigned:</span>
+                        <span>Atribuído:</span>
                         <span className={totalAssigned > totalAmount ? 'text-red-600' : 'text-green-600'}>
                           {formatCurrency(totalAssigned)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Difference:</span>
+                        <span>Diferença:</span>
                         <span className={Math.abs(totalAssigned - totalAmount) > 0.01 ? 'text-red-600' : 'text-green-600'}>
                           {formatCurrency(Math.abs(totalAssigned - totalAmount))}
                         </span>
                       </div>
                       {!isBalanced && (
                         <p className="text-sm text-red-600">
-                          The amounts don't add up to the total. Please adjust the split.
+                          Os valores não somam o total. Por favor, ajuste a divisão.
                         </p>
                       )}
                     </div>
@@ -585,7 +585,7 @@ export function EnhancedSharedExpenseForm() {
               className="w-full"
               disabled={isLoading || participants.length === 0 || !isBalanced}
             >
-              {isLoading ? 'Creating...' : 'Create Shared Expense'}
+              {isLoading ? 'Criando...' : 'Criar Despesa Compartilhada'}
             </Button>
           </form>
         </CardContent>

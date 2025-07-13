@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { sql } from "@/lib/db"
@@ -38,16 +39,16 @@ export default async function BudgetPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Budget</h1>
-        <p className="text-muted-foreground">Set and track your monthly budget</p>
+        <h1 className="text-3xl font-bold tracking-tight">Orçamento</h1>
+        <p className="text-muted-foreground">Defina e acompanhe seu orçamento mensal</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Set Monthly Budget</CardTitle>
+            <CardTitle>Definir Orçamento Mensal</CardTitle>
             <CardDescription>
-              {currentBudget ? "Update your current budget" : "Set your budget for this month"}
+              {currentBudget ? "Atualize seu orçamento atual" : "Defina seu orçamento para este mês"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -57,8 +58,8 @@ export default async function BudgetPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Budget Overview</CardTitle>
-            <CardDescription>Track your spending against your budget</CardDescription>
+            <CardTitle>Visão Geral do Orçamento</CardTitle>
+            <CardDescription>Acompanhe seus gastos em relação ao seu orçamento</CardDescription>
           </CardHeader>
           <CardContent>
             <BudgetOverview budget={currentBudget} />
@@ -68,3 +69,4 @@ export default async function BudgetPage() {
     </div>
   )
 }
+

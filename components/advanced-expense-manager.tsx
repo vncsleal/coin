@@ -70,7 +70,7 @@ export function AdvancedExpenseManager() {
   }
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading expenses...</div>
+    return <div className="text-center py-8">Carregando despesas...</div>
   }
 
   return (
@@ -79,7 +79,7 @@ export function AdvancedExpenseManager() {
 
       <div>
         <h3 className="text-lg font-semibold mb-4">
-          {filteredExpenses.length} expense{filteredExpenses.length !== 1 ? "s" : ""} found
+          {filteredExpenses.length} despesa{filteredExpenses.length !== 1 ? "s" : ""} encontrada{filteredExpenses.length !== 1 ? "s" : ""}
         </h3>
         <ExpenseList expenses={filteredExpenses} />
       </div>

@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { sql } from "@/lib/db"
@@ -31,15 +32,15 @@ export default async function ExpensesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
-        <p className="text-muted-foreground">Track and manage your expenses</p>
+        <h1 className="text-3xl font-bold tracking-tight">Despesas</h1>
+        <p className="text-muted-foreground">Acompanhe e gerencie suas despesas</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Add New Expense</CardTitle>
-            <CardDescription>Record a new expense with details</CardDescription>
+            <CardTitle>Adicionar Nova Despesa</CardTitle>
+            <CardDescription>Registre uma nova despesa com detalhes</CardDescription>
           </CardHeader>
           <CardContent>
             <ExpenseForm />
@@ -48,8 +49,8 @@ export default async function ExpensesPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Expenses</CardTitle>
-            <CardDescription>Your latest expense entries</CardDescription>
+            <CardTitle>Despesas Recentes</CardTitle>
+            <CardDescription>Seus últimos lançamentos de despesas</CardDescription>
           </CardHeader>
           <CardContent>
             <ExpenseList expenses={expenses} />
@@ -59,3 +60,4 @@ export default async function ExpensesPage() {
     </div>
   )
 }
+

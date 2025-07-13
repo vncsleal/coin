@@ -1,3 +1,4 @@
+
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { ProfileSettings } from "@/components/profile-settings"
@@ -14,27 +15,27 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings and preferences</p>
+        <h1 className="text-3xl font-bold tracking-tight">Configurações de Perfil</h1>
+        <p className="text-muted-foreground">Gerencie as configurações e preferências da sua conta</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Account Information</CardTitle>
-            <CardDescription>Your basic account details</CardDescription>
+            <CardTitle>Informações da Conta</CardTitle>
+            <CardDescription>Seus detalhes básicos da conta</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Name</label>
-              <p className="text-sm text-muted-foreground">{user.fullName || "Not set"}</p>
+              <label className="text-sm font-medium">Nome</label>
+              <p className="text-sm text-muted-foreground">{user.fullName || "Não definido"}</p>
             </div>
             <div>
               <label className="text-sm font-medium">Email</label>
               <p className="text-sm text-muted-foreground">{user.primaryEmailAddress?.emailAddress}</p>
             </div>
             <div>
-              <label className="text-sm font-medium">Member Since</label>
+              <label className="text-sm font-medium">Membro Desde</label>
               <p className="text-sm text-muted-foreground">{new Date(user.createdAt).toLocaleDateString()}</p>
             </div>
           </CardContent>
@@ -42,8 +43,8 @@ export default async function ProfilePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Preferences</CardTitle>
-            <CardDescription>Customize your experience</CardDescription>
+            <CardTitle>Preferências</CardTitle>
+            <CardDescription>Personalize sua experiência</CardDescription>
           </CardHeader>
           <CardContent>
             <ProfileSettings />
@@ -53,3 +54,4 @@ export default async function ProfilePage() {
     </div>
   )
 }
+

@@ -22,21 +22,21 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
     try {
       await deleteExpense(id)
       toast({
-        title: "Success",
-        description: "Expense deleted successfully",
+        title: "Sucesso",
+        description: "Despesa excluída com sucesso",
       })
       router.refresh()
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete expense",
+        title: "Erro",
+        description: "Falha ao excluir despesa",
         variant: "destructive",
       })
     }
   }
 
   if (expenses.length === 0) {
-    return <div className="text-center py-8 text-muted-foreground">No expenses recorded yet</div>
+    return <div className="text-center py-8 text-muted-foreground">Nenhuma despesa registrada ainda</div>
   }
 
   return (

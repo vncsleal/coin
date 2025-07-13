@@ -8,8 +8,8 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Expense Tracker",
-  description: "Track your income and expenses with AI-powered insights",
+  title: "Rastreador de Despesas",
+  description: "Acompanhe suas receitas e despesas com insights alimentados por IA",
     generator: 'v0.dev'
 }
 

@@ -10,15 +10,15 @@ import { useToast } from "@/hooks/use-toast"
 import { addExpense } from "@/app/actions/expenses"
 
 const EXPENSE_TAGS = [
-  "Food & Dining",
-  "Transportation",
-  "Shopping",
-  "Entertainment",
-  "Bills & Utilities",
-  "Healthcare",
-  "Education",
-  "Travel",
-  "Other",
+  "Alimentação e Refeições",
+  "Transporte",
+  "Compras",
+  "Entretenimento",
+  "Contas e Utilidades",
+  "Saúde",
+  "Educação",
+  "Viagem",
+  "Outros",
 ]
 
 export function ExpenseForm() {
@@ -32,14 +32,14 @@ export function ExpenseForm() {
     try {
       await addExpense(formData)
       toast({
-        title: "Success",
-        description: "Expense added successfully",
+        title: "Sucesso",
+        description: "Despesa adicionada com sucesso",
       })
       router.refresh()
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to add expense",
+        title: "Erro",
+        description: "Falha ao adicionar despesa",
         variant: "destructive",
       })
     } finally {
@@ -50,20 +50,20 @@ export function ExpenseForm() {
   return (
     <form action={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Expense Name</Label>
-        <Input id="name" name="name" placeholder="Enter expense name" required />
+        <Label htmlFor="name">Nome da Despesa</Label>
+        <Input id="name" name="name" placeholder="Digite o nome da despesa" required />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="amount">Amount</Label>
+        <Label htmlFor="amount">Valor</Label>
         <Input id="amount" name="amount" type="number" step="0.01" placeholder="0.00" required />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="tag">Category</Label>
+        <Label htmlFor="tag">Categoria</Label>
         <Select name="tag" required>
           <SelectTrigger>
-            <SelectValue placeholder="Select category" />
+            <SelectValue placeholder="Selecione a categoria" />
           </SelectTrigger>
           <SelectContent>
             {EXPENSE_TAGS.map((tag) => (
@@ -76,12 +76,12 @@ export function ExpenseForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="date">Date</Label>
+        <Label htmlFor="date">Data</Label>
         <Input id="date" name="date" type="date" defaultValue={new Date().toISOString().split("T")[0]} required />
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? "Adding..." : "Add Expense"}
+        {isLoading ? "Adicionando..." : "Adicionar Despesa"}
       </Button>
     </form>
   )

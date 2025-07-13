@@ -22,7 +22,7 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
 
   const monthlyData = Object.entries(monthlyTrends)
     .map(([month, amount]) => ({ month, amount }))
-    .slice(-12) // Last 12 months
+    .slice(-12) // Últimos 12 meses
 
   // Calculate category spending
   const categorySpending = expenses.reduce(
@@ -40,14 +40,14 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
   // Calculate weekly spending pattern
   const weeklyPattern = expenses.reduce(
     (acc, expense) => {
-      const dayOfWeek = new Date(expense.date).toLocaleDateString("en-US", { weekday: "long" })
+      const dayOfWeek = new Date(expense.date).toLocaleDateString("pt-BR", { weekday: "long" })
       acc[dayOfWeek] = (acc[dayOfWeek] || 0) + expense.amount
       return acc
     },
     {} as Record<string, number>,
   )
 
-  const weeklyData = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => ({
+  const weeklyData = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado", "domingo"].map((day) => ({
     day,
     amount: weeklyPattern[day] || 0,
   }))
@@ -56,8 +56,8 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Monthly Spending Trends</CardTitle>
-          <CardDescription>Your spending patterns over the last 12 months</CardDescription>
+          <CardTitle>Tendências de Gastos Mensais</CardTitle>
+          <CardDescription>Seus padrões de gastos nos últimos 12 meses</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -65,7 +65,7 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis tickFormatter={(value) => formatCurrency(Number(value))} />
-              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} />
+              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Valor"]} />
               <Line type="monotone" dataKey="amount" stroke="#8884d8" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
@@ -74,8 +74,8 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Spending by Category</CardTitle>
-          <CardDescription>Total spending breakdown by category</CardDescription>
+          <CardTitle>Gastos por Categoria</CardTitle>
+          <CardDescription>Detalhamento total de gastos por categoria</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -83,7 +83,7 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" tickFormatter={(value) => formatCurrency(Number(value))} />
               <YAxis dataKey="category" type="category" width={100} />
-              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} />
+              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Valor"]} />
               <Bar dataKey="amount" fill="#8884d8" />
             </BarChart>
           </ResponsiveContainer>
@@ -92,8 +92,8 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Weekly Spending Pattern</CardTitle>
-          <CardDescription>Average spending by day of the week</CardDescription>
+          <CardTitle>Padrão de Gastos Semanal</CardTitle>
+          <CardDescription>Média de gastos por dia da semana</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -101,7 +101,7 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
               <YAxis tickFormatter={(value) => formatCurrency(Number(value))} />
-              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Amount"]} />
+              <Tooltip formatter={(value) => [formatCurrency(Number(value)), "Valor"]} />
               <Bar dataKey="amount" fill="#82ca9d" />
             </BarChart>
           </ResponsiveContainer>
@@ -110,19 +110,19 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Spending Summary</CardTitle>
-          <CardDescription>Key statistics about your expenses</CardDescription>
+          <CardTitle>Resumo de Gastos</CardTitle>
+          <CardDescription>Estatísticas chave sobre suas despesas</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <span className="text-sm font-medium">Total Expenses</span>
+              <span className="text-sm font-medium">Total de Despesas</span>
               <span className="text-sm font-bold">
                 {formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0))}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium">Average per Transaction</span>
+              <span className="text-sm font-medium">Média por Transação</span>
               <span className="text-sm font-bold">
                 {expenses.length > 0
                   ? formatCurrency(expenses.reduce((sum, exp) => sum + exp.amount, 0) / expenses.length)
@@ -130,14 +130,14 @@ export function ExpenseAnalytics({ expenses }: ExpenseAnalyticsProps) {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium">Highest Single Expense</span>
+              <span className="text-sm font-medium">Maior Despesa Única</span>
               <span className="text-sm font-bold">
                 {expenses.length > 0 ? formatCurrency(Math.max(...expenses.map((exp) => exp.amount))) : formatCurrency(0)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm font-medium">Most Frequent Category</span>
-              <span className="text-sm font-bold">{categoryData.length > 0 ? categoryData[0].category : "None"}</span>
+              <span className="text-sm font-medium">Categoria Mais Frequente</span>
+              <span className="text-sm font-bold">{categoryData.length > 0 ? categoryData[0].category : "Nenhum"}</span>
             </div>
           </div>
         </CardContent>

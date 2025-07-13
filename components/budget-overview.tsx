@@ -28,7 +28,7 @@ export async function BudgetOverview({ budget }: BudgetOverviewProps) {
   const { userId } = await auth()
 
   if (!userId || !budget) {
-    return <div className="text-center py-8 text-muted-foreground">No budget set for this month</div>
+    return <div className="text-center py-8 text-muted-foreground">Nenhum orçamento definido para este mês</div>
   }
 
   const monthlySpending = await getMonthlySpending(userId)
@@ -38,7 +38,7 @@ export async function BudgetOverview({ budget }: BudgetOverviewProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium">Budget Progress</span>
+        <span className="text-sm font-medium">Progresso do Orçamento</span>
         <span className="text-sm text-muted-foreground">{percentageUsed.toFixed(1)}%</span>
       </div>
 
@@ -46,11 +46,11 @@ export async function BudgetOverview({ budget }: BudgetOverviewProps) {
 
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <div className="text-muted-foreground">Spent</div>
+          <div className="text-muted-foreground">Gasto</div>
           <div className="font-bold text-lg">{formatCurrency(monthlySpending)}</div>
         </div>
         <div>
-          <div className="text-muted-foreground">Remaining</div>
+          <div className="text-muted-foreground">Restante</div>
           <div className={`font-bold text-lg ${remaining < 0 ? "text-red-600" : "text-green-600"}`}>
             {formatCurrency(remaining)}
           </div>
@@ -58,13 +58,13 @@ export async function BudgetOverview({ budget }: BudgetOverviewProps) {
       </div>
 
       <div className="text-center">
-        <div className="text-muted-foreground text-sm">Total Budget</div>
+        <div className="text-muted-foreground text-sm">Orçamento Total</div>
         <div className="font-bold text-xl">{formatCurrency(budget.amount)}</div>
       </div>
 
       {remaining < 0 && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
-          ⚠️ You&apos;ve exceeded your budget by {formatCurrency(Math.abs(remaining))}
+          ⚠️ Você excedeu seu orçamento em {formatCurrency(Math.abs(remaining))}
         </div>
       )}
     </div>

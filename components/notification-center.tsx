@@ -21,24 +21,24 @@ export function NotificationCenter() {
     {
       id: "1",
       type: "warning",
-      title: "Budget Alert",
-      message: "You've spent 85% of your monthly budget",
+      title: "Alerta de Orçamento",
+      message: "Você gastou 85% do seu orçamento mensal",
       timestamp: new Date(),
       read: false,
     },
     {
       id: "2",
       type: "info",
-      title: "Weekly Summary",
-      message: "Your weekly spending report is ready",
+      title: "Resumo Semanal",
+      message: "Seu relatório de gastos semanais está pronto",
       timestamp: new Date(Date.now() - 86400000),
       read: false,
     },
     {
       id: "3",
       type: "success",
-      title: "Goal Achieved",
-      message: "You stayed under budget last month!",
+      title: "Meta Alcançada",
+      message: "Você se manteve dentro do orçamento no mês passado!",
       timestamp: new Date(Date.now() - 172800000),
       read: true,
     },
@@ -80,13 +80,13 @@ export function NotificationCenter() {
       <PopoverContent className="w-80" align="end">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-semibold">Notifications</h4>
-            <Badge variant="secondary">{unreadCount} new</Badge>
+            <h4 className="font-semibold">Notificações</h4>
+            <Badge variant="secondary">{unreadCount} novas</Badge>
           </div>
 
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">No notifications</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Sem notificações</p>
             ) : (
               notifications.map((notification) => (
                 <Card key={notification.id} className={`p-3 ${!notification.read ? "bg-muted/50" : ""}`}>
@@ -113,7 +113,7 @@ export function NotificationCenter() {
                           className="text-xs h-6"
                           onClick={() => markAsRead(notification.id)}
                         >
-                          Mark as read
+                          Marcar como lida
                         </Button>
                       )}
                     </div>

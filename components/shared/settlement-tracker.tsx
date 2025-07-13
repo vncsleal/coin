@@ -153,20 +153,20 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">{expenseName}</CardTitle>
-              <CardDescription>Settlement Progress</CardDescription>
+              <CardDescription>Progresso da Liquidação</CardDescription>
             </div>
             <Dialog open={showHistory} onOpenChange={setShowHistory}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
                   <History className="w-4 h-4 mr-2" />
-                  History
+                  Histórico
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>Settlement History</DialogTitle>
+                  <DialogTitle>Histórico de Liquidação</DialogTitle>
                   <DialogDescription>
-                    Payment history for {expenseName}
+                    Histórico de pagamentos para {expenseName}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -198,7 +198,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                   ))}
                   {[...confirmedSettlements, ...paidSettlements].length === 0 && (
                     <p className="text-center text-muted-foreground py-8">
-                      No payment history yet.
+                      Nenhum histórico de pagamento ainda.
                     </p>
                   )}
                 </div>
@@ -209,7 +209,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Progress</span>
+              <span>Progresso</span>
               <span>{progressPercentage.toFixed(1)}%</span>
             </div>
             <Progress value={progressPercentage} className="w-full" />
@@ -218,11 +218,11 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-green-600">{formatCurrency(totalPaid)}</p>
-              <p className="text-xs text-muted-foreground">Paid</p>
+              <p className="text-xs text-muted-foreground">Pago</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-orange-600">{formatCurrency(totalOwed - totalPaid)}</p>
-              <p className="text-xs text-muted-foreground">Remaining</p>
+              <p className="text-xs text-muted-foreground">Restante</p>
             </div>
             <div>
               <p className="text-2xl font-bold">{formatCurrency(totalOwed)}</p>
@@ -238,7 +238,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
           <CardHeader>
             <CardTitle className="text-base flex items-center">
               <Clock className="w-4 h-4 mr-2 text-orange-500" />
-              Pending Payments ({pendingSettlements.length})
+              Pagamentos Pendentes ({pendingSettlements.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -256,7 +256,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                       {settlement.participant_name || settlement.participant_email}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Owes {formatCurrency(settlement.share_amount)}
+                      Deve {formatCurrency(settlement.share_amount)}
                     </p>
                   </div>
                 </div>
@@ -267,7 +267,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                     onClick={() => sendReminder(settlement.participant_id)}
                   >
                     <Bell className="w-4 h-4 mr-1" />
-                    Remind
+                    Lembrar
                   </Button>
                   <Button
                     variant="default"
@@ -275,7 +275,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                     onClick={() => markAsPaid(settlement.id, settlement.share_amount)}
                   >
                     <DollarSign className="w-4 h-4 mr-1" />
-                    Mark Paid
+                    Marcar como Pago
                   </Button>
                 </div>
               </div>
@@ -290,7 +290,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
           <CardHeader>
             <CardTitle className="text-base flex items-center">
               <CheckCircle className="w-4 h-4 mr-2 text-blue-500" />
-              Awaiting Confirmation ({paidSettlements.length})
+              Aguardando Confirmação ({paidSettlements.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -308,7 +308,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                       {settlement.participant_name || settlement.participant_email}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Paid {formatCurrency(settlement.paid_amount)} • {settlement.paid_at && new Date(settlement.paid_at).toLocaleDateString()}
+                      Pago {formatCurrency(settlement.paid_amount)} • {settlement.paid_at && new Date(settlement.paid_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -318,7 +318,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                   onClick={() => confirmPayment(settlement.id)}
                 >
                   <CheckCircle className="w-4 h-4 mr-1" />
-                  Confirm
+                  Confirmar
                 </Button>
               </div>
             ))}
@@ -332,7 +332,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
           <CardHeader>
             <CardTitle className="text-base flex items-center">
               <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-              Completed ({confirmedSettlements.length})
+              Concluído ({confirmedSettlements.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -356,7 +356,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                 </div>
                 <Badge variant="default" className="bg-green-600">
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  Paid
+                  Pago
                 </Badge>
               </div>
             ))}
@@ -366,7 +366,7 @@ export function SettlementTracker({ expenseId, expenseName, totalAmount, onSettl
                 className="w-full"
                 onClick={() => setShowHistory(true)}
               >
-                View All {confirmedSettlements.length} Completed Payments
+                Ver Todos os {confirmedSettlements.length} Pagamentos Concluídos
               </Button>
             )}
           </CardContent>

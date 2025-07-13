@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { sql } from "@/lib/db"
@@ -98,14 +99,14 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Overview of your financial activity this month</p>
+        <h1 className="text-3xl font-bold tracking-tight">Painel</h1>
+        <p className="text-muted-foreground">Visão geral da sua atividade financeira neste mês</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Expenditure</CardTitle>
+            <CardTitle className="text-sm font-medium">Despesa Mensal</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -115,7 +116,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Daily Average</CardTitle>
+            <CardTitle className="text-sm font-medium">Média Diária</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -125,7 +126,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Budget</CardTitle>
+            <CardTitle className="text-sm font-medium">Orçamento Atual</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -135,7 +136,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Remaining Budget</CardTitle>
+            <CardTitle className="text-sm font-medium">Orçamento Restante</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -149,8 +150,8 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Monthly Expenses</CardTitle>
-            <CardDescription>Your daily spending throughout the month</CardDescription>
+            <CardTitle>Despesas Mensais</CardTitle>
+            <CardDescription>Seus gastos diários ao longo do mês</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <ExpenseChart data={stats.monthlyExpenses} />
@@ -159,8 +160,8 @@ export default async function DashboardPage() {
 
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>Expenses by Category</CardTitle>
-            <CardDescription>Current month breakdown</CardDescription>
+            <CardTitle>Despesas por Categoria</CardTitle>
+            <CardDescription>Detalhamento do mês atual</CardDescription>
           </CardHeader>
           <CardContent>
             <ExpensePieChart data={stats.expensesByTag} />
@@ -170,8 +171,8 @@ export default async function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Total Expenses by Category</CardTitle>
-          <CardDescription>All-time spending breakdown</CardDescription>
+          <CardTitle>Total de Despesas por Categoria</CardTitle>
+          <CardDescription>Detalhamento de gastos de todos os tempos</CardDescription>
         </CardHeader>
         <CardContent>
           <ExpensePieChart data={stats.totalExpensesByTag} />
@@ -180,3 +181,4 @@ export default async function DashboardPage() {
     </div>
   )
 }
+

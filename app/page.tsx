@@ -9,15 +9,15 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">Smart Expense Tracker</h1>
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">Rastreador de Despesas Inteligente</h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Take control of your finances with AI-powered insights, shared expenses, and comprehensive budget tracking.
+            Assuma o controle de suas finanças com insights alimentados por IA, despesas compartilhadas e acompanhamento orçamentário abrangente.
           </p>
 
           <SignedOut>
             <SignInButton mode="modal">
               <Button size="lg" className="text-lg px-8 py-3">
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                Começar <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </SignInButton>
           </SignedOut>
@@ -25,7 +25,7 @@ export default function HomePage() {
           <SignedIn>
             <Link href="/dashboard">
               <Button size="lg" className="text-lg px-8 py-3">
-                Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+                Ir para o Painel <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
           </SignedIn>
@@ -35,62 +35,62 @@ export default function HomePage() {
           <Card>
             <CardHeader>
               <BarChart3 className="h-8 w-8 text-blue-600 mb-2" />
-              <CardTitle>Smart Analytics</CardTitle>
+              <CardTitle>Análises Inteligentes</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Visualize your spending patterns with interactive charts and graphs.</CardDescription>
+              <CardDescription>Visualize seus padrões de gastos com gráficos interativos.</CardDescription>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <PieChart className="h-8 w-8 text-green-600 mb-2" />
-              <CardTitle>Budget Tracking</CardTitle>
+              <CardTitle>Controle de Orçamento</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Set monthly budgets and track your progress with real-time updates.</CardDescription>
+              <CardDescription>Defina orçamentos mensais e acompanhe seu progresso com atualizações em tempo real.</CardDescription>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <Users className="h-8 w-8 text-purple-600 mb-2" />
-              <CardTitle>Shared Expenses</CardTitle>
+              <CardTitle>Despesas Compartilhadas</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Split bills and track shared expenses with friends and family.</CardDescription>
+              <CardDescription>Divida contas e acompanhe despesas compartilhadas com amigos e familiares.</CardDescription>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <Brain className="h-8 w-8 text-orange-600 mb-2" />
-              <CardTitle>AI Counseling</CardTitle>
+              <CardTitle>Aconselhamento por IA</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Get personalized financial advice and insights powered by AI.</CardDescription>
+              <CardDescription>Obtenha aconselhamento financeiro personalizado e insights com o poder da IA.</CardDescription>
             </CardContent>
           </Card>
         </div>
 
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Features You&apos;ll Love</h2>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Recursos que Você Vai Adorar</h2>
           <div className="grid md:grid-cols-3 gap-8 mt-8">
             <div>
-              <h3 className="text-xl font-semibold mb-2">Export Data</h3>
+              <h3 className="text-xl font-semibold mb-2">Exportar Dados</h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Download your expenses as CSV files for external analysis.
+                Baixe suas despesas como arquivos CSV para análise externa.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-2">Real-time Insights</h3>
+              <h3 className="text-xl font-semibold mb-2">Insights em Tempo Real</h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Get instant feedback on your spending habits and budget adherence.
+                Obtenha feedback instantâneo sobre seus hábitos de consumo e adesão ao orçamento.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-semibold mb-2">Secure & Private</h3>
-              <p className="text-gray-600 dark:text-gray-300">Your financial data is encrypted and securely stored.</p>
+              <h3 className="text-xl font-semibold mb-2">Seguro e Privado</h3>
+              <p className="text-gray-600 dark:text-gray-300">Seus dados financeiros são criptografados e armazenados com segurança.</p>
             </div>
           </div>
         </div>

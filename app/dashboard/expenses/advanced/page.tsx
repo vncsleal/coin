@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { AdvancedExpenseManager } from "@/components/advanced-expense-manager"
@@ -13,14 +14,14 @@ export default async function AdvancedExpensesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Advanced Expense Management</h1>
-        <p className="text-muted-foreground">Search, filter, and manage your expenses with advanced tools</p>
+        <h1 className="text-3xl font-bold tracking-tight">Gerenciamento Avançado de Despesas</h1>
+        <p className="text-muted-foreground">Pesquise, filtre e gerencie suas despesas com ferramentas avançadas</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Expense Manager</CardTitle>
-          <CardDescription>Advanced search and filtering capabilities</CardDescription>
+          <CardTitle>Gerenciador de Despesas</CardTitle>
+          <CardDescription>Recursos avançados de pesquisa e filtragem</CardDescription>
         </CardHeader>
         <CardContent>
           <AdvancedExpenseManager />
@@ -29,3 +30,4 @@ export default async function AdvancedExpensesPage() {
     </div>
   )
 }
+

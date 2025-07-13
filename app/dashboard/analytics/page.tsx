@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { sql } from "@/lib/db"
@@ -29,11 +30,12 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-        <p className="text-muted-foreground">Deep insights into your spending patterns and trends</p>
+        <h1 className="text-3xl font-bold tracking-tight">Análises</h1>
+        <p className="text-muted-foreground">Insights profundos sobre seus padrões e tendências de gastos</p>
       </div>
 
       <ExpenseAnalytics expenses={expenses} />
     </div>
   )
 }
+

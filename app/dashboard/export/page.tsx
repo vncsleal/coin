@@ -1,3 +1,4 @@
+
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { ExportForm } from "@/components/export-form"
@@ -13,14 +14,14 @@ export default async function ExportPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Export Data</h1>
-        <p className="text-muted-foreground">Download your expense data in various formats</p>
+        <h1 className="text-3xl font-bold tracking-tight">Exportar Dados</h1>
+        <p className="text-muted-foreground">Baixe seus dados de despesas em vários formatos</p>
       </div>
 
       <Card className="max-w-md">
         <CardHeader>
-          <CardTitle>Export Expenses</CardTitle>
-          <CardDescription>Choose date range and format for your export</CardDescription>
+          <CardTitle>Exportar Despesas</CardTitle>
+          <CardDescription>Escolha o período e o formato para sua exportação</CardDescription>
         </CardHeader>
         <CardContent>
           <ExportForm />
@@ -29,3 +30,4 @@ export default async function ExportPage() {
     </div>
   )
 }
+

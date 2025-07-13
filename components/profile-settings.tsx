@@ -19,15 +19,15 @@ export function ProfileSettings() {
   function handleSave() {
     // In a real app, you'd save these to a user preferences table
     toast({
-      title: "Settings saved",
-      description: "Your preferences have been updated successfully.",
+      title: "Configurações salvas",
+      description: "Suas preferências foram atualizadas com sucesso.",
     })
   }
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="currency">Default Currency</Label>
+        <Label htmlFor="currency">Moeda Padrão</Label>
         <Select value={currency} onValueChange={setCurrency}>
           <SelectTrigger>
             <SelectValue />
@@ -43,17 +43,17 @@ export function ProfileSettings() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="notifications">Email Notifications</Label>
+        <Label htmlFor="notifications">Notificações por Email</Label>
         <Switch id="notifications" checked={notifications} onCheckedChange={setNotifications} />
       </div>
 
       <div className="flex items-center justify-between">
-        <Label htmlFor="darkMode">Dark Mode</Label>
+        <Label htmlFor="darkMode">Modo Escuro</Label>
         <Switch id="darkMode" checked={darkMode} onCheckedChange={setDarkMode} />
       </div>
 
       <Button onClick={handleSave} className="w-full">
-        Save Preferences
+        Salvar Preferências
       </Button>
     </div>
   )
