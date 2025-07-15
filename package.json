@@ -1,5 +1,6 @@
 {
-  "name": "my-v0-project",
+  "name": "cutia",
+  "description": "Cutia: A financial planning app.",
   "version": "0.1.0",
   "private": true,
   "scripts": {

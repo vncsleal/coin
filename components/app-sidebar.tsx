@@ -100,8 +100,8 @@ export function AppSidebar() {
                   <Wallet className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Rastreador</span>
-                  <span className="truncate text-xs">de Despesas</span>
+                  <span className="truncate font-medium">Cutia</span>
+                  <span className="truncate text-xs">Finanças</span>
                 </div>
               </a>
             </SidebarMenuButton>

@@ -9,7 +9,7 @@ import { ptBR } from '@clerk/localizations'
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Rastreador de Despesas",
+  title: "Cutia",
   description: "Acompanhe suas receitas e despesas com insights alimentados por IA",
     generator: 'v0.dev'
 }

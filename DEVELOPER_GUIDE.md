@@ -1,4 +1,4 @@
-# Developer Guide - Expense Tracker
+# Developer Guide - Cutia
 
 A comprehensive guide for developers and LLMs to understand the project architecture, patterns, and best practices for extending the expense tracker application.
 
@@ -20,8 +20,8 @@ A comprehensive guide for developers and LLMs to understand the project architec
 
 ## 🎯 Project Overview
 
-The Expense Tracker is a full-stack Next.js application built with TypeScript that provides:
-- **Personal expense management** with categories and budgets
+The Cutia is a full-stack Next.js application built with TypeScript that provides:
+- **Personal income and expense management** with categories and budgets
 - **Advanced shared expenses** with multiple splitting methods
 - **Friends system** for user relationships
 - **Settlement tracking** with payment workflows

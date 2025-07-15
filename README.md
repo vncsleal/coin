@@ -1,14 +1,14 @@
-# Expense Tracker
+# Cutia
 
-A comprehensive expense tracking application built with Next.js, featuring AI-powered insights, advanced shared expenses with smart splitting, friends management, settlement tracking, and detailed analytics.
+Cutia is a comprehensive financial planning application built with Next.js, featuring AI-powered insights, advanced shared expenses with smart splitting, friends management, settlement tracking, and detailed analytics. Inspired by the Brazilian animal that saves and plants seeds for the future, Cutia helps you manage your finances with a focus on growth and future planning.
 
 ## ✨ Features
 
-### 📊 **Core Expense Management**
+### 📊 **Core Financial Management**
 - **Smart Analytics** - Interactive charts and spending pattern visualization
 - **Budget Tracking** - Set and monitor monthly budgets with alerts
-- **Expense Categories** - Organize expenses with custom tags
-- **Advanced Search** - Filter and search through your expense history
+- **Income & Expense Categories** - Organize income and expenses with custom tags
+- **Advanced Search** - Filter and search through your financial history
 
 ### 👥 **Advanced Shared Expenses**
 - **Friends System** - Add friends, manage relationships, and browse users
@@ -62,7 +62,7 @@ Before running this application, you'll need:
 
 ```bash
 git clone <your-repo-url>
-cd expense-tracker
+cd cutia
 ```
 
 ### 2. Install dependencies
@@ -248,6 +248,7 @@ pnpm start
 ### Key Pages & Features
 
 - **Dashboard** (`/dashboard`) - Overview of your finances
+- **Income** (`/dashboard/income`) - Income management
 - **Expenses** (`/dashboard/expenses`) - Personal expense management
 - **Shared Expenses** (`/dashboard/shared`) - Advanced shared expense creation and management
 - **Shared Analytics** (`/dashboard/shared/analytics`) - Detailed insights into shared spending
