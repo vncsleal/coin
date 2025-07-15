@@ -1,17 +1,20 @@
+"use client"
+
+import { UserButton, useUser } from "@clerk/nextjs"
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarFooter,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, Receipt, Wallet, Users, FileText, Download, Search, BarChart3, User, UserPlus, PieChart } from "lucide-react"
+import { LayoutDashboard, Receipt, Wallet, Users, FileText, Download, Search, BarChart3, User, UserPlus, PieChart, Settings, LifeBuoy, LogOut } from "lucide-react"
 import Link from "next/link"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const items = [
+const mainNav = [
   {
     title: "Painel",
     url: "/dashboard",
@@ -28,20 +31,36 @@ const items = [
     icon: Receipt,
   },
   {
-    title: "Pesquisa Avançada",
-    url: "/dashboard/expenses/advanced",
-    icon: Search,
+    title: "Orçamento",
+    url: "/dashboard/budget",
+    icon: Wallet,
   },
+]
+
+const secondaryNav = [
   {
     title: "Análises",
     url: "/dashboard/analytics",
     icon: BarChart3,
   },
   {
-    title: "Orçamento",
-    url: "/dashboard/budget",
-    icon: Wallet,
+    title: "Pesquisa Avançada",
+    url: "/dashboard/expenses/advanced",
+    icon: Search,
   },
+  {
+    title: "Relatórios com IA",
+    url: "/dashboard/ai-counseling",
+    icon: FileText,
+  },
+  {
+    title: "Exportar Dados",
+    url: "/dashboard/export",
+    icon: Download,
+  },
+]
+
+const sharedNav = [
   {
     title: "Despesas Compartilhadas",
     url: "/dashboard/shared",
@@ -57,45 +76,97 @@ const items = [
     url: "/dashboard/friends",
     icon: UserPlus,
   },
+]
+
+const userNav = [
   {
-    title: "Relatórios com IA",
-    url: "/dashboard/ai-reports",
-    icon: FileText,
-  },
-  {
-    title: "Exportar Dados",
-    url: "/dashboard/export",
-    icon: Download,
-  },
-  {
-    title: "Perfil",
+    title: "Configurações",
     url: "/dashboard/profile",
-    icon: User,
+    icon: Settings,
   },
 ]
 
 export function AppSidebar() {
+  const { user } = useUser()
+
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="/dashboard">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Wallet className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">Rastreador</span>
+                  <span className="truncate text-xs">de Despesas</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Rastreador de Despesas</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarMenu>
+          {mainNav.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <Link href={item.url}>
+                  <item.icon className="size-4" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+        <SidebarMenu>
+          {secondaryNav.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <Link href={item.url}>
+                  <item.icon className="size-4" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+        <SidebarMenu>
+          {sharedNav.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <Link href={item.url}>
+                  <item.icon className="size-4" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          {userNav.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild>
+                <Link href={item.url}>
+                  <item.icon className="size-4" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+        <div className="flex items-center gap-3 p-2">
+          <UserButton afterSignOutUrl="/" />
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{user?.fullName}</span>
+            <span className="truncate text-xs text-muted-foreground">{user?.primaryEmailAddress?.emailAddress}</span>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }
