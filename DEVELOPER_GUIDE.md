@@ -134,12 +134,28 @@ expense-tracker/
 #### Users Table
 ```sql
 CREATE TABLE users (
-    id TEXT PRIMARY KEY,           -- Clerk user ID
-    email TEXT NOT NULL UNIQUE,
-    name TEXT,
-    avatar_url TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id VARCHAR(255) PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    display_name VARCHAR(255),
+    avatar_url VARCHAR(500),
+    is_public BOOLEAN DEFAULT TRUE,
+    bio TEXT,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### Budgets Table
+```sql
+CREATE TABLE budgets (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    amount NUMERIC(10,2) NOT NULL,
+    month INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, month, year)
 );
 ```
 
@@ -147,12 +163,13 @@ CREATE TABLE users (
 ```sql
 CREATE TABLE expenses (
     id SERIAL PRIMARY KEY,
-    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    tag VARCHAR(100) NOT NULL,
+    amount NUMERIC(10,2) NOT NULL,
     date DATE NOT NULL,
-    tag TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
@@ -161,40 +178,38 @@ CREATE TABLE expenses (
 -- Main shared expense record
 CREATE TABLE shared_expenses (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    total_amount DECIMAL(10,2) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    total_amount NUMERIC(10,2) NOT NULL,
     date DATE NOT NULL,
-    tag TEXT NOT NULL,
-    created_by TEXT NOT NULL REFERENCES users(id),
-    split_method TEXT NOT NULL DEFAULT 'equal', -- equal|percentage|custom|itemwise
-    items JSONB,                               -- For item-wise splitting
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    tag VARCHAR(100) NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Participant relationships
 CREATE TABLE shared_expense_participants (
     id SERIAL PRIMARY KEY,
-    shared_expense_id INTEGER NOT NULL REFERENCES shared_expenses(id) ON DELETE CASCADE,
-    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    share_amount DECIMAL(10,2) NOT NULL,
-    percentage DECIMAL(5,2),                   -- For percentage splits
-    items JSONB,                               -- Assigned items for item-wise
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(shared_expense_id, user_id)
+    shared_expense_id INTEGER REFERENCES shared_expenses(id) ON DELETE CASCADE,
+    user_id VARCHAR(255) NOT NULL,
+    share_amount NUMERIC(10,2) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Settlement tracking
 CREATE TABLE shared_expense_settlements (
     id SERIAL PRIMARY KEY,
-    shared_expense_id INTEGER NOT NULL REFERENCES shared_expenses(id) ON DELETE CASCADE,
-    participant_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    share_amount DECIMAL(10,2) NOT NULL,       -- Amount they owe
-    paid_amount DECIMAL(10,2) DEFAULT 0,       -- Amount they've paid
-    status TEXT NOT NULL DEFAULT 'pending',    -- pending|paid|confirmed
-    paid_at TIMESTAMP,
-    confirmed_by TEXT REFERENCES users(id),
-    confirmed_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    shared_expense_id INTEGER REFERENCES shared_expenses(id) ON DELETE CASCADE,
+    debtor_id VARCHAR(255) NOT NULL,
+    creditor_id VARCHAR(255) NOT NULL,
+    amount NUMERIC(10,2) NOT NULL,
+    paid_amount NUMERIC(10,2) DEFAULT 0,
+    paid_at TIMESTAMP WITHOUT TIME ZONE,
+    confirmed_by VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'pending',
+    last_reminder_sent TIMESTAMP WITHOUT TIME ZONE,
+    reminder_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
@@ -202,18 +217,21 @@ CREATE TABLE shared_expense_settlements (
 ```sql
 CREATE TABLE friends (
     id SERIAL PRIMARY KEY,
-    user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    friend_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    status TEXT NOT NULL DEFAULT 'pending',    -- pending|accepted|blocked
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, friend_id)
+    user_id VARCHAR(255) NOT NULL,
+    friend_user_id VARCHAR(255) NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    initiated_by VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, friend_user_id)
 );
 
 CREATE TABLE user_privacy_settings (
-    user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-    discoverable BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id VARCHAR(255) PRIMARY KEY,
+    discoverable_by_email BOOLEAN DEFAULT TRUE,
+    discoverable_by_username BOOLEAN DEFAULT TRUE,
+    show_in_user_browse BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 ```
 

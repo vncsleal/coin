@@ -17,7 +17,7 @@ async function getExpenses(userId: string): Promise<Expense[]> {
   return expenses.map((expense) => ({
     ...expense,
     amount: Number(expense.amount),
-  }))
+  })) as Expense[]
 }
 
 export default async function ExpensesPage() {

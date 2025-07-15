@@ -8,6 +8,7 @@ import { ExpenseChart } from "@/components/expense-chart"
 import { ExpensePieChart } from "@/components/expense-pie-chart"
 import { DollarSign, TrendingUp, Calendar, Target } from "lucide-react"
 import { formatCurrency } from "@/lib/currency"
+import { AICounselingModal } from "@/components/shared/AICounselingModal"
 
 async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const currentDate = new Date()
@@ -106,8 +107,11 @@ export default async function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Despesa Mensal</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Despesa Mensal</CardTitle>
+            </div>
+            <AICounselingModal counselingType="monthly_expenditure" data={stats} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.monthlyExpenditure)}</div>
@@ -116,8 +120,11 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Média Diária</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Média Diária</CardTitle>
+            </div>
+            <AICounselingModal counselingType="daily_average" data={stats} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.dailyAverage)}</div>
@@ -126,8 +133,11 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Orçamento Atual</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Orçamento Atual</CardTitle>
+            </div>
+            <AICounselingModal counselingType="current_budget" data={stats} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(stats.currentBudget)}</div>
@@ -136,8 +146,11 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Orçamento Restante</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Orçamento Restante</CardTitle>
+            </div>
+            <AICounselingModal counselingType="remaining_budget" data={stats} />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${stats.remainingBudget < 0 ? "text-red-600" : "text-green-600"}`}>
@@ -149,9 +162,12 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Despesas Mensais</CardTitle>
-            <CardDescription>Seus gastos diários ao longo do mês</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Despesas Mensais</CardTitle>
+              <CardDescription>Seus gastos diários ao longo do mês</CardDescription>
+            </div>
+            <AICounselingModal counselingType="monthly_expenses_chart" data={stats} />
           </CardHeader>
           <CardContent className="pl-2">
             <ExpenseChart data={stats.monthlyExpenses} />
@@ -159,9 +175,12 @@ export default async function DashboardPage() {
         </Card>
 
         <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Despesas por Categoria</CardTitle>
-            <CardDescription>Detalhamento do mês atual</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Despesas por Categoria</CardTitle>
+              <CardDescription>Detalhamento do mês atual</CardDescription>
+            </div>
+            <AICounselingModal counselingType="expenses_by_category_chart" data={stats} />
           </CardHeader>
           <CardContent>
             <ExpensePieChart data={stats.expensesByTag} />
@@ -170,9 +189,12 @@ export default async function DashboardPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Total de Despesas por Categoria</CardTitle>
-          <CardDescription>Detalhamento de gastos de todos os tempos</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Total de Despesas por Categoria</CardTitle>
+            <CardDescription>Detalhamento de gastos de todos os tempos</CardDescription>
+          </div>
+          <AICounselingModal counselingType="total_expenses_by_category_chart" data={stats} />
         </CardHeader>
         <CardContent>
           <ExpensePieChart data={stats.totalExpensesByTag} />

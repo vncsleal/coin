@@ -3,8 +3,60 @@ import { sql } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { generateText } from "ai"
 import { google } from "@ai-sdk/google"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
+import { formatCurrency } from "@/lib/currency"
 
-export async function POST() {
+async function getFinancialDataForRange(userId: string, startDate: string, endDate: string) {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  const totalExpensesRes = await sql`
+    SELECT SUM(amount) as total
+    FROM expenses
+    WHERE user_id = ${userId} AND date >= ${start.toISOString()} AND date <= ${end.toISOString()}
+  `
+  const totalExpenses = Number(totalExpensesRes[0]?.total || 0)
+
+  const expensesByCategoryRes = await sql`
+    SELECT tag, SUM(amount) as total
+    FROM expenses
+    WHERE user_id = ${userId} AND date >= ${start.toISOString()} AND date <= ${end.toISOString()}
+    GROUP BY tag
+    ORDER BY total DESC
+  `
+  const expensesByCategory = expensesByCategoryRes.map((row) => ({
+    tag: row.tag,
+    total: Number(row.total),
+    percentage: totalExpenses > 0 ? ((Number(row.total) / totalExpenses) * 100).toFixed(2) : "0.00",
+  }))
+
+  const topExpensesRes = await sql`
+    SELECT name, amount, date
+    FROM expenses
+    WHERE user_id = ${userId} AND date >= ${start.toISOString()} AND date <= ${end.toISOString()}
+    ORDER BY amount DESC
+    LIMIT 5
+  `
+  const topExpenses = topExpensesRes.map((row) => ({
+    name: row.name,
+    amount: Number(row.amount),
+    date: row.date,
+  }))
+
+  const timeDifference = end.getTime() - start.getTime()
+  const daysDifference = timeDifference > 0 ? Math.ceil(timeDifference / (1000 * 3600 * 24)) : 1
+  const dailyAverage = totalExpenses / daysDifference
+
+  return {
+    totalExpenses,
+    expensesByCategory,
+    topExpenses,
+    dailyAverage,
+  }
+}
+
+export async function POST(request: Request) {
   const { userId } = await auth()
 
   if (!userId) {
@@ -12,40 +64,66 @@ export async function POST() {
   }
 
   try {
+    const { counselingType, data, startDate, endDate } = await request.json()
+
+    if (counselingType === "report") {
+      const financialData = await getFinancialDataForRange(userId, startDate, endDate)
+
+      const prompt = `
+        Aja como um analista financeiro especialista. Crie um relatório financeiro detalhado e perspicaz para o período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
+
+        **Dados Financeiros:**
+        - **Total de Despesas:** ${formatCurrency(financialData.totalExpenses)}
+        - **Renda (se aplicável):** (não disponível)
+        - **Balanço (Renda - Despesas):** ${formatCurrency(-financialData.totalExpenses)}
+        - **Média de Gasto Diário:** ${formatCurrency(financialData.dailyAverage)}
+
+        **Análise de Despesas por Categoria:**
+        ${financialData.expensesByCategory.map((item) => `- **${item.tag}:** ${formatCurrency(item.total)} (${item.percentage}%)`).join("\n")}
+
+        **Principais Despesas:**
+        ${financialData.topExpenses.map((exp) => `- ${exp.name} em ${format(new Date(exp.date), "dd/MM/yyyy", { locale: ptBR })}: ${formatCurrency(exp.amount)}`).join("\n")}
+
+        **O relatório deve incluir as seguintes seções, com títulos claros e formatação em Markdown:**
+
+        1.  **Resumo Executivo:** Um parágrafo conciso com os principais destaques financeiros do período.
+        2.  **Análise de Padrões de Consumo:**
+            - Identifique as 3 principais categorias de gastos.
+            - Analise a distribuição de despesas. Há alguma concentração excessiva?
+            - Comente sobre a frequência e o volume das transações.
+        3.  **Visualização de Dados (Simulado):**
+            - Descreva um gráfico de pizza para "Distribuição de Despesas por Categoria".
+            - Descreva um gráfico de barras para "Top 5 Despesas".
+        4.  **Insights e Observações:**
+            - Destaque tendências importantes (ex: aumento de gastos em uma categoria específica).
+            - Aponte anomalias ou despesas inesperadas.
+            - Avalie a saúde financeira geral com base nos dados.
+        5.  **Dicas e Recomendações Acionáveis:**
+            - Forneça 3-5 dicas práticas e personalizadas para otimizar os gastos.
+            - Sugira áreas para economia potencial.
+            - Recomende estratégias para melhorar a gestão financeira com base nos padrões observados.
+
+        **Instruções de Formato:**
+        - Use Markdown para formatar o relatório com títulos, listas e negrito.
+        - A resposta deve ser estruturada, clara e profissional.
+        - Responda sempre em português do Brasil (pt-BR).
+      `
+
+      const { text } = await generateText({
+        model: google("gemini-1.5-flash"),
+        prompt,
+        maxTokens: 2000, // Increased for detailed report
+      })
+
+      return NextResponse.json({ analysis: text })
+    }
+
     // Get user's financial data
     const currentDate = new Date()
     const currentMonth = currentDate.getMonth() + 1
     const currentYear = currentDate.getFullYear()
 
-    // Get current month expenses
-    const monthlyExpenses = await sql`
-      SELECT tag, SUM(amount) as amount
-      FROM expenses 
-      WHERE user_id = ${userId}
-      AND EXTRACT(MONTH FROM date) = ${currentMonth}
-      AND EXTRACT(YEAR FROM date) = ${currentYear}
-      GROUP BY tag
-      ORDER BY amount DESC
-    `
-
-    // Get total monthly spending
-    const totalSpending = await sql`
-      SELECT COALESCE(SUM(amount), 0) as total
-      FROM expenses 
-      WHERE user_id = ${userId}
-      AND EXTRACT(MONTH FROM date) = ${currentMonth}
-      AND EXTRACT(YEAR FROM date) = ${currentYear}
-    `
-
-    // Get current budget
-    const budget = await sql`
-      SELECT amount FROM budgets 
-      WHERE user_id = ${userId} 
-      AND month = ${currentMonth} 
-      AND year = ${currentYear}
-    `
-
-    // Get last 3 months spending for trend analysis
+    // Get last 3 months spending for trend analysis (still needed as it's not passed from frontend)
     const historicalSpending = await sql`
       SELECT 
         EXTRACT(MONTH FROM date) as month,
@@ -59,12 +137,7 @@ export async function POST() {
     `
 
     const financialData = {
-      monthlyExpenses: monthlyExpenses.map((row) => ({
-        category: row.tag,
-        amount: Number(row.amount),
-      })),
-      totalSpending: Number(totalSpending[0]?.total || 0),
-      budget: Number(budget[0]?.amount || 0),
+      ...data, // Use data passed from frontend
       historicalSpending: historicalSpending.map((row) => ({
         month: row.month,
         year: row.year,
@@ -72,34 +145,40 @@ export async function POST() {
       })),
     }
 
-    const prompt = `
-    As a financial advisor, analyze the following user's financial data and provide personalized advice:
+    let prompt = ""
+    const expertInstruction = "Forneça dicas curtas, diretas e de alto impacto, como se fossem de um especialista financeiro. Cada frase deve ter um valor claro. Evite texto genérico. Responda sempre em português do Brasil (pt-BR)."
 
-    Current Month Spending: $${financialData.totalSpending}
-    Monthly Budget: $${financialData.budget}
-    Budget Remaining: $${financialData.budget - financialData.totalSpending}
-
-    Spending by Category:
-    ${financialData.monthlyExpenses.map((exp) => `- ${exp.category}: $${exp.amount}`).join("\n")}
-
-    Historical Spending (last 3 months):
-    ${financialData.historicalSpending.map((hist) => `- ${hist.month}/${hist.year}: $${hist.total}`).join("\n")}
-
-    Please provide:
-    1. Analysis of spending patterns
-    2. Budget adherence assessment
-    3. Areas where they're succeeding
-    4. Areas that need improvement
-    5. Specific actionable recommendations
-    6. Tips for better financial management
-
-    Keep the response conversational, encouraging, and practical. Focus on actionable advice.
-    `
+    switch (counselingType) {
+      case "monthly_expenditure":
+        prompt = `Meu gasto mensal atual é de ${financialData.monthlyExpenditure}. Analise estes dados e os gastos por categoria: ${JSON.stringify(financialData.expensesByTag || [])}. Me dê estratégias práticas e imediatas para reduzir este valor sem sacrificar o essencial. ${expertInstruction}`;
+        break;
+      case "daily_average":
+        prompt = `Com base na minha média de gastos diária de ${financialData.dailyAverage}, me diga de forma direta se estou no caminho certo. Projete meu gasto mensal e me dê um conselho chave para otimizar. Meu orçamento é ${financialData.currentBudget}. ${expertInstruction}`;
+        break;
+      case "current_budget":
+        prompt = `Meu orçamento é ${financialData.currentBudget} e meu gasto atual é ${financialData.monthlyExpenditure}. Me dê 3 ações críticas e objetivas para garantir que eu termine o mês dentro do orçamento. ${expertInstruction}`;
+        break;
+      case "remaining_budget":
+        prompt = `Com ${financialData.remainingBudget} de orçamento restante, quais são as 3 principais prioridades para o resto do mês? Seja direto e acionável. ${expertInstruction}`;
+        break;
+      case "monthly_expenses_chart":
+        prompt = `Com base nestes dados históricos de despesas mensais: ${JSON.stringify(financialData.monthlyExpenses || [])}, aponte a tendência mais preocupante e a mais positiva. Dê uma dica poderosa para cada uma. ${expertInstruction}`;
+        break;
+      case "expenses_by_category_chart":
+        prompt = `Analisando minhas despesas por categoria: ${JSON.stringify(financialData.expensesByTag || [])}, identifique a de maior gasto e me dê duas táticas não óbvias para reduzir custos nela imediatamente. ${expertInstruction}`;
+        break;
+      case "total_expenses_by_category_chart":
+        prompt = `Olhando meus gastos de longo prazo por categoria: ${JSON.stringify(financialData.totalExpensesByTag || [])}, qual mudança de hábito teria o maior impacto financeiro? Forneça uma estratégia clara. ${expertInstruction}`;
+        break;
+      default:
+        prompt = `Aja como um consultor financeiro de elite. Analise estes dados e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.\n\n        Gasto no Mês Atual: ${financialData.totalSpending}\n        Orçamento Mensal: ${financialData.budget}\n        Gastos por Categoria:\n        ${(financialData.expensesByTag || []).map((exp: { tag: string; total: number }) => `- ${exp.tag}: ${exp.total}`).join("\n")}\n\n        Histórico de Gastos (últimos 3 meses):\n        ${(financialData.historicalSpending || []).map((hist: { month: number; year: number; total: number }) => `- ${hist.month}/${hist.year}: ${hist.total}`).join("\n")}\n\n        ${expertInstruction}\n        `;
+        break;
+    }
 
     const { text } = await generateText({
       model: google("gemini-1.5-flash"),
       prompt,
-      maxTokens: 1000,
+      maxTokens: 500, // Reduced max tokens for shorter responses
     })
 
     return NextResponse.json({ analysis: text })

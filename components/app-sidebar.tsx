@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, Receipt, Wallet, Users, Brain, Download, Search, BarChart3, User, UserPlus, PieChart } from "lucide-react"
+import { LayoutDashboard, Receipt, Wallet, Users, FileText, Download, Search, BarChart3, User, UserPlus, PieChart } from "lucide-react"
 import Link from "next/link"
 
 const items = [
@@ -53,9 +53,9 @@ const items = [
     icon: UserPlus,
   },
   {
-    title: "Aconselhamento com IA",
-    url: "/dashboard/ai-counseling",
-    icon: Brain,
+    title: "Relatórios com IA",
+    url: "/dashboard/ai-reports",
+    icon: FileText,
   },
   {
     title: "Exportar Dados",
