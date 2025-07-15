@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`)
+
   const formData = await request.formData()
   const startDate = formData.get("startDate") as string
   const endDate = formData.get("endDate") as string

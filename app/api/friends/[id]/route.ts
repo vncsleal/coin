@@ -12,6 +12,9 @@ export async function PUT(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
   try {
     const { action } = await request.json();
     const friendshipId = parseInt(params.id);
@@ -90,6 +93,9 @@ export async function DELETE(
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
   try {
     const friendshipId = parseInt(params.id);

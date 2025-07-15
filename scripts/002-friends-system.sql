@@ -34,18 +34,4 @@ CREATE TABLE IF NOT EXISTS user_privacy_settings (
 );
 
 -- Settlements tracking for shared expenses
-CREATE TABLE IF NOT EXISTS shared_expense_settlements (
-  id SERIAL PRIMARY KEY,
-  shared_expense_id INTEGER REFERENCES shared_expenses(id) ON DELETE CASCADE,
-  participant_id VARCHAR(255) NOT NULL,
-  paid_amount DECIMAL(10, 2) DEFAULT 0,
-  paid_at TIMESTAMP,
-  confirmed_by VARCHAR(255),
-  status VARCHAR(20) DEFAULT 'pending', -- pending, paid, confirmed
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
--- Index for settlements
-CREATE INDEX IF NOT EXISTS idx_settlements_shared_expense_id ON shared_expense_settlements(shared_expense_id);
-CREATE INDEX IF NOT EXISTS idx_settlements_participant_id ON shared_expense_settlements(participant_id);

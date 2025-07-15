@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search') || '';
   const page = parseInt(searchParams.get('page') || '1');

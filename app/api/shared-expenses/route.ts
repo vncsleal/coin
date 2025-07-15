@@ -10,6 +10,9 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`)
+
   try {
     await ensureUserInDatabase()
 
@@ -61,6 +64,9 @@ export async function POST(request: NextRequest) {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`)
 
   try {
     await ensureUserInDatabase()

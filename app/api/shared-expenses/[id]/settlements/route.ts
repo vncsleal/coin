@@ -13,6 +13,9 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Set the session variable for RLS
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
   try {
     await ensureUserInDatabase();
     
