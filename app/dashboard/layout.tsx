@@ -2,7 +2,6 @@ import type React from "react"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { UserButton } from "@clerk/nextjs"
 import { NotificationCenter } from "@/components/notification-center"
 
 export default function DashboardLayout({
