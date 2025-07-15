@@ -8,6 +8,7 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ['l3pden50fc.ufs.sh'],
   },
 }
 

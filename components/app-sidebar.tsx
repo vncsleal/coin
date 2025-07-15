@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar"
 import { LayoutDashboard, Receipt, Wallet, Users, FileText, Download, Search, BarChart3, User, UserPlus, PieChart, Settings, LifeBuoy, LogOut } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 
 const mainNav = [
@@ -96,8 +97,8 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="/dashboard">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Wallet className="size-4" />
+                <div className="bg-[#FAECD8] text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Image src="https://l3pden50fc.ufs.sh/f/qVxhWi9olDGtv7HTLkPK2ApQTwchMHEZ8OIegU6XizFlkxf4" alt="Cutia Logo" width={32} height={32} />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">Cutia</span>
