@@ -1,5 +1,6 @@
 "use client"
 
+import { useTheme } from "next-themes"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -9,9 +10,9 @@ import { useToast } from "@/hooks/use-toast"
 import { getAvailableCurrencies, DEFAULT_CURRENCY } from "@/lib/currency"
 
 export function ProfileSettings() {
+  const { theme, setTheme } = useTheme()
   const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY)
   const [notifications, setNotifications] = useState(true)
-  const [darkMode, setDarkMode] = useState(false)
   const { toast } = useToast()
 
   const availableCurrencies = getAvailableCurrencies()
@@ -49,7 +50,7 @@ export function ProfileSettings() {
 
       <div className="flex items-center justify-between">
         <Label htmlFor="darkMode">Modo Escuro</Label>
-        <Switch id="darkMode" checked={darkMode} onCheckedChange={setDarkMode} />
+        <Switch id="darkMode" checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />
       </div>
 
       <Button onClick={handleSave} className="w-full">
