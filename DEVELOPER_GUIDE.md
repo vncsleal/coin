@@ -66,6 +66,7 @@ The Expense Tracker is a full-stack Next.js application built with TypeScript th
 expense-tracker/
 ├── app/                    # Next.js 15+ App Router
 │   ├── api/               # Backend API routes
+│   │   ├── incomes/           # Income CRUD
 │   │   ├── expenses/          # Personal expense CRUD
 │   │   ├── shared-expenses/   # Shared expense system
 │   │   │   ├── route.ts           # Main CRUD operations
@@ -80,10 +81,11 @@ expense-tracker/
 │   │   │   └── [id]/route.ts      # Individual friend ops
 │   │   ├── users/             # User management
 │   │   │   └── browse/route.ts    # User discovery
-│   │   └── ai-counseling/     # AI financial advice
+│   │   └── ai-counseling/     # AI financial advice & reporting
 │   ├── dashboard/         # Protected pages
 │   │   ├── layout.tsx         # Dashboard layout with sidebar
 │   │   ├── page.tsx           # Main dashboard overview
+│   │   ├── income/            # Income management page
 │   │   ├── expenses/          # Personal expense pages
 │   │   ├── shared/            # Shared expense pages
 │   │   │   ├── page.tsx           # Shared expense list
@@ -92,7 +94,7 @@ expense-tracker/
 │   │   ├── budget/            # Budget tracking
 │   │   ├── analytics/         # Personal analytics
 │   │   ├── profile/           # User preferences
-│   │   └── ai-counseling/     # AI insights
+│   │   └── ai-counseling/     # AI reporting page
 │   ├── globals.css        # Global styles & CSS variables
 │   ├── layout.tsx         # Root layout with providers
 │   └── page.tsx           # Landing page
@@ -106,6 +108,8 @@ expense-tracker/
 │   │   ├── enhanced-expense-card.tsx         # Expense display
 │   │   └── bulk-operations.tsx               # Bulk actions
 │   ├── ui/               # Reusable UI components (shadcn/ui)
+│   ├── income-manager.tsx # Income management component
+│   ├── income-chart.tsx   # Income chart component
 │   ├── expense-*.tsx     # Personal expense components
 │   ├── budget-*.tsx      # Budget-related components
 │   ├── app-sidebar.tsx   # Navigation sidebar
@@ -123,7 +127,8 @@ expense-tracker/
 ├── scripts/              # Database & setup scripts
 │   ├── setup-db.sh           # Automated DB setup
 │   ├── 001-create-tables.sql # Core schema
-│   └── 002-friends-system.sql # Friends extensions
+│   ├── 002-friends-system.sql # Friends extensions
+│   └── 003-incomes-table.sql # Incomes table
 └── public/               # Static assets
 ```
 
@@ -167,6 +172,19 @@ CREATE TABLE expenses (
     name VARCHAR(255) NOT NULL,
     tag VARCHAR(100) NOT NULL,
     amount NUMERIC(10,2) NOT NULL,
+    date DATE NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### Incomes Table
+```sql
+CREATE TABLE incomes (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    amount NUMERIC(10, 2) NOT NULL,
     date DATE NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -386,6 +404,24 @@ return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
 return NextResponse.json({ data: result, message: 'Created successfully' });
 ```
 
+### AI Reporting Feature
+
+The application includes an AI-powered reporting feature that allows users to generate detailed financial reports for specific periods. This feature is designed to provide users with a comprehensive overview of their financial activity, including insights and actionable recommendations.
+
+#### Report Generation
+
+The AI reporting feature is accessible from the "AI Counseling" page. Users can select from predefined report types (e.g., "Weekly", "Monthly") or specify a custom date range. The backend then fetches the relevant financial data and uses a sophisticated prompt to generate a detailed report with the help of Google's Generative AI.
+
+#### Report Content
+
+The generated reports include:
+
+*   A summary of total income, expenses, and net balance.
+*   A breakdown of expenses by category.
+*   A list of top expenses.
+*   Simulated data visualizations (e.g., pie charts, bar charts).
+*   Actionable insights and recommendations.
+
 ## 🧩 Component Architecture
 
 ### Component Categories
@@ -417,58 +453,19 @@ export default async function FeaturePage() {
 
 #### 2. Feature Components
 ```typescript
-// components/feature-component.tsx
-'use client';
-
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-
-interface FeatureComponentProps {
-  initialData?: any[];
-  onUpdate?: () => void;
+// components/income-manager.tsx
+export function IncomeManager() {
+  // Component implementation
 }
 
-export function FeatureComponent({ initialData, onUpdate }: FeatureComponentProps) {
-  const [data, setData] = useState(initialData || []);
-  const [loading, setLoading] = useState(false);
+// components/income-chart.tsx
+export function IncomeChart() {
+  // Component implementation
+}
 
-  const handleAction = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/endpoint', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ /* data */ })
-      });
-
-      if (!response.ok) throw new Error('Failed to perform action');
-      
-      const result = await response.json();
-      setData(prev => [...prev, result.data]);
-      toast.success('Action completed successfully');
-      onUpdate?.();
-    } catch (error) {
-      toast.error('Failed to perform action');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Feature Title</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {/* Component content */}
-        <Button onClick={handleAction} disabled={loading}>
-          {loading ? 'Loading...' : 'Action'}
-        </Button>
-      </CardContent>
-    </Card>
-  );
+// components/ai-counseling.tsx
+export function AICounseling() {
+  // Component implementation
 }
 ```
 
