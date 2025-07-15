@@ -18,6 +18,11 @@ const items = [
     icon: LayoutDashboard,
   },
   {
+    title: "Rendas",
+    url: "/dashboard/income",
+    icon: Wallet,
+  },
+  {
     title: "Despesas",
     url: "/dashboard/expenses",
     icon: Receipt,

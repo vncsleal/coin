@@ -9,7 +9,7 @@ import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface AICounselingModalProps {
-  counselingType: "monthly_expenditure" | "daily_average" | "current_budget" | "remaining_budget" | "monthly_expenses_chart" | "expenses_by_category_chart" | "total_expenses_by_category_chart";
+  counselingType: "monthly_income" | "net_balance" | "monthly_incomes_chart" | "monthly_expenditure" | "daily_average" | "current_budget" | "remaining_budget" | "monthly_expenses_chart" | "expenses_by_category_chart" | "total_expenses_by_category_chart";
   data: any; // This will be the relevant data for the counseling type
 }
 

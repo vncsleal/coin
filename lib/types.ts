@@ -39,10 +39,13 @@ export interface SharedExpenseParticipant {
 }
 
 export interface DashboardStats {
+  monthlyIncome: number
   monthlyExpenditure: number
   dailyAverage: number
   currentBudget: number
   remainingBudget: number
+  netBalance: number
+  monthlyIncomes: { date: string; amount: number }[]
   monthlyExpenses: { date: string; amount: number }[]
   expensesByTag: { tag: string; amount: number }[]
   totalExpensesByTag: { tag: string; amount: number }[]

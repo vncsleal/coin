@@ -149,6 +149,15 @@ export async function POST(request: Request) {
     const expertInstruction = "Forneça dicas curtas, diretas e de alto impacto, como se fossem de um especialista financeiro. Cada frase deve ter um valor claro. Evite texto genérico. Responda sempre em português do Brasil (pt-BR)."
 
     switch (counselingType) {
+      case "monthly_income":
+        prompt = `Minha renda mensal é de ${financialData.monthlyIncome}. Analise essa renda e me dê dicas de como posso aumentá-la ou diversificá-la. ${expertInstruction}`;
+        break;
+      case "net_balance":
+        prompt = `Meu balanço mensal (renda - despesas) é de ${financialData.netBalance}. O que esse número significa para minha saúde financeira? Me dê conselhos sobre como melhorar esse indicador. ${expertInstruction}`;
+        break;
+      case "monthly_incomes_chart":
+        prompt = `Analise meus dados de renda mensal: ${JSON.stringify(financialData.monthlyIncomes || [])}. Aponte as tendências e me dê estratégias para estabilizar ou aumentar minhas fontes de renda. ${expertInstruction}`;
+        break;
       case "monthly_expenditure":
         prompt = `Meu gasto mensal atual é de ${financialData.monthlyExpenditure}. Analise estes dados e os gastos por categoria: ${JSON.stringify(financialData.expensesByTag || [])}. Me dê estratégias práticas e imediatas para reduzir este valor sem sacrificar o essencial. ${expertInstruction}`;
         break;
