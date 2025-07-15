@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Loader2, Brain, Sparkles } from "lucide-react"
+import { Loader2, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -110,7 +110,7 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
             </>
           ) : (
             <>
-              <Brain className="mr-2 h-4 w-4" />
+              
               Gerar Nova Análise
             </>
           )}
