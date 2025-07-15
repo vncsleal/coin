@@ -124,7 +124,7 @@ export function IncomeManager() {
                 )}
               />
               <Button type="submit" className="w-full">
-                <PlusCircle className="mr-2 h-4 w-4" />
+                
                 Adicionar Renda
               </Button>
             </form>
