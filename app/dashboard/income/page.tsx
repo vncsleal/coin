@@ -1,43 +1,20 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/currency";
-import { PlusCircle, List, DollarSign } from "lucide-react";
-
-const incomeSchema = z.object({
-  name: z.string().min(1, "O nome é obrigatório."),
-  amount: z.coerce.number().positive("O valor deve ser positivo."),
-  date: z.string().min(1, "A data é obrigatória."),
-});
-
-type IncomeFormValues = z.infer<typeof incomeSchema>;
-
-interface Income extends IncomeFormValues {
-  id: number;
-}
+import { PlusCircle, List, DollarSign, Trash2 } from "lucide-react";
+import { Income } from "@/lib/types";
+import { IncomeForm } from "@/components/income-form";
+import { EditIncomeModal } from "@/components/EditIncomeModal";
 
 export default function IncomePage() {
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const form = useForm<IncomeFormValues>({
-    resolver: zodResolver(incomeSchema),
-    defaultValues: {
-      name: "",
-      amount: 0,
-      date: new Date().toISOString().split("T")[0],
-    },
-  });
 
   async function fetchIncomes() {
     try {
@@ -56,28 +33,22 @@ export default function IncomePage() {
     fetchIncomes();
   }, []);
 
-  const onSubmit = async (values: IncomeFormValues) => {
+  async function handleDelete(id: number) {
     try {
       const response = await fetch("/api/incomes", {
-        method: "POST",
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ id }),
       });
 
-      if (!response.ok) throw new Error("Falha ao adicionar renda.");
+      if (!response.ok) throw new Error("Falha ao excluir renda.");
 
-      const { income } = await response.json();
-      setIncomes([income, ...incomes]);
-      toast.success("Renda adicionada com sucesso!");
-      form.reset({
-        name: "",
-        amount: 0,
-        date: new Date().toISOString().split("T")[0],
-      });
+      toast.success("Renda excluída com sucesso!");
+      fetchIncomes(); // Refresh the list
     } catch (error) {
-      toast.error("Não foi possível adicionar a renda.");
+      toast.error("Não foi possível excluir a renda.");
     }
-  };
+  }
 
   return (
     <div className="space-y-6">
@@ -110,53 +81,7 @@ export default function IncomePage() {
               <CardDescription>Preencha os detalhes da sua nova fonte de renda.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium">Nome da Renda</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ex: Salário, Freelance" {...field} className="h-10" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium">Valor</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.01" placeholder="0.00" {...field} className="h-10" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium">Data</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} className="h-10" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Adicionar Renda
-                  </Button>
-                </form>
-              </Form>
+              <IncomeForm onSave={fetchIncomes} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -194,6 +119,7 @@ export default function IncomePage() {
                         <TableHead>Nome</TableHead>
                         <TableHead>Data</TableHead>
                         <TableHead className="text-right">Valor</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -205,6 +131,15 @@ export default function IncomePage() {
                           </TableCell>
                           <TableCell className="text-right font-semibold text-green-600">
                             {formatCurrency(income.amount)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <EditIncomeModal income={income} />
+                              <Button variant="ghost" size="sm" onClick={() => handleDelete(income.id)} className="h-8 w-8">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Excluir</span>
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

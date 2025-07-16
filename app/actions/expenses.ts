@@ -29,6 +29,32 @@ export async function addExpense(formData: FormData) {
   revalidatePath("/dashboard/expenses")
 }
 
+export async function updateExpense(id: number, formData: FormData) {
+  const { userId } = await auth()
+
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  const name = formData.get("name") as string
+  const amount = Number.parseFloat(formData.get("amount") as string)
+  const tag = formData.get("tag") as string
+  const date = formData.get("date") as string
+
+  if (!name || !amount || !tag || !date) {
+    throw new Error("Missing required fields")
+  }
+
+  await sql`
+    UPDATE expenses
+    SET name = ${name}, amount = ${amount}, tag = ${tag}, date = ${date}
+    WHERE id = ${id} AND user_id = ${userId}
+  `
+
+  revalidatePath("/dashboard")
+  revalidatePath("/dashboard/expenses")
+}
+
 export async function deleteExpense(id: number) {
   const { userId } = await auth()
 

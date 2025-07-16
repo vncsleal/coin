@@ -4,7 +4,8 @@ import type { Expense } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Trash2 } from "lucide-react"
+import { Trash2, Pencil } from "lucide-react"
+import { EditExpenseModal } from "@/components/EditExpenseModal"
 import { formatCurrency } from "@/lib/currency"
 import { deleteExpense } from "@/app/actions/expenses"
 import { useRouter } from "next/navigation"
@@ -54,6 +55,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg">{formatCurrency(expense.amount)}</span>
+                <EditExpenseModal expense={expense} />
                 <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>

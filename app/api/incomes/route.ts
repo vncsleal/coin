@@ -50,3 +50,64 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to create income" }, { status: 500 })
   }
 }
+
+export async function PUT(request: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id, name, amount, date } = await request.json();
+
+    if (!id || !name || !amount || !date) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    const result = await sql`
+      UPDATE incomes
+      SET name = ${name}, amount = ${amount}, date = ${date}
+      WHERE id = ${id} AND user_id = ${userId}
+      RETURNING id;
+    `;
+
+    if (result.length === 0) {
+      return NextResponse.json({ error: "Income not found or unauthorized" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Income updated successfully" }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to update income:", error);
+    return NextResponse.json({ error: "Failed to update income" }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await request.json();
+
+    if (!id) {
+      return NextResponse.json({ error: "Income ID is required" }, { status: 400 });
+    }
+
+    const result = await sql`
+      DELETE FROM incomes
+      WHERE id = ${id} AND user_id = ${userId}
+      RETURNING id;
+    `;
+
+    if (result.length === 0) {
+      return NextResponse.json({ error: "Income not found or unauthorized" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Income deleted successfully" }, { status: 200 });
+  } catch (error) {
+    console.error("Failed to delete income:", error);
+    return NextResponse.json({ error: "Failed to delete income" }, { status: 500 });
+  }
+}

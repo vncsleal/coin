@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
-import { CalendarIcon, PlusCircle, DollarSign, List, BarChart, ChevronDown } from 'lucide-react';
+import { CalendarIcon, PlusCircle, DollarSign, List, BarChart, ChevronDown, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -16,8 +16,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExpenseChart } from '@/components/expense-chart';
 import { ExpensePieChart } from '@/components/expense-pie-chart';
 import { formatCurrency } from '@/lib/currency';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { EXPENSE_TAGS } from '@/lib/constants';
+import { SharedExpenseForm } from '@/components/shared-expense-form';
+import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
 
 interface SharedExpense {
   id: string;
@@ -73,7 +73,7 @@ export default function SharedExpensesPage() {
 
   const fetchSharedExpenses = async () => {
     try {
-      const response = await fetch('/api/shared-expenses/list');
+      const response = await fetch('/api/shared-expenses');
       if (!response.ok) {
         throw new Error('Failed to fetch shared expenses');
       }
@@ -110,6 +110,28 @@ export default function SharedExpensesPage() {
     } catch (error) {
       console.error('Error fetching shared expenses by category:', error);
       toast.error('Failed to load shared expenses by category.');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch('/api/shared-expenses', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete shared expense');
+      }
+
+      toast.success('Despesa compartilhada excluída com sucesso!');
+      fetchSharedExpenses();
+      fetchMonthlySharedExpenses();
+      fetchSharedExpensesByCategory();
+    } catch (error) {
+      console.error('Error deleting shared expense:', error);
+      toast.error('Falha ao excluir despesa compartilhada.');
     }
   };
 
@@ -185,123 +207,11 @@ export default function SharedExpensesPage() {
               <CardDescription>Adicione uma despesa que será dividida igualmente com um amigo.</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid gap-2">
-                  <label htmlFor="description" className="text-sm font-medium">Descrição</label>
-                  <Input
-                    id="description"
-                    placeholder="Almoço com amigos"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                    className="h-10"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="amount" className="text-sm font-medium">Valor Total</label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    placeholder="50.00"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    required
-                    className="h-10"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="date" className="text-sm font-medium">Data</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal h-10",
-                          !date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "dd/MM/yyyy") : <span>Selecione uma data</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="category" className="text-sm font-medium">Categoria (Opcional)</label>
-                  <Select onValueChange={setCategory} value={category}>
-                    <SelectTrigger className="h-10">
-                      <SelectValue placeholder="Selecione uma categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {EXPENSE_TAGS.map((tag) => (
-                        <SelectItem key={tag} value={tag}>
-                          {tag}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="friend" className="text-sm font-medium">Compartilhar com</label>
-                  {friends.length === 0 ? (
-                    <div className="flex items-center justify-center p-4 border rounded-lg bg-muted/50">
-                      <div className="text-center">
-                        <p className="text-sm font-medium text-muted-foreground">Nenhum amigo disponível</p>
-                        <p className="text-xs text-muted-foreground mt-1">Adicione amigos na página de Amigos</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="grid gap-2 max-h-40 overflow-y-auto border rounded-lg p-2">
-                      {friends.map((friend) => (
-                        <div
-                          key={friend.id}
-                          onClick={() => setSelectedFriend(friend.id)}
-                          className={cn(
-                            "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-all duration-200",
-                            selectedFriend === friend.id
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "hover:bg-accent hover:text-accent-foreground"
-                          )}
-                        >
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={friend.avatar_url || "/placeholder-user.jpg"} alt={friend.display_name || friend.email} />
-                            <AvatarFallback className="text-xs font-medium">
-                              {(friend.display_name || friend.email).charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex flex-col flex-1 min-w-0">
-                            <span className="font-medium text-sm truncate">
-                              {friend.display_name || 'Usuário'}
-                            </span>
-                            <span className={cn(
-                              "text-xs truncate",
-                              selectedFriend === friend.id ? "text-primary-foreground/70" : "text-muted-foreground"
-                            )}>
-                              {friend.email}
-                            </span>
-                          </div>
-                          {selectedFriend === friend.id && (
-                            <div className="w-1.5 h-1.5 bg-primary-foreground rounded-full flex-shrink-0" />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <Button type="submit" className="w-full">
-                  
-                  Registrar Despesa Compartilhada
-                </Button>
-              </form>
+              <SharedExpenseForm onSave={() => {
+                fetchSharedExpenses();
+                fetchMonthlySharedExpenses();
+                fetchSharedExpensesByCategory();
+              }} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -336,12 +246,19 @@ export default function SharedExpensesPage() {
                         <p className="text-sm text-muted-foreground">Pago por: {expense.paid_by_user_name}</p>
                         <p className="text-sm text-muted-foreground">Compartilhado com: {expense.shared_with_user_name}</p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex flex-col items-end">
                         <p className="font-bold text-lg">{formatCurrency(expense.total_amount)}</p>
                         <p className="text-sm text-muted-foreground">Sua parte: {formatCurrency(expense.total_amount / 2)}</p>
                         <Badge variant={expense.status === 'settled' ? 'default' : 'destructive'} className={expense.status === 'settled' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}>
                           {expense.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
                         </Badge>
+                        <div className="flex items-center justify-end gap-2 mt-2">
+                          <EditSharedExpenseModal expense={expense} />
+                          <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)} className="h-8 w-8">
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Excluir</span>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
