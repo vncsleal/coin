@@ -15,12 +15,9 @@ export default async function AIReportsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Relatórios com IA</h1>
-          <p className="text-muted-foreground">Obtenha insights inteligentes e relatórios financeiros personalizados</p>
-        </div>
-       
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Relatórios com IA</h1>
+        <p className="text-muted-foreground">Obtenha insights inteligentes e relatórios financeiros personalizados</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3 mb-6">
