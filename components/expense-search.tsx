@@ -8,16 +8,17 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Search, X } from "lucide-react"
 import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 
 interface ExpenseSearchProps {
-  onSearch: (filters: {
+  onSearchAction: (filters: {
     query: string
     category: string
     dateFrom: Date | undefined
     dateTo: Date | undefined
   }) => void
-  onClear: () => void
+  onClearAction: () => void
 }
 
 const EXPENSE_TAGS = [
@@ -33,14 +34,14 @@ const EXPENSE_TAGS = [
   "Outros",
 ]
 
-export function ExpenseSearch({ onSearch, onClear }: ExpenseSearchProps) {
+export function ExpenseSearch({ onSearchAction, onClearAction }: ExpenseSearchProps) {
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState("Todas as Categorias")
   const [dateFrom, setDateFrom] = useState<Date>()
   const [dateTo, setDateTo] = useState<Date>()
 
   function handleSearch() {
-    onSearch({
+    onSearchAction({
       query,
       category: category === "Todas as Categorias" ? "" : category,
       dateFrom,
@@ -53,7 +54,7 @@ export function ExpenseSearch({ onSearch, onClear }: ExpenseSearchProps) {
     setCategory("Todas as Categorias")
     setDateFrom(undefined)
     setDateTo(undefined)
-    onClear()
+    onClearAction()
   }
 
   return (
@@ -91,7 +92,7 @@ export function ExpenseSearch({ onSearch, onClear }: ExpenseSearchProps) {
                 className={cn("w-full justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateFrom ? format(dateFrom, "PPP") : "Data inicial"}
+                {dateFrom ? format(dateFrom, "PPP", { locale: ptBR }) : "Data inicial"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -108,7 +109,7 @@ export function ExpenseSearch({ onSearch, onClear }: ExpenseSearchProps) {
                 className={cn("w-full justify-start text-left font-normal", !dateTo && "text-muted-foreground")}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateTo ? format(dateTo, "PPP") : "Data final"}
+                {dateTo ? format(dateTo, "PPP", { locale: ptBR }) : "Data final"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">

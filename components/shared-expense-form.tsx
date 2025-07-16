@@ -9,8 +9,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, PlusCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, safeDateParse, safeFormatDateForSubmission, formatDateBR } from '@/lib/utils';
 import { EXPENSE_TAGS } from '@/lib/constants';
 import { addSharedExpense, updateSharedExpense } from '@/app/actions/shared-expenses';
 import { useToast } from "@/hooks/use-toast";
@@ -42,8 +43,14 @@ interface SharedExpenseFormProps {
 
 export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormProps) {
   const [description, setDescription] = useState(expenseToEdit?.description || '');
-  const [amount, setAmount] = useState<string>(expenseToEdit?.total_amount.toString() || '');
-  const [date, setDate] = useState<Date | undefined>(expenseToEdit?.date ? new Date(expenseToEdit.date) : new Date());
+  const [amount, setAmount] = useState<string>(expenseToEdit?.total_amount?.toString() || '');
+  
+  // Safe date parsing with utility function
+  const [date, setDate] = useState<Date | undefined>(() => {
+    const parsedDate = safeDateParse(expenseToEdit?.date);
+    return parsedDate || new Date();
+  });
+  
   const [category, setCategory] = useState(expenseToEdit?.category || '');
   const [selectedFriend, setSelectedFriend] = useState<string>(expenseToEdit?.shared_with_user_id || '');
   const [friends, setFriends] = useState<Friend[]>([]);
@@ -86,8 +93,8 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       const formData = new FormData();
       formData.append("description", description);
       formData.append("total_amount", amount);
-      formData.append("date", date.toISOString().split('T')[0]);
-      formData.append("category", category);
+      formData.append("date", safeFormatDateForSubmission(date));
+      formData.append("category", category || '');
       formData.append("shared_with_user_id", selectedFriend);
 
       if (expenseToEdit) {
@@ -161,7 +168,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "dd/MM/yyyy") : <span>Selecione uma data</span>}
+              {date && !isNaN(date.getTime()) ? formatDateBR(date, "dd/MM/yyyy") : <span>Selecione uma data</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">

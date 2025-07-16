@@ -8,9 +8,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, PlusCircle, DollarSign, List, BarChart, ChevronDown, Trash2, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { cn, safeDateParse } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExpenseChart } from '@/components/expense-chart';
@@ -234,7 +235,12 @@ export default function SharedExpensesPage() {
                     <div key={expense.id} className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
                       <div className="flex-1">
                         <p className="font-medium text-foreground">{expense.description}</p>
-                        <p className="text-sm text-muted-foreground">{format(new Date(expense.date), 'PPP')} - {expense.category || 'Sem Categoria'}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {(() => {
+                            const parsedDate = safeDateParse(expense.date);
+                            return parsedDate ? format(parsedDate, 'PPP', { locale: ptBR }) : 'Data Inválida';
+                          })()} - {expense.category || 'Sem Categoria'}
+                        </p>
                         <p className="text-sm text-muted-foreground">Pago por: {expense.paid_by_user_name}</p>
                         <p className="text-sm text-muted-foreground">Compartilhado com: {expense.shared_with_user_name}</p>
                       </div>

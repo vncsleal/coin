@@ -34,6 +34,8 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
         return `Analyze my expenses by category for the current month: ${JSON.stringify(data.expensesByTag)}. Provide insights on which categories I spend the most on and tips to reduce spending in those areas.`;
       case "total_expenses_by_category_chart":
         return `Analyze my total expenses by category across all time: ${JSON.stringify(data.totalExpensesByTag)}. Provide long-term spending insights and strategies for financial improvement based on these categories.`;
+      case "monthly_shared_expenditure":
+        return `Minha despesa mensal compartilhada é de ${data.monthlySharedExpenditure}. Analise este valor e me dê dicas sobre como gerenciar melhor ou reduzir minha parte nas despesas compartilhadas.`;
       default:
         return "Provide general financial counseling based on my expense data.";
     }

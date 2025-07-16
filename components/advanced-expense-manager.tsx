@@ -75,7 +75,7 @@ export function AdvancedExpenseManager() {
 
   return (
     <div className="space-y-6">
-      <ExpenseSearch onSearch={handleSearch} onClear={handleClear} />
+      <ExpenseSearch onSearchAction={handleSearch} onClearAction={handleClear} />
 
       <div>
         <h3 className="text-lg font-semibold mb-4">
