@@ -27,8 +27,8 @@ export function ExpensePieChart({ data }: ExpensePieChartProps) {
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-        <Legend />
+        <Tooltip formatter={(value, name, props) => [`${formatCurrency(Number(value))}`, props.payload.tag]} />
+        <Legend formatter={(value, entry) => `${entry.payload.tag} (${formatCurrency(entry.payload.amount)})`} />
       </PieChart>
     </ResponsiveContainer>
   )
