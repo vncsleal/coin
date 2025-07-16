@@ -1,15 +1,14 @@
 "use client"
 
-import type { Expense } from "@/lib/types"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Trash2, Pencil } from "lucide-react"
-import { EditExpenseModal } from "@/components/EditExpenseModal"
-import { formatCurrency } from "@/lib/currency"
 import { deleteExpense } from "@/app/actions/expenses"
-import { useRouter } from "next/navigation"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
+import { formatCurrency } from "@/lib/currency"
+import { Expense } from "@/lib/types"
+import { Trash2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { EditExpenseModal } from "./EditExpenseModal"
 
 interface ExpenseListProps {
   expenses: Expense[]
@@ -41,29 +40,37 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
   }
 
   return (
-    <div className="space-y-3 max-h-96 overflow-y-auto">
-      {expenses.slice(0, 10).map((expense) => (
-        <Card key={expense.id}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium">{expense.name}</span>
-                  <Badge variant="secondary">{expense.tag}</Badge>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nome</TableHead>
+            <TableHead>Categoria</TableHead>
+            <TableHead>Data</TableHead>
+            <TableHead className="text-right">Valor</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {expenses.map((expense) => (
+            <TableRow key={expense.id}>
+              <TableCell className="font-medium">{expense.name}</TableCell>
+              <TableCell className="text-muted-foreground">{expense.tag}</TableCell>
+              <TableCell className="text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</TableCell>
+              <TableCell className="text-right font-semibold text-red-600">{formatCurrency(expense.amount)}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex items-center justify-end gap-2">
+                  <EditExpenseModal expense={expense} />
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)} className="h-8 w-8">
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Excluir</span>
+                  </Button>
                 </div>
-                <div className="text-sm text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-lg">{formatCurrency(expense.amount)}</span>
-                <EditExpenseModal expense={expense} />
-                <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

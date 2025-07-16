@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, PlusCircle, DollarSign, List, BarChart, ChevronDown, Trash2, Pencil } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { cn, safeDateParse } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -230,36 +231,49 @@ export default function SharedExpensesPage() {
                   <p className="text-sm text-muted-foreground mt-2">Comece a registrar despesas compartilhadas na aba "Adicionar Despesa".</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {sharedExpenses.map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{expense.description}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {(() => {
-                            const parsedDate = safeDateParse(expense.date);
-                            return parsedDate ? format(parsedDate, 'PPP', { locale: ptBR }) : 'Data Inválida';
-                          })()} - {expense.category || 'Sem Categoria'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">Pago por: {expense.paid_by_user_name}</p>
-                        <p className="text-sm text-muted-foreground">Compartilhado com: {expense.shared_with_user_name}</p>
-                      </div>
-                      <div className="text-right flex flex-col items-end">
-                        <p className="font-bold text-lg">{formatCurrency(expense.total_amount)}</p>
-                        <p className="text-sm text-muted-foreground">Sua parte: {formatCurrency(expense.total_amount / 2)}</p>
-                        <Badge variant={expense.status === 'settled' ? 'default' : 'destructive'} className={expense.status === 'settled' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}>
-                          {expense.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
-                        </Badge>
-                        <div className="flex items-center justify-end gap-2 mt-2">
-                          <EditSharedExpenseModal expense={expense} />
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)} className="h-8 w-8">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Excluir</span>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Pago Por</TableHead>
+                        <TableHead>Compartilhado Com</TableHead>
+                        <TableHead className="text-right">Valor Total</TableHead>
+                        <TableHead className="text-right">Sua Parte</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sharedExpenses.map((expense) => (
+                        <TableRow key={expense.id}>
+                          <TableCell className="font-medium">{expense.description}</TableCell>
+                          <TableCell>{expense.category || 'Sem Categoria'}</TableCell>
+                          <TableCell className="text-muted-foreground">{expense.date ? new Date(expense.date).toLocaleDateString() : 'Data Inválida'}</TableCell>
+                          <TableCell>{expense.paid_by_user_name}</TableCell>
+                          <TableCell>{expense.shared_with_user_name}</TableCell>
+                          <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount)}</TableCell>
+                          <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount / 2)}</TableCell>
+                          <TableCell className="text-right">
+                            <Badge variant={expense.status === 'settled' ? 'default' : 'destructive'} className={expense.status === 'settled' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}>
+                              {expense.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <EditSharedExpenseModal expense={expense} />
+                              <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)} className="h-8 w-8">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Excluir</span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
               )}
             </CardContent>
