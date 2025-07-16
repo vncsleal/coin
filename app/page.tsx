@@ -27,7 +27,7 @@ export default function HomePage() {
         <Image src="https://l3pden50fc.ufs.sh/f/qVxhWi9olDGtv7HTLkPK2ApQTwchMHEZ8OIegU6XizFlkxf4" alt="Cutia Logo" width={64} height={64} className="mb-4" />
         <h1 className="text-4xl font-bold tracking-tight mb-4">Cutia</h1>
         <p className="text-lg text-muted-foreground mb-8">
-          Sua solução inteligente para gerenciar finanças.
+          Controle Financeiro Inteligente
         </p>
         <SignedOut>
           <SignInButton mode="modal">

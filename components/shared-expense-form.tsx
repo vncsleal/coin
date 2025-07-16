@@ -13,6 +13,7 @@ import { CalendarIcon, PlusCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { EXPENSE_TAGS } from '@/lib/constants';
+import { addSharedExpense, updateSharedExpense } from '@/app/actions/shared-expenses';
 
 interface SharedExpense {
   id: string;
@@ -73,27 +74,21 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
     }
 
     try {
-      const method = expenseToEdit ? 'PUT' : 'POST';
-      const url = expenseToEdit ? `/api/shared-expenses?id=${expenseToEdit.id}` : '/api/shared-expenses';
+      const formData = new FormData();
+      formData.append("description", description);
+      formData.append("total_amount", amount);
+      formData.append("date", date.toISOString().split('T')[0]);
+      formData.append("category", category);
+      formData.append("shared_with_user_id", selectedFriend);
 
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: expenseToEdit?.id,
-          description,
-          total_amount: parseFloat(amount),
-          date: date.toISOString().split('T')[0],
-          category: category || null,
-          shared_with_user_id: selectedFriend,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${expenseToEdit ? 'update' : 'create'} shared expense`);
+      if (expenseToEdit) {
+        await updateSharedExpense(expenseToEdit.id, formData);
+        toast.success('Despesa compartilhada atualizada com sucesso!');
+      } else {
+        await addSharedExpense(formData);
+        toast.success('Despesa compartilhada criada com sucesso!');
       }
 
-      toast.success(`Despesa compartilhada ${expenseToEdit ? 'atualizada' : 'criada'} com sucesso!`);
       if (!expenseToEdit) {
         setDescription('');
         setAmount('');

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { toast } from "sonner"
 import { Income } from "@/lib/types"
+import { addIncome, updateIncome } from "@/app/actions/incomes"
 
 const incomeSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
@@ -49,18 +50,18 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
 
   const onSubmit = async (values: IncomeFormValues) => {
     try {
-      const method = incomeToEdit ? "PUT" : "POST";
-      const url = incomeToEdit ? `/api/incomes?id=${incomeToEdit.id}` : "/api/incomes";
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("amount", values.amount.toString());
+      formData.append("date", values.date);
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(incomeToEdit ? { id: incomeToEdit.id, ...values } : values),
-      });
-
-      if (!response.ok) throw new Error(`Falha ao ${incomeToEdit ? 'atualizar' : 'adicionar'} renda.`);
-
-      toast.success(`Renda ${incomeToEdit ? 'atualizada' : 'adicionada'} com sucesso!`);
+      if (incomeToEdit) {
+        await updateIncome(incomeToEdit.id, formData);
+        toast.success("Renda atualizada com sucesso!");
+      } else {
+        await addIncome(formData);
+        toast.success("Renda adicionada com sucesso!");
+      }
       onSave?.();
     } catch (error) {
       toast.error(`Não foi possível ${incomeToEdit ? 'atualizar' : 'adicionar'} a renda.`);

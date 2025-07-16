@@ -33,16 +33,9 @@ export default function IncomePage() {
     fetchIncomes();
   }, []);
 
-  async function handleDelete(id: number) {
+    async function handleDelete(id: number) {
     try {
-      const response = await fetch("/api/incomes", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-
-      if (!response.ok) throw new Error("Falha ao excluir renda.");
-
+      await deleteIncome(id);
       toast.success("Renda excluída com sucesso!");
       fetchIncomes(); // Refresh the list
     } catch (error) {

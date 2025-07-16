@@ -113,18 +113,9 @@ export default function SharedExpensesPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+    const handleDelete = async (id: string) => {
     try {
-      const response = await fetch('/api/shared-expenses', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete shared expense');
-      }
-
+      await deleteSharedExpense(id);
       toast.success('Despesa compartilhada excluída com sucesso!');
       fetchSharedExpenses();
       fetchMonthlySharedExpenses();
