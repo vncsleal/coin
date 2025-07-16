@@ -20,12 +20,7 @@ export default async function AIReportsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Relatórios com IA</h1>
           <p className="text-muted-foreground">Obtenha insights inteligentes e relatórios financeiros personalizados</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="flex items-center gap-1">
-            <Brain className="h-3 w-3" />
-            IA Avançada
-          </Badge>
-        </div>
+       
       </div>
 
       <div className="grid gap-4 md:grid-cols-3 mb-6">

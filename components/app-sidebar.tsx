@@ -53,7 +53,7 @@ const toolsNav = [
   },
   {
     title: "Relatórios com IA",
-    url: "/dashboard/ai-counseling",
+    url: "/dashboard/ai-reports",
     icon: FileText,
   },
   {

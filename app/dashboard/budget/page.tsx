@@ -6,6 +6,8 @@ import type { Budget } from "@/lib/types"
 import { BudgetForm } from "@/components/budget-form"
 import { BudgetOverview } from "@/components/budget-overview"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Settings, BarChart3, Target } from "lucide-react"
 
 async function getCurrentBudget(userId: string): Promise<Budget | null> {
   const currentDate = new Date()
@@ -23,7 +25,7 @@ async function getCurrentBudget(userId: string): Promise<Budget | null> {
     ? {
         ...budget[0],
         amount: Number(budget[0].amount),
-      }
+      } as Budget
     : null
 }
 
@@ -43,29 +45,61 @@ export default async function BudgetPage() {
         <p className="text-muted-foreground">Defina e acompanhe seu orçamento mensal</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Definir Orçamento Mensal</CardTitle>
-            <CardDescription>
-              {currentBudget ? "Atualize seu orçamento atual" : "Defina seu orçamento para este mês"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <BudgetForm currentBudget={currentBudget} />
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="setup" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="setup" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Definir Orçamento
+            
+          </TabsTrigger>
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Visão Geral
+          </TabsTrigger>
+        </TabsList>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Visão Geral do Orçamento</CardTitle>
-            <CardDescription>Acompanhe seus gastos em relação ao seu orçamento</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <BudgetOverview budget={currentBudget} />
-          </CardContent>
-        </Card>
-      </div>
+        {/* Setup Budget Tab */}
+        <TabsContent value="setup">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-muted-foreground" />
+                <CardTitle>Definir Orçamento Mensal</CardTitle>
+              </div>
+              <CardDescription>
+                {currentBudget ? "Atualize seu orçamento atual" : "Defina seu orçamento para este mês"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BudgetForm currentBudget={currentBudget} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                <CardTitle>Visão Geral do Orçamento</CardTitle>
+              </div>
+              <CardDescription>Acompanhe seus gastos em relação ao seu orçamento</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!currentBudget ? (
+                <div className="text-center py-12">
+                  <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground font-medium text-lg">Nenhum orçamento definido ainda</p>
+                  <p className="text-sm text-muted-foreground mt-2">Defina seu orçamento mensal na aba "Definir Orçamento" para ver a visão geral.</p>
+                </div>
+              ) : (
+                <BudgetOverview budget={currentBudget} />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
