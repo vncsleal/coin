@@ -82,7 +82,7 @@ export function NotificationCenter() {
         <Button variant="ghost" size="sm" className="relative">
           <Bell className="h-4 w-4" />
           {notifications.length > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">{notifications.length}</Badge>
+            <div className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500" />
           )}
         </Button>
       </PopoverTrigger>
