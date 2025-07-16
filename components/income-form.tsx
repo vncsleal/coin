@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner"
 import { Income } from "@/lib/types"
 import { addIncome, updateIncome } from "@/app/actions/incomes"
+import { useToast } from "@/hooks/use-toast";
 
 const incomeSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
@@ -48,6 +49,8 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
     }
   }, [incomeToEdit, form]);
 
+  const { toast } = useToast();
+
   const onSubmit = async (values: IncomeFormValues) => {
     try {
       const formData = new FormData();
@@ -57,14 +60,24 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
 
       if (incomeToEdit) {
         await updateIncome(incomeToEdit.id, formData);
-        toast.success("Renda atualizada com sucesso!");
+        toast({
+          title: "Sucesso",
+          description: "Renda atualizada com sucesso",
+        });
       } else {
         await addIncome(formData);
-        toast.success("Renda adicionada com sucesso!");
+        toast({
+          title: "Sucesso",
+          description: "Renda adicionada com sucesso",
+        });
       }
       onSave?.();
     } catch (error) {
-      toast.error(`Não foi possível ${incomeToEdit ? 'atualizar' : 'adicionar'} a renda.`);
+      toast({
+        title: "Erro",
+        description: `Não foi possível ${incomeToEdit ? 'atualizar' : 'adicionar'} a renda.`,
+        variant: "destructive",
+      });
     }
   };
 

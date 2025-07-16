@@ -10,10 +10,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { CalendarIcon, PlusCircle } from 'lucide-react';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { EXPENSE_TAGS } from '@/lib/constants';
 import { addSharedExpense, updateSharedExpense } from '@/app/actions/shared-expenses';
+import { useToast } from "@/hooks/use-toast";
 
 interface SharedExpense {
   id: string;
@@ -47,6 +47,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
   const [category, setCategory] = useState(expenseToEdit?.category || '');
   const [selectedFriend, setSelectedFriend] = useState<string>(expenseToEdit?.shared_with_user_id || '');
   const [friends, setFriends] = useState<Friend[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchFriends();
@@ -62,14 +63,22 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       setFriends(data.friends);
     } catch (error) {
       console.error('Error fetching friends:', error);
-      toast.error('Failed to load friends.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao carregar amigos.',
+        variant: "destructive",
+      });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description || !amount || !date || !selectedFriend) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.');
+      toast({
+        title: 'Erro',
+        description: 'Por favor, preencha todos os campos obrigatórios.',
+        variant: "destructive",
+      });
       return;
     }
 
@@ -82,11 +91,19 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       formData.append("shared_with_user_id", selectedFriend);
 
       if (expenseToEdit) {
+        
         await updateSharedExpense(expenseToEdit.id, formData);
-        toast.success('Despesa compartilhada atualizada com sucesso!');
+        
+        toast({
+          title: 'Despesa compartilhada atualizada com sucesso!',
+        });
       } else {
+        
         await addSharedExpense(formData);
-        toast.success('Despesa compartilhada criada com sucesso!');
+        
+        toast({
+          title: 'Despesa compartilhada criada com sucesso!',
+        });
       }
 
       if (!expenseToEdit) {
@@ -99,7 +116,10 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       onSave?.();
     } catch (error) {
       console.error('Error creating/updating shared expense:', error);
-      toast.error(`Falha ao ${expenseToEdit ? 'atualizar' : 'criar'} despesa compartilhada.`);
+      toast({
+        title: `Falha ao ${expenseToEdit ? 'atualizar' : 'criar'} despesa compartilhada.`,
+        variant: "destructive",
+      });
     }
   };
 

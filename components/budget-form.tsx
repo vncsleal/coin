@@ -24,14 +24,14 @@ export function BudgetForm({ currentBudget }: BudgetFormProps) {
     try {
       await setBudget(formData)
       toast({
-        title: "Success",
-        description: "Budget updated successfully",
+        title: "Sucesso",
+        description: "Orçamento atualizado com sucesso",
       })
       router.refresh()
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update budget",
+        title: "Erro",
+        description: "Falha ao atualizar orçamento",
         variant: "destructive",
       })
     } finally {
