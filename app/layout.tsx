@@ -9,9 +9,56 @@ import { ptBR } from '@clerk/localizations'
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Cutia",
-  description: "Acompanhe suas receitas e despesas com insights alimentados por IA",
-    generator: 'v0.dev'
+  title: {
+    default: "Cutia - Controle Financeiro Inteligente",
+    template: "%s | Cutia"
+  },
+  description: "Acompanhe suas receitas e despesas com insights alimentados por IA. Gerencie seu orçamento, analise gastos e tome decisões financeiras inteligentes.",
+  keywords: ["finanças", "orçamento", "controle financeiro", "gastos", "receitas", "IA", "relatórios"],
+  authors: [{ name: "Vini.co" }],
+  creator: "vncsleal",
+  publisher: "vncsleal",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://vinicoin.netlify.app/"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Cutia - Controle Financeiro Inteligente",
+    description: "Acompanhe suas receitas e despesas com insights alimentados por IA",
+    url: "https://vinicoin.netlify.app/",
+    siteName: "Cutia",
+    images: [
+      {
+        url: "/placeholder-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Cutia - Controle Financeiro Inteligente",
+      },
+    ],
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cutia - Controle Financeiro Inteligente",
+    description: "Acompanhe suas receitas e despesas com insights alimentados por IA",
+    images: ["/placeholder-logo.png"],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/placeholder-logo.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/placeholder-logo.png",
+  },
+  manifest: "/manifest.json",
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -21,7 +68,7 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider localization={ptBR}>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="pt-BR" suppressHydrationWarning>
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {children}
