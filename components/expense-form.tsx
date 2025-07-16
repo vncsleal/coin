@@ -9,17 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast"
 import { addExpense } from "@/app/actions/expenses"
 
-const EXPENSE_TAGS = [
-  "Alimentação e Refeições",
-  "Transporte",
-  "Compras",
-  "Entretenimento",
-  "Contas e Utilidades",
-  "Saúde",
-  "Educação",
-  "Viagem",
-  "Outros",
-]
+import { EXPENSE_TAGS } from "@/lib/constants"
 
 export function ExpenseForm() {
   const [isLoading, setIsLoading] = useState(false)

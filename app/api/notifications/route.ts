@@ -56,6 +56,30 @@ export async function GET() {
         timestamp: request.created_at.toISOString(),
       });
     });
+
+    // Fetch unsettled shared expenses where current user is shared_with_user_id
+    const unsettledSharedExpenses = await sql`
+      SELECT
+        id,
+        description,
+        total_amount,
+        paid_by_user_id,
+        (SELECT display_name FROM users WHERE id = paid_by_user_id) as paid_by_user_name,
+        created_at
+      FROM shared_expenses
+      WHERE shared_with_user_id = ${userId} AND status = 'unsettled';
+    `;
+
+    // Add shared expense notifications
+    unsettledSharedExpenses.forEach(expense => {
+      notifications.push({
+        id: `shared-expense-${expense.id}`,
+        type: "info",
+        title: "Nova Despesa Compartilhada",
+        message: `${expense.paid_by_user_name || 'Um usuário'} compartilhou uma despesa de R${Number(expense.total_amount).toFixed(2)} com você.`,
+        timestamp: expense.created_at.toISOString(),
+      });
+    });
     const budgetAmount = Number(budget[0]?.amount || 0)
     const spentAmount = Number(spending[0]?.total || 0)
 

@@ -13,7 +13,7 @@ interface Notification {
   title: string
   message: string
   timestamp: string
-  notification_type?: 'friend_request' | 'budget_alert' | 'spending_alert'; // Added to differentiate notification types
+  notification_type?: 'friend_request' | 'budget_alert' | 'spending_alert' | 'shared_expense'; // Added shared_expense type
   sender_id?: string; // For friend requests
   sender_name?: string; // For friend requests
 }
@@ -113,6 +113,12 @@ export function NotificationCenter() {
                         <div className="flex space-x-2 mt-2">
                           <Button size="sm" onClick={() => handleFriendRequest(notification.id.replace('friend-request-', ''), 'accept')}>Accept</Button>
                           <Button size="sm" variant="outline" onClick={() => handleFriendRequest(notification.id.replace('friend-request-', ''), 'deny')}>Deny</Button>
+                        </div>
+                      )}
+                      {notification.notification_type === 'shared_expense' && (
+                        <div className="flex space-x-2 mt-2">
+                          {/* Add actions for shared expenses if needed, e.g., "View Expense" */}
+                          <Button size="sm" onClick={() => window.location.href = '/dashboard/shared-expenses'}>Ver Despesa</Button>
                         </div>
                       )}
                     </div>
