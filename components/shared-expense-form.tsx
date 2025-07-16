@@ -217,7 +217,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
         )}
       </div>
       <Button type="submit" className="w-full">
-        <PlusCircle className="mr-2 h-4 w-4" />
+        
         {expenseToEdit ? 'Atualizar Despesa Compartilhada' : 'Registrar Despesa Compartilhada'}
       </Button>
     </form>

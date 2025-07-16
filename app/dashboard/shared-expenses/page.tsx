@@ -18,6 +18,7 @@ import { ExpensePieChart } from '@/components/expense-pie-chart';
 import { formatCurrency } from '@/lib/currency';
 import { SharedExpenseForm } from '@/components/shared-expense-form';
 import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
+import { deleteSharedExpense } from '@/app/actions/shared-expenses';
 
 interface SharedExpense {
   id: string;

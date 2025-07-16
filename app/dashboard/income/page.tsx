@@ -11,6 +11,7 @@ import { PlusCircle, List, DollarSign, Trash2 } from "lucide-react";
 import { Income } from "@/lib/types";
 import { IncomeForm } from "@/components/income-form";
 import { EditIncomeModal } from "@/components/EditIncomeModal";
+import { deleteIncome } from "@/app/actions/incomes";
 
 export default function IncomePage() {
   const [incomes, setIncomes] = useState<Income[]>([]);
