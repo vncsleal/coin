@@ -8,7 +8,7 @@ import { ExpenseChart } from "@/components/expense-chart"
 import { ExpensePieChart } from "@/components/expense-pie-chart"
 import { DollarSign, TrendingUp, Target, TrendingDown, Scale } from "lucide-react"
 import { formatCurrency } from "@/lib/currency"
-import { AICounselingModal } from "@/components/shared/AICounselingModal"
+import { AICounselingModal } from "@/components/AICounselingModal"
 import { IncomeChart } from "@/components/income-chart"
 
 async function getDashboardStats(userId: string): Promise<DashboardStats> {

@@ -34,6 +34,28 @@ export async function GET() {
     `
 
     const notifications = []
+
+    // Fetch pending friend requests
+    const pendingFriendRequests = await sql`
+      SELECT
+        id,
+        user_id as sender_id,
+        (SELECT display_name FROM users WHERE id = user_id) as sender_name,
+        created_at
+      FROM friends
+      WHERE friend_user_id = ${userId} AND status = 'pending';
+    `;
+
+    // Add friend request notifications
+    pendingFriendRequests.forEach(request => {
+      notifications.push({
+        id: `friend-request-${request.id}`,
+        type: "info",
+        title: "Novo Pedido de Amizade",
+        message: `${request.sender_name || 'Um usuário'} quer ser seu amigo.`,
+        timestamp: request.created_at.toISOString(),
+      });
+    });
     const budgetAmount = Number(budget[0]?.amount || 0)
     const spentAmount = Number(spending[0]?.total || 0)
 
@@ -59,47 +81,28 @@ export async function GET() {
         })
       }
     }
-
-    // New Friend Requests
-    const friendRequests = await sql`
-      SELECT f.id, u.display_name, u.email
-      FROM friends f
-      JOIN users u ON f.user_id = u.id
-      WHERE f.friend_user_id = ${userId} AND f.status = 'pending'
-    `
-
-    friendRequests.forEach(request => {
+    // Spending alerts
+    if (spentAmount > budgetAmount) {
       notifications.push({
-        id: `friend-request-${request.id}`,
+        id: "spending-over-budget",
+        type: "error",
+        title: "Excesso de Gastos",
+        message: `Você gastou R$${spentAmount.toFixed(2)}, que excede seu orçamento de R$${budgetAmount.toFixed(2)}`,
+        timestamp: new Date().toISOString(),
+      })
+    }
+    else if (spentAmount > 0) {
+      notifications.push({
+        id: "spending-update",
         type: "info",
-        title: "Nova Solicitação de Amizade",
-        message: `${request.name || request.email} enviou uma solicitação de amizade.`,
+        title: "Atualização de Gastos",
+        message: `Você gastou R$${spentAmount.toFixed(2)} este mês`,
         timestamp: new Date().toISOString(),
       })
-    })
-
-    // Pending Shared Expense Settlements
-    const pendingSettlements = await sql`
-      SELECT ses.id, se.name as expense_name, debtor_user.display_name as payer_name, debtor_user.email as payer_email
-      FROM shared_expense_settlements ses
-      JOIN shared_expenses se ON ses.shared_expense_id = se.id
-      JOIN users debtor_user ON ses.debtor_id = debtor_user.id
-      WHERE ses.debtor_id = ${userId} AND ses.status = 'pending'
-    `
-
-    pendingSettlements.forEach(settlement => {
-      notifications.push({
-        id: `settlement-pending-${settlement.id}`,
-        type: "warning",
-        title: "Liquidação Pendente",
-        message: `Você tem uma liquidação pendente para a despesa "${settlement.expense_name}" com ${settlement.payer_name || settlement.payer_email}.`,
-        timestamp: new Date().toISOString(),
-      })
-    })
-
+    }
     return NextResponse.json(notifications)
   } catch (error) {
-    console.error("Error fetching notifications:", error)
-    return NextResponse.json({ error: "Failed to fetch notifications" }, { status: 500 })
+    console.error('Error fetching notifications:', error)
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
   }
 }

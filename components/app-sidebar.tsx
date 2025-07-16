@@ -59,25 +59,14 @@ const secondaryNav = [
     url: "/dashboard/export",
     icon: Download,
   },
-]
-
-const sharedNav = [
-  {
-    title: "Despesas Compartilhadas",
-    url: "/dashboard/shared",
-    icon: Users,
-  },
-  {
-    title: "Análises Compartilhadas",
-    url: "/dashboard/shared/analytics",
-    icon: PieChart,
-  },
   {
     title: "Amigos",
     url: "/dashboard/friends",
     icon: UserPlus,
   },
 ]
+
+
 
 const userNav = [
   {
@@ -135,16 +124,6 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
         <SidebarMenu>
-          {sharedNav.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <Link href={item.url}>
-                  <item.icon className="size-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>

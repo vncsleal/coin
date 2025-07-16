@@ -166,13 +166,13 @@ CREATE POLICY participant_access_policy ON shared_expense_participants FOR ALL U
     shared_expense_id IN (
         SELECT id FROM shared_expenses
         WHERE created_by = current_setting('auth.user_id', true)::varchar OR
-              id IN (SELECT shared_expense_id FROM shared_expense_participants WHERE user_id = current_setting('auth.user_id', true)::varchar)
+              EXISTS (SELECT 1 FROM shared_expense_participants WHERE shared_expense_id = shared_expenses.id AND user_id = current_setting('auth.user_id', true)::varchar)
     )
 ) WITH CHECK (
     shared_expense_id IN (
         SELECT id FROM shared_expenses
         WHERE created_by = current_setting('auth.user_id', true)::varchar OR
-              id IN (SELECT shared_expense_id FROM shared_expense_participants WHERE user_id = current_setting('auth.user_id', true)::varchar)
+              EXISTS (SELECT 1 FROM shared_expense_participants WHERE shared_expense_id = shared_expenses.id AND user_id = current_setting('auth.user_id', true)::varchar)
     )
 );
 ```

@@ -22,7 +22,6 @@ A comprehensive guide for developers and LLMs to understand the project architec
 
 The Cutia is a full-stack Next.js application built with TypeScript that provides:
 - **Personal income and expense management** with categories and budgets
-- **Advanced shared expenses** with multiple splitting methods
 - **Friends system** for user relationships
 - **Settlement tracking** with payment workflows
 - **AI-powered financial insights** using Google Generative AI
@@ -30,7 +29,6 @@ The Cutia is a full-stack Next.js application built with TypeScript that provide
 - **Multi-currency support** (defaulting to Brazilian Reais)
 
 ### Key Features
-- **Split Methods**: Equal, percentage, custom amount, item-wise
 - **Settlement Workflow**: Pending → Paid → Confirmed
 - **Bulk Operations**: Manage multiple expenses efficiently
 - **Real-time Updates**: Live settlement tracking and notifications
@@ -68,11 +66,6 @@ expense-tracker/
 │   ├── api/               # Backend API routes
 │   │   ├── incomes/           # Income CRUD
 │   │   ├── expenses/          # Personal expense CRUD
-│   │   ├── shared-expenses/   # Shared expense system
-│   │   │   ├── route.ts           # Main CRUD operations
-│   │   │   ├── analytics/         # Analytics endpoints
-│   │   │   ├── bulk/              # Bulk operations
-│   │   │   └── [id]/settlements/  # Settlement management
 │   │   ├── settlements/       # Settlement operations
 │   │   │   ├── [id]/route.ts      # Individual settlement ops
 │   │   │   └── reminder/route.ts  # Reminder system
@@ -87,9 +80,6 @@ expense-tracker/
 │   │   ├── page.tsx           # Main dashboard overview
 │   │   ├── income/            # Income management page
 │   │   ├── expenses/          # Personal expense pages
-│   │   ├── shared/            # Shared expense pages
-│   │   │   ├── page.tsx           # Shared expense list
-│   │   │   └── analytics/         # Shared expense analytics
 │   │   ├── friends/           # Friends management
 │   │   ├── budget/            # Budget tracking
 │   │   ├── analytics/         # Personal analytics
@@ -99,14 +89,6 @@ expense-tracker/
 │   ├── layout.tsx         # Root layout with providers
 │   └── page.tsx           # Landing page
 ├── components/            # React components
-│   ├── shared/           # Shared expense components
-│   │   ├── enhanced-shared-expense-form.tsx  # Advanced form
-│   │   ├── settlement-tracker.tsx            # Payment tracking
-│   │   ├── shared-expense-analytics.tsx      # Analytics UI
-│   │   ├── friends-manager.tsx               # Friend management
-│   │   ├── user-browser.tsx                  # User discovery
-│   │   ├── enhanced-expense-card.tsx         # Expense display
-│   │   └── bulk-operations.tsx               # Bulk actions
 │   ├── ui/               # Reusable UI components (shadcn/ui)
 │   ├── income-manager.tsx # Income management component
 │   ├── income-chart.tsx   # Income chart component
@@ -128,7 +110,8 @@ expense-tracker/
 │   ├── setup-db.sh           # Automated DB setup
 │   ├── 001-create-tables.sql # Core schema
 │   ├── 002-friends-system.sql # Friends extensions
-│   └── 003-incomes-table.sql # Incomes table
+│   ├── 003-incomes-table.sql # Incomes table
+│   └── 008-remove-shared-expenses.sql # Remove shared expenses tables
 └── public/               # Static assets
 ```
 

@@ -19,23 +19,14 @@ export interface Budget {
   updated_at: string
 }
 
-export interface SharedExpense {
+export interface Income {
   id: number
-  name: string
-  total_amount: number
-  date: string
-  tag: string
-  created_by: string
-  created_at: string
-  participants: SharedExpenseParticipant[]
-}
-
-export interface SharedExpenseParticipant {
-  id: number
-  shared_expense_id: number
   user_id: string
-  share_amount: number
+  name: string
+  amount: number
+  date: string
   created_at: string
+  updated_at: string
 }
 
 export interface DashboardStats {

@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
         u.avatar_url,
         u.bio,
         CASE 
-          WHEN f.status IS NOT NULL THEN f.status
+          WHEN f.status = 'accepted' THEN 'friends'
+          WHEN f.status = 'pending' AND f.user_id = ${userId} THEN 'pending_sent'
+          WHEN f.status = 'pending' AND f.friend_user_id = ${userId} THEN 'pending_received'
           ELSE 'none'
         END as friendship_status
       FROM users u
