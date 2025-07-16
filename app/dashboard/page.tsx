@@ -48,10 +48,25 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   `
 
   // Get monthly expenditure
-  const monthlyExpenditure = await sql`
+  // Get monthly expenditure from individual expenses
+  const monthlyIndividualExpenditure = await sql`
     SELECT COALESCE(SUM(amount), 0) as total
     FROM expenses 
     WHERE user_id = ${userId}
+    AND EXTRACT(MONTH FROM date) = ${currentMonth}
+    AND EXTRACT(YEAR FROM date) = ${currentYear}
+  `
+
+  // Get monthly shared expenditure (user's portion)
+  const monthlySharedExpenditureResult = await sql`
+    SELECT
+      COALESCE(SUM(CASE
+        WHEN paid_by_user_id = ${userId} THEN total_amount / 2
+        WHEN shared_with_user_id = ${userId} THEN total_amount / 2
+        ELSE 0
+      END), 0) as total
+    FROM shared_expenses
+    WHERE (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
     AND EXTRACT(MONTH FROM date) = ${currentMonth}
     AND EXTRACT(YEAR FROM date) = ${currentYear}
   `
@@ -85,14 +100,17 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   `
 
   const totalIncome = Number(monthlyIncomeTotal[0]?.total || 0)
-  const totalExpenditure = Number(monthlyExpenditure[0]?.total || 0)
+  const totalIndividualExpenditure = Number(monthlyIndividualExpenditure[0]?.total || 0)
+  const totalSharedExpenditure = Number(monthlySharedExpenditureResult[0]?.total || 0)
+  const totalExpenditure = totalIndividualExpenditure + totalSharedExpenditure
   const currentBudget = Number(budget[0]?.amount || 0)
   const daysInMonth = new Date(currentYear, currentMonth, 0).getDate()
   const dailyAverage = totalExpenditure / daysInMonth
 
   return {
     monthlyIncome: totalIncome,
-    monthlyExpenditure: totalExpenditure,
+    monthlyExpenditure: totalIndividualExpenditure,
+    monthlySharedExpenditure: totalSharedExpenditure,
     dailyAverage,
     currentBudget,
     remainingBudget: currentBudget - totalExpenditure,
@@ -156,6 +174,19 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{formatCurrency(stats.monthlyExpenditure)}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <div className="flex items-center gap-2">
+              <TrendingDown className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Despesa Mensal Compartilhada</CardTitle>
+            </div>
+            <AICounselingModal counselingType="monthly_shared_expenditure" data={stats} />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{formatCurrency(stats.monthlySharedExpenditure)}</div>
           </CardContent>
         </Card>
 

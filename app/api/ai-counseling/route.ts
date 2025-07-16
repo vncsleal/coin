@@ -179,8 +179,10 @@ export async function POST(request: Request) {
       case "expenses_by_category_chart":
         prompt = `Analisando minhas despesas por categoria: ${JSON.stringify(financialData.expensesByTag || [])}, identifique a de maior gasto e me dê duas táticas não óbvias para reduzir custos nela imediatamente. ${expertInstruction}`;
         break;
-      case "total_expenses_by_category_chart":
-        prompt = `Olhando meus gastos de longo prazo por categoria: ${JSON.stringify(financialData.totalExpensesByTag || [])}, qual mudança de hábito teria o maior impacto financeiro? Forneça uma estratégia clara. ${expertInstruction}`;
+      case "total_expenses_by_category_chart":        prompt = `Olhando meus gastos de longo prazo por categoria: ${JSON.stringify(financialData.totalExpensesByTag || [])}, qual mudança de hábito teria o maior impacto financeiro? Forneça uma estratégia clara. ${expertInstruction}`;
+        break;
+      case "monthly_shared_expenditure":
+        prompt = `Minha despesa mensal compartilhada é de ${financialData.monthlySharedExpenditure}. Analise este valor e me dê dicas sobre como gerenciar melhor ou reduzir minha parte nas despesas compartilhadas. ${expertInstruction}`;
         break;
       default:
         prompt = `Aja como um consultor financeiro de elite. Analise estes dados e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.\n\n        Gasto no Mês Atual: ${financialData.totalSpending}\n        Orçamento Mensal: ${financialData.budget}\n        Gastos por Categoria:\n        ${(financialData.expensesByTag || []).map((exp: { tag: string; total: number }) => `- ${exp.tag}: ${exp.total}`).join("\n")}\n\n        Histórico de Gastos (últimos 3 meses):\n        ${(financialData.historicalSpending || []).map((hist: { month: number; year: number; total: number }) => `- ${hist.month}/${hist.year}: ${hist.total}`).join("\n")}\n\n        ${expertInstruction}\n        `;

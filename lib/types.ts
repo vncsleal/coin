@@ -32,6 +32,7 @@ export interface Income {
 export interface DashboardStats {
   monthlyIncome: number
   monthlyExpenditure: number
+  monthlySharedExpenditure: number
   dailyAverage: number
   currentBudget: number
   remainingBudget: number
