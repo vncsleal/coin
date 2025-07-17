@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { NotificationCenter } from "@/components/notification-center"
+import { AmountVisibilityToggle } from "@/components/amount-visibility-toggle"
 
 export default function DashboardLayout({
   children,
@@ -16,6 +17,7 @@ export default function DashboardLayout({
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
           <div className="ml-auto flex items-center gap-2">
+            <AmountVisibilityToggle />
             <NotificationCenter />
           </div>
         </header>

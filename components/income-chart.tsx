@@ -5,9 +5,10 @@ import { formatCurrency } from "@/lib/currency"
 
 interface IncomeChartProps {
   data: { date: string; amount: number }[]
+  showAmounts?: boolean
 }
 
-export function IncomeChart({ data }: IncomeChartProps) {
+export function IncomeChart({ data, showAmounts = true }: IncomeChartProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
@@ -24,7 +25,7 @@ export function IncomeChart({ data }: IncomeChartProps) {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => formatCurrency(value)}
+          tickFormatter={(value) => showAmounts ? formatCurrency(value) : "••••"}
         />
         <Tooltip
           cursor={{ fill: "transparent" }}
@@ -42,7 +43,7 @@ export function IncomeChart({ data }: IncomeChartProps) {
                     <div className="flex flex-col space-y-1">
                       <span className="text-[0.70rem] uppercase text-muted-foreground">Renda</span>
                       <span className="font-bold">
-                        {formatCurrency(payload[0].value as number)}
+                        {showAmounts ? formatCurrency(payload[0].value as number) : "••••••"}
                       </span>
                     </div>
                   </div>
