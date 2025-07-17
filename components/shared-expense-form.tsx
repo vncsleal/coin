@@ -1,20 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, PlusCircle } from 'lucide-react';
+import { DatePicker } from "@/components/ui/date-picker";
 import { cn, safeDateParse, safeFormatDateForSubmission, formatDateBR } from '@/lib/utils';
 import { EXPENSE_TAGS } from '@/lib/constants';
 import { addSharedExpense, updateSharedExpense } from '@/app/actions/shared-expenses';
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface SharedExpense {
   id: string;
@@ -158,28 +153,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       </div>
       <div className="grid gap-2">
         <label htmlFor="date" className="text-sm font-medium">Data</label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal h-10",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date && !isNaN(date.getTime()) ? date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : <span>Selecione uma data</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+        <DatePicker value={date} onChangeAction={setDate} />
       </div>
       <div className="grid gap-2">
         <label htmlFor="category" className="text-sm font-medium">Categoria (Opcional)</label>

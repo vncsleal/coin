@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast"
 import { addExpense, updateExpense } from "@/app/actions/expenses"
 import type { Expense } from "@/lib/types"
 
+import { DatePicker } from "@/components/ui/date-picker";
 import { EXPENSE_TAGS } from "@/lib/constants"
 
 interface ExpenseFormProps {
@@ -25,10 +26,14 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
   const [name, setName] = useState(expenseToEdit?.name || '');
   const [amount, setAmount] = useState(expenseToEdit?.amount.toString() || '');
   const [tag, setTag] = useState(expenseToEdit?.tag || '');
-  const [date, setDate] = useState(expenseToEdit?.date ? new Date(expenseToEdit.date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState<Date | undefined>(
+    expenseToEdit?.date ? new Date(expenseToEdit.date) : new Date()
+  );
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
+    
+    formData.set("date", date?.toISOString().split("T")[0] || "");
 
     try {
       if (expenseToEdit) {
@@ -87,7 +92,7 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="date">Data</Label>
-        <Input id="date" name="date" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
+        <DatePicker value={date} onChangeAction={setDate} />
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">

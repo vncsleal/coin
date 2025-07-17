@@ -10,12 +10,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner"
 import { Income } from "@/lib/types"
 import { addIncome, updateIncome } from "@/app/actions/incomes"
+import { DatePicker } from "@/components/ui/date-picker";
 import { useToast } from "@/hooks/use-toast";
 
 const incomeSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
   amount: z.coerce.number().positive("O valor deve ser positivo."),
-  date: z.string().min(1, "A data é obrigatória."),
+  date: z.date({ required_error: "A data é obrigatória." }),
 })
 
 type IncomeFormValues = z.infer<typeof incomeSchema>
@@ -31,11 +32,11 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
     defaultValues: incomeToEdit ? {
       name: incomeToEdit.name,
       amount: incomeToEdit.amount,
-      date: new Date(incomeToEdit.date).toISOString().split("T")[0],
+      date: new Date(incomeToEdit.date),
     } : {
       name: "",
       amount: 0,
-      date: new Date().toISOString().split("T")[0],
+      date: new Date(),
     },
   });
 
@@ -44,7 +45,7 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
       form.reset({
         name: incomeToEdit.name,
         amount: incomeToEdit.amount,
-        date: new Date(incomeToEdit.date).toISOString().split("T")[0],
+        date: new Date(incomeToEdit.date),
       });
     }
   }, [incomeToEdit, form]);
@@ -56,7 +57,7 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("amount", values.amount.toString());
-      formData.append("date", values.date);
+      formData.append("date", values.date.toISOString().split("T")[0]);
 
       if (incomeToEdit) {
         await updateIncome(incomeToEdit.id, formData);
@@ -114,11 +115,9 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
           control={form.control}
           name="date"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex flex-col">
               <FormLabel>Data</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
+              <DatePicker value={field.value} onChangeAction={field.onChange} />
               <FormMessage />
             </FormItem>
           )}
