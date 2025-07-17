@@ -3,6 +3,7 @@
 import { deleteExpense } from "@/app/actions/expenses"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useToast } from "@/hooks/use-toast"
+import { formatDate } from "@/lib/utils";
 import { formatCurrency } from "@/lib/currency"
 import { Expense } from "@/lib/types"
 import { Trash2 } from "lucide-react"
@@ -56,7 +57,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
             <TableRow key={expense.id}>
               <TableCell className="font-medium">{expense.name}</TableCell>
               <TableCell className="text-muted-foreground">{expense.tag}</TableCell>
-              <TableCell className="text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</TableCell>
+                            <TableCell className="text-muted-foreground">{formatDate(expense.date)}</TableCell>
               <TableCell className="text-right font-semibold text-red-600">{formatCurrency(expense.amount)}</TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">

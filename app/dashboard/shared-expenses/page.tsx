@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { formatDate } from '@/lib/utils';
 import { PlusCircle, DollarSign, List, BarChart, ChevronDown, Trash2, Pencil } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,6 +14,7 @@ import { formatCurrency } from '@/lib/currency';
 import { SharedExpenseForm } from '@/components/shared-expense-form';
 import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
 import { deleteSharedExpense } from '@/app/actions/shared-expenses';
+import { Button } from '@/components/ui/button';
 
 
 interface SharedExpense {
@@ -366,7 +367,7 @@ export default function SharedExpensesPage() {
                           </TableCell>
                           <TableCell className="font-medium">{expense.description}</TableCell>
                           <TableCell>{expense.category || 'Sem Categoria'}</TableCell>
-                          <TableCell className="text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</TableCell>
+                                                    <TableCell className="text-muted-foreground">{formatDate(expense.date)}</TableCell>
                           <TableCell>{expense.paid_by_user_name}</TableCell>
                           <TableCell>{expense.shared_with_user_name}</TableCell>
                           <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount)}</TableCell>
