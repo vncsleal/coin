@@ -10,7 +10,8 @@ import { useToast } from "@/hooks/use-toast"
 import { addExpense, updateExpense } from "@/app/actions/expenses"
 import type { Expense } from "@/lib/types"
 
-import { DatePicker } from "@/components/ui/date-picker";
+import { DatePicker } from "@/components/ui/date-picker"
+import { CurrencyInput } from "@/components/ui/currency-input"
 import { EXPENSE_TAGS } from "@/lib/constants"
 
 interface ExpenseFormProps {
@@ -71,7 +72,14 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="amount">Valor</Label>
-        <Input id="amount" name="amount" type="number" step="0.01" placeholder="0.00" required value={amount} onChange={(e) => setAmount(e.target.value)} />
+        <CurrencyInput 
+          id="amount" 
+          name="amount" 
+          placeholder="0,00" 
+          required 
+          value={amount} 
+          onValueChange={(value) => setAmount(value || '')} 
+        />
       </div>
 
       <div className="space-y-2">

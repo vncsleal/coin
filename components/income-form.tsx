@@ -10,8 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "sonner"
 import { Income } from "@/lib/types"
 import { addIncome, updateIncome } from "@/app/actions/incomes"
-import { DatePicker } from "@/components/ui/date-picker";
-import { useToast } from "@/hooks/use-toast";
+import { DatePicker } from "@/components/ui/date-picker"
+import { CurrencyInput } from "@/components/ui/currency-input"
+import { useToast } from "@/hooks/use-toast"
 
 const incomeSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
@@ -105,7 +106,11 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
             <FormItem>
               <FormLabel>Valor</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" {...field} />
+                <CurrencyInput 
+                  placeholder="0,00" 
+                  defaultValue={field.value || 0}
+                  onValueChange={(value) => field.onChange(value ? parseFloat(value) : 0)} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { cn, safeDateParse, safeFormatDateForSubmission, formatDateBR } from '@/lib/utils';
 import { EXPENSE_TAGS } from '@/lib/constants';
@@ -140,13 +141,11 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       </div>
       <div className="grid gap-2">
         <label htmlFor="amount" className="text-sm font-medium">Valor Total</label>
-        <Input
+        <CurrencyInput
           id="amount"
-          type="number"
-          step="0.01"
-          placeholder="50.00"
+          placeholder="R$ 0,00"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onValueChange={(value) => setAmount(value || "")}
           required
           className="h-10"
         />
