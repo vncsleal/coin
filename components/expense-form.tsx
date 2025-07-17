@@ -13,6 +13,8 @@ import type { Expense } from "@/lib/types"
 import { DatePicker } from "@/components/ui/date-picker"
 import { CurrencyInput } from "@/components/ui/currency-input"
 import { EXPENSE_TAGS } from "@/lib/constants"
+import { getUserCurrencyPreference } from "@/lib/client-preferences"
+import { CURRENCIES } from "@/lib/currency"
 
 interface ExpenseFormProps {
   expenseToEdit?: Expense;
@@ -30,6 +32,9 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
   const [date, setDate] = useState<Date | undefined>(
     expenseToEdit?.date ? new Date(expenseToEdit.date) : new Date()
   );
+
+  const userCurrencyCode = getUserCurrencyPreference();
+  const userCurrency = CURRENCIES[userCurrencyCode];
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
@@ -75,10 +80,11 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
         <CurrencyInput 
           id="amount" 
           name="amount" 
-          placeholder="0,00" 
+          placeholder={userCurrency.symbol + " 0,00"} 
           required 
           value={amount} 
           onValueChange={(value) => setAmount(value || '')} 
+          currencyCode={userCurrencyCode}
         />
       </div>
 

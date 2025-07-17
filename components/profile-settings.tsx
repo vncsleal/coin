@@ -7,18 +7,24 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
-import { getAvailableCurrencies, DEFAULT_CURRENCY } from "@/lib/currency"
+import { getAvailableCurrencies, DEFAULT_CURRENCY, CurrencyCode, CURRENCIES } from "@/lib/currency"
+import { saveUserCurrencyPreference, getUserCurrencyPreference } from "@/lib/client-preferences"
+import { useEffect } from "react"
 
 export function ProfileSettings() {
   const { theme, setTheme } = useTheme()
-  const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY)
+  const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CURRENCY)
   const [notifications, setNotifications] = useState(true)
   const { toast } = useToast()
 
   const availableCurrencies = getAvailableCurrencies()
 
+  useEffect(() => {
+    setCurrency(getUserCurrencyPreference())
+  }, [])
+
   function handleSave() {
-    // In a real app, you'd save these to a user preferences table
+    saveUserCurrencyPreference(currency)
     toast({
       title: "Configurações salvas",
       description: "Suas preferências foram atualizadas com sucesso.",

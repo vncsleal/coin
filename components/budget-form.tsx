@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { setBudget } from "@/app/actions/budget"
 import type { Budget } from "@/lib/types"
+import { CurrencyInput } from "@/components/ui/currency-input"
+import { getUserCurrencyPreference } from "@/lib/client-preferences"
+import { CURRENCIES } from "@/lib/currency"
 
 interface BudgetFormProps {
   currentBudget: Budget | null
@@ -17,6 +20,9 @@ export function BudgetForm({ currentBudget }: BudgetFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+
+  const userCurrencyCode = getUserCurrencyPreference();
+  const userCurrency = CURRENCIES[userCurrencyCode];
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
@@ -43,14 +49,13 @@ export function BudgetForm({ currentBudget }: BudgetFormProps) {
     <form action={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="amount">Valor do Orçamento Mensal</Label>
-        <Input
+        <CurrencyInput
           id="amount"
           name="amount"
-          type="number"
-          step="0.01"
-          placeholder="0.00"
-          defaultValue={currentBudget?.amount || ""}
+          placeholder={userCurrency.symbol + " 0,00"}
+          defaultValue={currentBudget?.amount.toString() || ""}
           required
+          currencyCode={userCurrencyCode}
         />
       </div>
 

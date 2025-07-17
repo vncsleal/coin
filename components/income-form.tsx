@@ -13,10 +13,12 @@ import { addIncome, updateIncome } from "@/app/actions/incomes"
 import { DatePicker } from "@/components/ui/date-picker"
 import { CurrencyInput } from "@/components/ui/currency-input"
 import { useToast } from "@/hooks/use-toast"
+import { getUserCurrencyPreference } from "@/lib/client-preferences"
+import { CURRENCIES } from "@/lib/currency"
 
 const incomeSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
-  amount: z.coerce.number().positive("O valor deve ser positivo."),
+  amount: z.string().min(1, "O valor deve ser positivo."),
   date: z.date({ required_error: "A data é obrigatória." }),
 })
 
@@ -32,11 +34,11 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
     resolver: zodResolver(incomeSchema),
     defaultValues: incomeToEdit ? {
       name: incomeToEdit.name,
-      amount: incomeToEdit.amount,
+      amount: incomeToEdit.amount.toString(),
       date: new Date(incomeToEdit.date),
     } : {
       name: "",
-      amount: 0,
+      amount: "",
       date: new Date(),
     },
   });
@@ -45,7 +47,7 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
     if (incomeToEdit) {
       form.reset({
         name: incomeToEdit.name,
-        amount: incomeToEdit.amount,
+        amount: incomeToEdit.amount.toString(),
         date: new Date(incomeToEdit.date),
       });
     }
@@ -53,11 +55,14 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
 
   const { toast } = useToast();
 
+  const userCurrencyCode = getUserCurrencyPreference();
+  const userCurrency = CURRENCIES[userCurrencyCode];
+
   const onSubmit = async (values: IncomeFormValues) => {
     try {
       const formData = new FormData();
       formData.append("name", values.name);
-      formData.append("amount", values.amount.toString());
+      formData.append("amount", values.amount);
       formData.append("date", values.date.toISOString().split("T")[0]);
 
       if (incomeToEdit) {
@@ -107,9 +112,10 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
               <FormLabel>Valor</FormLabel>
               <FormControl>
                 <CurrencyInput 
-                  placeholder="0,00" 
-                  defaultValue={field.value || 0}
-                  onValueChange={(value) => field.onChange(value ? parseFloat(value) : 0)} 
+                  placeholder={userCurrency.symbol + " 0,00"} 
+                  value={field.value}
+                  onValueChange={field.onChange} 
+                  currencyCode={userCurrencyCode}
                 />
               </FormControl>
               <FormMessage />
@@ -122,7 +128,7 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data</FormLabel>
-              <DatePicker value={field.value} onChangeAction={field.onChange} />
+              <DatePicker value={field.value} onChange={field.onChange} />
               <FormMessage />
             </FormItem>
           )}

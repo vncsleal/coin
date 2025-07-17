@@ -10,6 +10,8 @@ import { cn, safeDateParse, safeFormatDateForSubmission, formatDateBR } from '@/
 import { EXPENSE_TAGS } from '@/lib/constants';
 import { addSharedExpense, updateSharedExpense } from '@/app/actions/shared-expenses';
 import { useToast } from "@/hooks/use-toast";
+import { getUserCurrencyPreference } from "@/lib/client-preferences";
+import { CURRENCIES } from "@/lib/currency";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface SharedExpense {
@@ -51,6 +53,9 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
   const [selectedFriend, setSelectedFriend] = useState<string>(expenseToEdit?.shared_with_user_id || '');
   const [friends, setFriends] = useState<Friend[]>([]);
   const { toast } = useToast();
+
+  const userCurrencyCode = getUserCurrencyPreference();
+  const userCurrency = CURRENCIES[userCurrencyCode];
 
   useEffect(() => {
     fetchFriends();
@@ -143,16 +148,17 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
         <label htmlFor="amount" className="text-sm font-medium">Valor Total</label>
         <CurrencyInput
           id="amount"
-          placeholder="R$ 0,00"
+          placeholder={userCurrency.symbol + " 0,00"}
           value={amount}
           onValueChange={(value) => setAmount(value || "")}
           required
           className="h-10"
+          currencyCode={userCurrencyCode}
         />
       </div>
       <div className="grid gap-2">
         <label htmlFor="date" className="text-sm font-medium">Data</label>
-        <DatePicker value={date} onChangeAction={setDate} />
+        <DatePicker value={date} onChange={setDate} />
       </div>
       <div className="grid gap-2">
         <label htmlFor="category" className="text-sm font-medium">Categoria (Opcional)</label>
