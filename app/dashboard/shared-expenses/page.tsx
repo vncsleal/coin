@@ -366,7 +366,7 @@ export default function SharedExpensesPage() {
                           </TableCell>
                           <TableCell className="font-medium">{expense.description}</TableCell>
                           <TableCell>{expense.category || 'Sem Categoria'}</TableCell>
-                          <TableCell className="text-muted-foreground">{expense.date ? new Date(expense.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Data Inválida'}</TableCell>
+                          <TableCell className="text-muted-foreground">{new Date(expense.date).toLocaleDateString()}</TableCell>
                           <TableCell>{expense.paid_by_user_name}</TableCell>
                           <TableCell>{expense.shared_with_user_name}</TableCell>
                           <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount)}</TableCell>
