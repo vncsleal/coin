@@ -3,17 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, PlusCircle, DollarSign, List, BarChart, ChevronDown, Trash2, Pencil } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, ChevronDown, Trash2, Pencil } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
-import { cn, safeDateParse } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExpenseChart } from '@/components/expense-chart';
 import { ExpensePieChart } from '@/components/expense-pie-chart';
@@ -21,6 +14,7 @@ import { formatCurrency } from '@/lib/currency';
 import { SharedExpenseForm } from '@/components/shared-expense-form';
 import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
 import { deleteSharedExpense } from '@/app/actions/shared-expenses';
+
 
 interface SharedExpense {
   id: string;
@@ -52,6 +46,8 @@ export default function SharedExpensesPage() {
   const [sharedExpenses, setSharedExpenses] = useState<SharedExpense[]>([]);
   const [monthlySharedExpenses, setMonthlySharedExpenses] = useState<{ month: string; total: number }[]>([]);
   const [sharedExpensesByCategory, setSharedExpensesByCategory] = useState<{ category: string; total: number }[]>([]);
+  const [selectedExpenses, setSelectedExpenses] = useState<string[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchFriends();
@@ -70,7 +66,11 @@ export default function SharedExpensesPage() {
       setFriends(data.friends);
     } catch (error) {
       console.error('Error fetching friends:', error);
-      toast.error('Failed to load friends.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao carregar amigos.',
+        variant: "destructive",
+      });
     }
   };
 
@@ -84,7 +84,11 @@ export default function SharedExpensesPage() {
       setSharedExpenses(data.sharedExpenses);
     } catch (error) {
       console.error('Error fetching shared expenses:', error);
-      toast.error('Failed to load shared expenses.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao carregar despesas compartilhadas.',
+        variant: "destructive",
+      });
     }
   };
 
@@ -98,7 +102,11 @@ export default function SharedExpensesPage() {
       setMonthlySharedExpenses(data.chartData.map((item: any) => ({ ...item, total: Number(item.total) })));
     } catch (error) {
       console.error('Error fetching monthly shared expenses:', error);
-      toast.error('Failed to load monthly shared expenses.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao carregar despesas compartilhadas mensais.',
+        variant: "destructive",
+      });
     }
   };
 
@@ -112,27 +120,105 @@ export default function SharedExpensesPage() {
       setSharedExpensesByCategory(data.chartData.map((item: any) => ({ ...item, total: Number(item.total) })));
     } catch (error) {
       console.error('Error fetching shared expenses by category:', error);
-      toast.error('Failed to load shared expenses by category.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao carregar despesas compartilhadas por categoria.',
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
+    const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
+    try {
+      const response = await fetch('/api/shared-expenses', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle status');
+      }
+      toast({
+        title: 'Status da despesa atualizado!',
+        description: `A despesa foi marcada como ${newStatus === 'settled' ? 'liquidada' : 'não liquidada'}.`,
+      });
+      fetchSharedExpenses();
+    } catch (error) {
+      console.error('Error toggling status:', error);
+      toast({
+        title: 'Erro',
+        description: 'Falha ao atualizar status da despesa.',
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBatchSettle = async () => {
+    if (selectedExpenses.length === 0) {
+      toast({
+        title: 'Informação',
+        description: 'Selecione despesas para liquidar.',
+      });
+      return;
+    }
+    try {
+      const response = await fetch('/api/shared-expenses/batch-settle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedExpenses }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to batch settle expenses');
+      }
+      toast({
+        title: 'Sucesso',
+        description: `${selectedExpenses.length} despesas liquidadas com sucesso!`,
+      });
+      setSelectedExpenses([]); // Clear selection
+      fetchSharedExpenses();
+      fetchMonthlySharedExpenses();
+      fetchSharedExpensesByCategory();
+    } catch (error) {
+      console.error('Error batch settling expenses:', error);
+      toast({
+        title: 'Erro',
+        description: 'Falha ao liquidar despesas selecionadas.',
+        variant: "destructive",
+      });
     }
   };
 
     const handleDelete = async (id: string) => {
     try {
       await deleteSharedExpense(id);
-      toast.success('Despesa compartilhada excluída com sucesso!');
+      toast({
+        title: 'Sucesso',
+        description: 'Despesa compartilhada excluída com sucesso!',
+      });
       fetchSharedExpenses();
       fetchMonthlySharedExpenses();
       fetchSharedExpensesByCategory();
     } catch (error) {
       console.error('Error deleting shared expense:', error);
-      toast.error('Falha ao excluir despesa compartilhada.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao excluir despesa compartilhada.',
+        variant: "destructive",
+      });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description || !amount || !date || !selectedFriend) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.');
+      toast({
+        title: 'Erro',
+        description: 'Por favor, preencha todos os campos obrigatórios.',
+        variant: "destructive",
+      });
       return;
     }
 
@@ -153,7 +239,10 @@ export default function SharedExpensesPage() {
         throw new Error('Failed to create shared expense');
       }
 
-      toast.success('Despesa compartilhada criada com sucesso!');
+      toast({
+        title: 'Sucesso',
+        description: 'Despesa compartilhada criada com sucesso!',
+      });
       setDescription('');
       setAmount('');
       setDate(new Date());
@@ -162,7 +251,11 @@ export default function SharedExpensesPage() {
       fetchSharedExpenses(); // Refresh the list
     } catch (error) {
       console.error('Error creating shared expense:', error);
-      toast.error('Falha ao criar despesa compartilhada.');
+      toast({
+        title: 'Erro',
+        description: 'Falha ao criar despesa compartilhada.',
+        variant: "destructive",
+      });
     }
   };
 
@@ -235,6 +328,18 @@ export default function SharedExpensesPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead>
+                          <Checkbox
+                            checked={selectedExpenses.length === sharedExpenses.length && sharedExpenses.length > 0}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedExpenses(sharedExpenses.map(exp => exp.id));
+                              } else {
+                                setSelectedExpenses([]);
+                              }
+                            }}
+                          />
+                        </TableHead>
                         <TableHead>Descrição</TableHead>
                         <TableHead>Categoria</TableHead>
                         <TableHead>Data</TableHead>
@@ -249,17 +354,35 @@ export default function SharedExpensesPage() {
                     <TableBody>
                       {sharedExpenses.map((expense) => (
                         <TableRow key={expense.id}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedExpenses.includes(expense.id)}
+                              onCheckedChange={(checked) => {
+                                setSelectedExpenses(prev =>
+                                  checked ? [...prev, expense.id] : prev.filter(id => id !== expense.id)
+                                );
+                              }}
+                            />
+                          </TableCell>
                           <TableCell className="font-medium">{expense.description}</TableCell>
                           <TableCell>{expense.category || 'Sem Categoria'}</TableCell>
-                          <TableCell className="text-muted-foreground">{expense.date ? new Date(expense.date).toLocaleDateString() : 'Data Inválida'}</TableCell>
+                          <TableCell className="text-muted-foreground">{expense.date ? new Date(expense.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Data Inválida'}</TableCell>
                           <TableCell>{expense.paid_by_user_name}</TableCell>
                           <TableCell>{expense.shared_with_user_name}</TableCell>
                           <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount)}</TableCell>
                           <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount / 2)}</TableCell>
                           <TableCell className="text-right">
-                            <Badge variant={expense.status === 'settled' ? 'default' : 'destructive'} className={expense.status === 'settled' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : ''}>
+                            <Button
+                              variant={expense.status === 'settled' ? 'secondary' : 'default'}
+                              size="sm"
+                              className="w-[120px]"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent row click
+                                handleToggleStatus(expense.id, expense.status);
+                              }}
+                            >
                               {expense.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
-                            </Badge>
+                            </Button>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -274,6 +397,13 @@ export default function SharedExpensesPage() {
                       ))}
                     </TableBody>
                   </Table>
+                  {selectedExpenses.length > 0 && (
+                    <div className="p-4 border-t flex justify-end">
+                      <Button onClick={handleBatchSettle}>
+                        Marcar como Liquidado ({selectedExpenses.length})
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

@@ -168,7 +168,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date && !isNaN(date.getTime()) ? date.toLocaleDateString() : <span>Selecione uma data</span>}
+              {date && !isNaN(date.getTime()) ? date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : <span>Selecione uma data</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
