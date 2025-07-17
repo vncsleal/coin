@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://vinicoin.netlify.app//sitemap.xml
+Sitemap: https://vinicoin.netlify.app/sitemap.xml
 
 # Disallow admin or private routes
 Disallow: /api/
