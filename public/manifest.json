@@ -14,13 +14,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "/placeholder-logo.png",
+      "src": "/cutia-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/placeholder-logo.png",
+      "src": "/cutia-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
