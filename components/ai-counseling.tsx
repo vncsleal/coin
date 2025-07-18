@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { DateRange } from "react-day-picker"
+import MarkdownRenderer from "@/components/ui/markdown-renderer"
 
 export function AICounseling() {
   const [analysis, setAnalysis] = useState<string>("")
@@ -162,8 +163,8 @@ export function AICounseling() {
           <CardHeader>
             <CardTitle>Relatório Financeiro Detalhado</CardTitle>
           </CardHeader>
-          <CardContent className="prose prose-sm max-w-none whitespace-pre-wrap text-sm leading-relaxed">
-            {analysis}
+          <CardContent className="prose prose-sm max-w-none">
+            <MarkdownRenderer content={analysis} />
           </CardContent>
         </Card>
       )}

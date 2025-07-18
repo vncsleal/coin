@@ -7,6 +7,7 @@ import { Loader2, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import MarkdownRenderer from "@/components/ui/markdown-renderer"
 
 import { DashboardStats, SharedExpensesAIStats, SharedExpensesPainelStats } from "@/lib/types"
 
@@ -94,8 +95,8 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
               <p className="mt-2 text-muted-foreground">Analisando suas finanças...</p>
             </div>
           ) : analysis ? (
-            <div className="whitespace-pre-wrap text-sm leading-relaxed max-h-96 overflow-y-auto">
-              {analysis}
+            <div className="max-h-96 overflow-y-auto">
+              <MarkdownRenderer content={analysis} />
             </div>
           ) : (
             <p className="text-sm text-muted-foreground text-center">Nenhuma análise disponível.</p>
