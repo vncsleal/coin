@@ -123,8 +123,6 @@ export async function POST(request: Request) {
 
     // Get user's financial data
     const currentDate = new Date()
-    const currentMonth = currentDate.getMonth() + 1
-    const currentYear = currentDate.getFullYear()
 
     // Get last 3 months spending for trend analysis (still needed as it's not passed from frontend)
     const historicalSpending = await sql`

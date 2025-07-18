@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+import { ptBR } from "date-fns/locale/pt-BR";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -65,8 +66,6 @@ export function formatDateBR(
   date: Date | null | undefined,
   formatStr: string = "PPP"
 ): string {
-  const { format } = require("date-fns");
-  const { ptBR } = require("date-fns/locale");
 
   if (!date || isNaN(date.getTime())) {
     return "Data Inválida";

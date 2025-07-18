@@ -63,26 +63,25 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
   const userCurrency = CURRENCIES[userCurrencyCode];
 
   useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const response = await fetch('/api/friends/list');
+        if (!response.ok) {
+          throw new Error('Failed to fetch friends');
+        }
+        const data = await response.json();
+        setFriends(data.friends);
+      } catch (error) {
+        console.error('Error fetching friends:', error);
+        toast({
+          title: 'Erro',
+          description: 'Falha ao carregar amigos.',
+          variant: "destructive",
+        });
+      }
+    };
     fetchFriends();
   }, []);
-
-  const fetchFriends = async () => {
-    try {
-      const response = await fetch('/api/friends/list');
-      if (!response.ok) {
-        throw new Error('Failed to fetch friends');
-      }
-      const data = await response.json();
-      setFriends(data.friends);
-    } catch (error) {
-      console.error('Error fetching friends:', error);
-      toast({
-        title: 'Erro',
-        description: 'Falha ao carregar amigos.',
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
