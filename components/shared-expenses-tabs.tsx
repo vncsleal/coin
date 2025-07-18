@@ -4,7 +4,7 @@
 import { useState, ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2 } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2, Sparkles } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -13,15 +13,22 @@ import { ExpenseChart } from '@/components/expense-chart';
 import { formatCurrency } from '@/lib/currency';
 import { SharedExpenseForm } from '@/components/shared-expense-form';
 import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
-import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData } from '@/app/actions/shared-expenses';
+import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-expenses';
 import { Button } from '@/components/ui/button';
 import { SharedExpense } from '@/lib/types';
+import { AICounselingModal } from '@/components/AICounselingModal';
 
 interface SharedExpensesTabsProps {
   painel: ReactNode;
   sharedExpenses: SharedExpense[];
   monthlyChartData: { month: string; total: number }[];
   categoryChartData: { category: string; total: number; percentage: number }[];
+  painelStats: {
+    totalSpent: number;
+    myShare: number;
+    iOwe: number;
+    theyOweMe: number;
+  };
 }
 
 export function SharedExpensesTabs({
@@ -29,10 +36,12 @@ export function SharedExpensesTabs({
   sharedExpenses: initialSharedExpenses,
   monthlyChartData: initialMonthlyChartData,
   categoryChartData: initialCategoryChartData,
+  painelStats: initialPainelStats,
 }: SharedExpensesTabsProps) {
   const [sharedExpenses, setSharedExpenses] = useState<SharedExpense[]>(initialSharedExpenses);
   const [monthlySharedExpenses, setMonthlySharedExpenses] = useState<{ month: string; total: number }[]>(initialMonthlyChartData);
   const [sharedExpensesByCategory, setSharedExpensesByCategory] = useState<{ category: string; total: number; percentage: number }[]>(initialCategoryChartData);
+  const [painelStats, setPainelStats] = useState(initialPainelStats);
   const [selectedExpenses, setSelectedExpenses] = useState<string[]>([]);
   const { toast } = useToast();
 
@@ -43,6 +52,14 @@ export function SharedExpensesTabs({
     setMonthlySharedExpenses(monthlyData);
     const categoryData = await getSharedExpensesByCategoryData();
     setSharedExpensesByCategory(categoryData);
+    const newPainelStats = await getSharedPainelStats();
+    setPainelStats(newPainelStats);
+  };
+
+  const aiCounselingData = {
+    ...painelStats,
+    monthlySharedExpenses,
+    sharedExpensesByCategory,
   };
 
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
@@ -269,9 +286,12 @@ export function SharedExpensesTabs({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <BarChart className="h-5 w-5 text-muted-foreground" />
-                <CardTitle>Despesas Compartilhadas Mensais</CardTitle>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BarChart className="h-5 w-5 text-muted-foreground" />
+                  <CardTitle>Despesas Compartilhadas Mensais</CardTitle>
+                </div>
+                <AICounselingModal counselingType="shared_expenses_monthly_chart" data={aiCounselingData} />
               </div>
               <CardDescription>Visão geral das despesas compartilhadas ao longo do tempo.</CardDescription>
             </CardHeader>
@@ -290,9 +310,12 @@ export function SharedExpensesTabs({
 
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-2">
-                <BarChart className="h-5 w-5 text-muted-foreground" />
-                <CardTitle>Despesas por Categoria</CardTitle>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BarChart className="h-5 w-5 text-muted-foreground" />
+                  <CardTitle>Despesas por Categoria</CardTitle>
+                </div>
+                <AICounselingModal counselingType="shared_expenses_category_table" data={aiCounselingData} />
               </div>
               <CardDescription>Distribuição das despesas compartilhadas por categoria.</CardDescription>
             </CardHeader>

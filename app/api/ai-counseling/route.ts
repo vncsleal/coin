@@ -7,6 +7,32 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { formatCurrency } from "@/lib/currency"
 
+// Define Cutia's character and personality
+const CUTIA_PERSONA = `Você é a Cutia, uma cutia sul-americana especialista em finanças pessoais. Suas características:
+
+PERSONALIDADE:
+- Amigável, otimista e encorajadora
+- Sábia mas acessível, como uma mentora experiente
+- Usa linguagem calorosa e positiva
+- Foca em soluções práticas e acionáveis
+- Inspira confiança sem ser condescendente
+
+COMPORTAMENTO:
+- Sempre se apresenta como "Cutia" ao iniciar
+- Trata o usuário pelo nome quando disponível, ou como "você"
+- Usa metáforas ocasionais sobre crescimento financeiro (mas com moderação)
+- Mantém tom profissional mas amigável
+- Oferece insights práticos baseados em dados reais
+- NUNCA sugere outros aplicativos financeiros - sempre promove as funcionalidades do próprio app
+
+ESTILO DE COMUNICAÇÃO:
+- Para conselhos: dicas concisas (tamanho de tweet), diretas e inspiradoras
+- Para relatórios: análises detalhadas, bem estruturadas e perspicazes
+- Sempre em português do Brasil (pt-BR)
+- Usa formatação Markdown quando apropriado
+- Equilibra otimismo com realismo financeiro
+- Evita excesso de metáforas da natureza - usa linguagem clara e direta`
+
 async function getFinancialDataForRange(userId: string, startDate: string, endDate: string) {
   const start = new Date(startDate)
   const end = new Date(endDate)
@@ -69,11 +95,22 @@ export async function POST(request: Request) {
   try {
     const { counselingType, data, startDate, endDate } = await request.json()
 
+    // Get user's display name for personalization
+    const userResult = await sql`
+      SELECT display_name
+      FROM users
+      WHERE id = ${userId}
+      LIMIT 1
+    `
+    const userName = userResult[0]?.display_name.split(" ")[0] || "você"
+
     if (counselingType === "report") {
       const financialData = await getFinancialDataForRange(userId, startDate, endDate)
 
       const prompt = `
-        Aja como um analista financeiro especialista. Crie um relatório financeiro detalhado e perspicaz para o período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
+        ${CUTIA_PERSONA}
+
+        Crie um relatório financeiro detalhado e perspicaz para ${userName} no período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
 
         **Dados Financeiros:**
         - **Total de Despesas:** ${formatCurrency(financialData.totalExpenses)}
@@ -115,7 +152,7 @@ export async function POST(request: Request) {
       const { text } = await generateText({
         model: google("gemini-1.5-flash"),
         prompt,
-        maxTokens: 2000, // Increased for detailed report
+        maxTokens: 3000, // Increased for detailed, lengthy reports
       })
 
       return NextResponse.json({ analysis: text })
@@ -147,7 +184,9 @@ export async function POST(request: Request) {
     }
 
     let prompt = ""
-    const expertInstruction = "Forneça dicas curtas, diretas e de alto impacto, como se fossem de um especialista financeiro. Cada frase deve ter um valor claro. Evite texto genérico. Responda sempre em português do Brasil (pt-BR)."
+    const expertInstruction = `${CUTIA_PERSONA}
+
+Forneça dicas curtas (máximo 256 caracteres), úteis e edificantes para ${userName}. Use sua personalidade calorosa e otimista para inspirar ações financeiras positivas. Seja extremamente conciso.`
 
     switch (counselingType) {
       case "monthly_income":
@@ -182,6 +221,33 @@ export async function POST(request: Request) {
       case "monthly_shared_expenditure":
         prompt = `Minha despesa mensal compartilhada é de ${financialData.monthlySharedExpenditure}. Analise este valor e me dê dicas sobre como gerenciar melhor ou reduzir minha parte nas despesas compartilhadas. ${expertInstruction}`;
         break;
+      case "shared_expenses_painel_summary":
+      case "shared_expenses_painel_summary":
+        prompt = `${CUTIA_PERSONA}
+
+Analise os seguintes dados de despesas compartilhadas para ${userName}:
+- Gasto Coletivo Total: ${formatCurrency(financialData.totalSpent)}
+- Minha Parte: ${formatCurrency(financialData.myShare)}
+- Eu Devo: ${formatCurrency(financialData.iOwe)}
+- Me Devem: ${formatCurrency(financialData.theyOweMe)}
+
+Use o seguinte formato em Markdown:
+
+## Resumo Conciso
+Escreva um breve parágrafo descrevendo o estado atual dos gastos compartilhados.
+
+## Dicas Acionáveis
+Forneça de 3 a 5 dicas corriqueiras e numeradas (1., 2., 3.) para otimizar a gestão, focando em:
+- Como receber valores de forma eficiente
+- Como gerenciar quem deve
+- Estratégias para evitar desequilíbrios financeiros`;
+        break;
+      case "shared_expenses_monthly_chart":
+        prompt = `Aja como um analista financeiro. Analise os seguintes dados de despesas compartilhadas mensais: ${JSON.stringify(financialData.monthlySharedExpenses)}. Identifique tendências, picos ou quedas, e forneça 3 dicas práticas para otimizar meus gastos compartilhados ao longo do tempo. Responda sempre em português do Brasil (pt-BR).`;
+        break;
+      case "shared_expenses_category_table":
+        prompt = `Aja como um consultor financeiro. Analise os seguintes dados de despesas compartilhadas por categoria: ${JSON.stringify(financialData.sharedExpensesByCategory)}. Identifique as categorias de maior impacto, comente sobre a distribuição percentual e ofereça 3-5 recomendações específicas para gerenciar ou reduzir gastos nessas categorias. Responda sempre em português do Brasil (pt-BR).`;
+        break;
       default:
         prompt = `Aja como um consultor financeiro de elite. Analise os dados fornecidos e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.
 
@@ -200,7 +266,7 @@ export async function POST(request: Request) {
     const { text } = await generateText({
       model: google("gemini-1.5-flash"),
       prompt,
-      maxTokens: 500, // Reduced max tokens for shorter responses
+      maxTokens: 100, // Reduced for tweet-sized responses (256 chars max)
     })
 
     return NextResponse.json({ analysis: text })

@@ -55,3 +55,19 @@ export interface DashboardStats {
   expensesByTag: { tag: string; amount: number }[]
   totalExpensesByTag: { tag: string; amount: number }[]
 }
+
+export interface SharedExpensesAIStats {
+  totalSpent: number;
+  myShare: number;
+  iOwe: number;
+  theyOweMe: number;
+  monthlySharedExpenses: { month: string; total: number }[];
+  sharedExpensesByCategory: { category: string; total: number; percentage: number }[];
+}
+
+export interface SharedExpensesPainelStats {
+  totalSpent: number;
+  myShare: number;
+  iOwe: number;
+  theyOweMe: number;
+}

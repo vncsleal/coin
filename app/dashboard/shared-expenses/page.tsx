@@ -1,11 +1,12 @@
 import { SharedExpensesPainel } from '@/components/shared-expenses-painel';
 import { SharedExpensesTabs } from '@/components/shared-expenses-tabs';
-import { getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData } from '@/app/actions/shared-expenses';
+import { getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-expenses';
 
 export default async function SharedExpensesPage() {
   const sharedExpenses = await getSharedExpenses();
   const monthlyChartData = await getMonthlySharedExpensesChartData();
   const categoryChartData = await getSharedExpensesByCategoryData();
+  const painelStats = await getSharedPainelStats();
 
   return (
     <div className="space-y-6">
@@ -18,6 +19,7 @@ export default async function SharedExpensesPage() {
         sharedExpenses={sharedExpenses}
         monthlyChartData={monthlyChartData}
         categoryChartData={categoryChartData}
+        painelStats={painelStats}
       />
     </div>
   );

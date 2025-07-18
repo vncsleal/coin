@@ -8,9 +8,25 @@ import { toast } from "sonner"
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
+import { DashboardStats, SharedExpensesAIStats, SharedExpensesPainelStats } from "@/lib/types"
+
 interface AICounselingModalProps {
-  counselingType: "monthly_income" | "net_balance" | "monthly_incomes_chart" | "monthly_expenditure" | "daily_average" | "current_budget" | "remaining_budget" | "monthly_expenses_chart" | "expenses_by_category_chart" | "total_expenses_by_category_chart" | "monthly_shared_expenditure";
-  data: any; // This will be the relevant data for the counseling type
+  counselingType: 
+    | "monthly_income" 
+    | "net_balance" 
+    | "monthly_incomes_chart" 
+    | "monthly_expenditure" 
+    | "daily_average" 
+    | "current_budget" 
+    | "remaining_budget" 
+    | "monthly_expenses_chart" 
+    | "expenses_by_category_chart" 
+    | "total_expenses_by_category_chart"
+    | "monthly_shared_expenditure"
+    | "shared_expenses_painel_summary"
+    | "shared_expenses_monthly_chart"
+    | "shared_expenses_category_table";
+  data: DashboardStats | SharedExpensesAIStats | SharedExpensesPainelStats; 
 }
 
 export function AICounselingModal({ counselingType, data }: AICounselingModalProps) {
@@ -18,49 +34,32 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
-  const getCounselingPrompt = () => {
-    switch (counselingType) {
-      case "monthly_expenditure":
-        return `Analyze my monthly expenditure of ${data.monthlyExpenditure} and provide tips to save money. Compare it with previous months if data is available: ${JSON.stringify(data.monthlyExpenses)}. Also, provide insights on expense by category: ${JSON.stringify(data.expensesByTag)}.`;
-      case "daily_average":
-        return `Analyze my daily average spending of ${data.dailyAverage} and provide insights. Can I continue spending at this rate? What would my expected monthly expense be this way? My current monthly expenditure is ${data.monthlyExpenditure} and my budget is ${data.currentBudget}.`;
-      case "current_budget":
-        return `Analyze my current budget of ${data.currentBudget} and provide tips for effective budget management. My monthly expenditure is ${data.monthlyExpenditure}.`;
-      case "remaining_budget":
-        return `Analyze my remaining budget of ${data.remainingBudget} and provide advice on how to manage it for the rest of the month. My current monthly expenditure is ${data.monthlyExpenditure} and my budget is ${data.currentBudget}.`;
-      case "monthly_expenses_chart":
-        return `Analyze my monthly expenses data: ${JSON.stringify(data.monthlyExpenses)}. Provide insights on trends, anomalies, and tips for better spending habits based on this historical data.`;
-      case "expenses_by_category_chart":
-        return `Analyze my expenses by category for the current month: ${JSON.stringify(data.expensesByTag)}. Provide insights on which categories I spend the most on and tips to reduce spending in those areas.`;
-      case "total_expenses_by_category_chart":
-        return `Analyze my total expenses by category across all time: ${JSON.stringify(data.totalExpensesByTag)}. Provide long-term spending insights and strategies for financial improvement based on these categories.`;
-      case "monthly_shared_expenditure":
-        return `Minha despesa mensal compartilhada é de ${data.monthlySharedExpenditure}. Analise este valor e me dê dicas sobre como gerenciar melhor ou reduzir minha parte nas despesas compartilhadas.`;
-      default:
-        return "Provide general financial counseling based on my expense data.";
-    }
-  };
-
   const getAnalysis = async () => {
     setIsLoading(true)
     setAnalysis("") // Clear previous analysis
 
     try {
-      const prompt = getCounselingPrompt();
+      // ...existing code...
       const response = await fetch("/api/ai-counseling", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ 
+          counselingType: counselingType,
+          data: data 
+        }),
       })
 
+      // ...existing code...
       if (!response.ok) {
         throw new Error("Falha ao obter análise da IA")
       }
 
-      const data = await response.json()
-      setAnalysis(data.analysis)
+      // Parse and log response
+      const responseData: any = await response.json()
+      // ...existing code...
+      setAnalysis(responseData.analysis)
     } catch (error) {
-      console.error("Error fetching AI analysis:", error)
+      console.error("Modal error fetching AI analysis:", error)
       toast.error("Falha ao obter análise da IA")
     } finally {
       setIsLoading(false)
@@ -79,13 +78,13 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
             </DialogTrigger>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Aconselhamento com IA</p>
+            <p>Dicas da Cutia</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Aconselhamento Financeiro com IA</DialogTitle>
+          <DialogTitle>Dicas da Cutia</DialogTitle>
           <DialogDescription>
             Receba insights e dicas personalizadas com base nos seus dados financeiros.
           </DialogDescription>
