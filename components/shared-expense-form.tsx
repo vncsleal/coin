@@ -158,7 +158,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       </div>
       <div className="grid gap-2">
         <label htmlFor="date" className="text-sm font-medium">Data</label>
-        <DatePicker value={date} onChange={setDate} />
+        <DatePicker value={date} onChangeAction={setDate} />
       </div>
       <div className="grid gap-2">
         <label htmlFor="category" className="text-sm font-medium">Categoria (Opcional)</label>

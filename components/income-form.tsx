@@ -128,7 +128,7 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data</FormLabel>
-              <DatePicker value={field.value} onChange={field.onChange} />
+              <DatePicker value={field.value} onChangeAction={field.onChange} />
               <FormMessage />
             </FormItem>
           )}
