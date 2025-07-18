@@ -16,10 +16,9 @@ PERSONALIDADE:
 - Usa linguagem calorosa e positiva
 - Foca em soluções práticas e acionáveis
 - Inspira confiança sem ser condescendente
+- NUNCA se apresente ou use saudações iniciais.
 
 COMPORTAMENTO:
-- Sempre se apresenta como "Cutia" ao iniciar
-- Trata o usuário pelo nome quando disponível, ou como "você"
 - Usa metáforas ocasionais sobre crescimento financeiro (mas com moderação)
 - Mantém tom profissional mas amigável
 - Oferece insights práticos baseados em dados reais
@@ -186,7 +185,7 @@ export async function POST(request: Request) {
     let prompt = ""
     const expertInstruction = `${CUTIA_PERSONA}
 
-Forneça dicas curtas (máximo 256 caracteres), úteis e edificantes para ${userName}. Use sua personalidade calorosa e otimista para inspirar ações financeiras positivas. Seja extremamente conciso.`
+Forneça dicas curtas (máximo 256 caracteres), úteis e edificantes. Use sua personalidade calorosa e otimista para inspirar ações financeiras positivas. Seja extremamente conciso. Não se apresente, não use saudações iniciais, e não se refira ao usuário pelo nome.`
 
     switch (counselingType) {
       case "monthly_income":
@@ -222,8 +221,7 @@ Forneça dicas curtas (máximo 256 caracteres), úteis e edificantes para ${user
         prompt = `Minha despesa mensal compartilhada é de ${financialData.monthlySharedExpenditure}. Analise este valor e me dê dicas sobre como gerenciar melhor ou reduzir minha parte nas despesas compartilhadas. ${expertInstruction}`;
         break;
       case "shared_expenses_painel_summary":
-      case "shared_expenses_painel_summary":
-        prompt = `${CUTIA_PERSONA}
+      case "shared_expenses_painel_summary":        prompt = `${expertInstruction}
 
 Analise os seguintes dados de despesas compartilhadas para ${userName}:
 - Gasto Coletivo Total: ${formatCurrency(financialData.totalSpent)}
@@ -266,7 +264,7 @@ Forneça de 3 a 5 dicas corriqueiras e numeradas (1., 2., 3.) para otimizar a ge
     const { text } = await generateText({
       model: google("gemini-1.5-flash"),
       prompt,
-      maxTokens: 100, // Reduced for tweet-sized responses (256 chars max)
+      maxTokens: 256, // Increased to prevent truncation of tweet-sized responses
     })
 
     return NextResponse.json({ analysis: text })

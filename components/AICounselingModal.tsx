@@ -38,8 +38,8 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
     setIsLoading(true)
     setAnalysis("") // Clear previous analysis
 
+
     try {
-      // ...existing code...
       const response = await fetch("/api/ai-counseling", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -49,14 +49,12 @@ export function AICounselingModal({ counselingType, data }: AICounselingModalPro
         }),
       })
 
-      // ...existing code...
       if (!response.ok) {
         throw new Error("Falha ao obter análise da IA")
       }
 
       // Parse and log response
       const responseData: any = await response.json()
-      // ...existing code...
       setAnalysis(responseData.analysis)
     } catch (error) {
       console.error("Modal error fetching AI analysis:", error)
