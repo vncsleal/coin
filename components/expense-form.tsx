@@ -15,6 +15,7 @@ import { CurrencyInput } from "@/components/ui/currency-input"
 import { EXPENSE_TAGS } from "@/lib/constants"
 import { getUserCurrencyPreference } from "@/lib/client-preferences"
 import { CURRENCIES } from "@/lib/currency"
+import React from "react"
 
 interface ExpenseFormProps {
   expenseToEdit?: Expense;
@@ -32,6 +33,10 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
   const [date, setDate] = useState<Date | undefined>(
     expenseToEdit?.date ? new Date(expenseToEdit.date) : new Date()
   );
+
+  const handleDateChange = React.useCallback((newDate: Date | undefined) => {
+    setDate(newDate);
+  }, []);
 
   const userCurrencyCode = getUserCurrencyPreference();
   const userCurrency = CURRENCIES[userCurrencyCode];
@@ -107,7 +112,7 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="date">Data</Label>
-        <DatePicker value={date} onChangeAction={setDate} />
+        <DatePicker value={date} onChange={handleDateChange} />
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">

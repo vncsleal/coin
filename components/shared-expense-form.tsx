@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getUserCurrencyPreference } from "@/lib/client-preferences";
 import { CURRENCIES } from "@/lib/currency";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import React from 'react';
 
 interface SharedExpense {
   id: string;
@@ -48,6 +49,10 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
     const parsedDate = safeDateParse(expenseToEdit?.date);
     return parsedDate || new Date();
   });
+
+  const handleDateChange = React.useCallback((newDate: Date | undefined) => {
+    setDate(newDate);
+  }, []);
   
   const [category, setCategory] = useState(expenseToEdit?.category || '');
   const [selectedFriend, setSelectedFriend] = useState<string>(expenseToEdit?.shared_with_user_id || '');
@@ -158,7 +163,7 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
       </div>
       <div className="grid gap-2">
         <label htmlFor="date" className="text-sm font-medium">Data</label>
-        <DatePicker value={date} onChangeAction={setDate} />
+        <DatePicker value={date} onChange={handleDateChange} />
       </div>
       <div className="grid gap-2">
         <label htmlFor="category" className="text-sm font-medium">Categoria (Opcional)</label>

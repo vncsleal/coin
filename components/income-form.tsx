@@ -15,6 +15,7 @@ import { CurrencyInput } from "@/components/ui/currency-input"
 import { useToast } from "@/hooks/use-toast"
 import { getUserCurrencyPreference } from "@/lib/client-preferences"
 import { CURRENCIES } from "@/lib/currency"
+import React from "react"
 
 const incomeSchema = z.object({
   name: z.string().min(1, "O nome é obrigatório."),
@@ -128,7 +129,7 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data</FormLabel>
-              <DatePicker value={field.value} onChangeAction={field.onChange} />
+              <DatePicker value={field.value} onChange={React.useCallback(field.onChange, [field.onChange])} />
               <FormMessage />
             </FormItem>
           )}

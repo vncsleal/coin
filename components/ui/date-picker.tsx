@@ -17,7 +17,7 @@ import {
 
 interface DatePickerProps {
   value?: Date
-  onChangeAction: (date: Date | undefined) => void
+  onChange: (date: Date | undefined) => void
   className?: string
 }
 
@@ -25,7 +25,7 @@ function isValidDate(date: Date | undefined): date is Date {
   return date instanceof Date && !isNaN(date.getTime())
 }
 
-export function DatePicker({ value, onChangeAction, className }: DatePickerProps) {
+export function DatePicker({ value, onChange, className }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
   const [displayValue, setDisplayValue] = React.useState("")
   const [month, setMonth] = React.useState<Date | undefined>(value)
@@ -45,15 +45,15 @@ export function DatePicker({ value, onChangeAction, className }: DatePickerProps
 
     const parsedDate = parse(newDisplayValue, "dd/MM/yyyy", new Date(), { locale: ptBR })
     if (isValidDate(parsedDate)) {
-      onChangeAction(parsedDate)
+      onChange(parsedDate)
       setMonth(parsedDate)
     } else {
-      onChangeAction(undefined)
+      onChange(undefined)
     }
   }
 
   const handleDateSelect = (date: Date | undefined) => {
-    onChangeAction(date)
+    onChange(date)
     if (isValidDate(date)) {
       setDisplayValue(format(date, "dd/MM/yyyy", { locale: ptBR }))
     }
