@@ -40,6 +40,7 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
     setIsLoading(true)
     
     formData.set("date", date?.toISOString().split("T")[0] || "");
+    formData.set("amount", amount || "");
 
     try {
       if (expenseToEdit) {
