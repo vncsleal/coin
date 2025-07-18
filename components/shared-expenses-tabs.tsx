@@ -15,19 +15,7 @@ import { SharedExpenseForm } from '@/components/shared-expense-form';
 import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
 import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData } from '@/app/actions/shared-expenses';
 import { Button } from '@/components/ui/button';
-
-interface SharedExpense {
-  id: string;
-  description: string;
-  total_amount: number;
-  date: string;
-  category: string;
-  paid_by_user_id: string;
-  shared_with_user_id: string;
-  status: 'unsettled' | 'settled';
-  paid_by_user_name: string;
-  shared_with_user_name: string;
-}
+import { SharedExpense } from '@/lib/types';
 
 interface SharedExpensesTabsProps {
   painel: ReactNode;

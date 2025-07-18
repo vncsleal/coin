@@ -14,19 +14,7 @@ import { getUserCurrencyPreference } from "@/lib/client-preferences";
 import { CURRENCIES } from "@/lib/currency";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import React from 'react';
-
-interface SharedExpense {
-  id: string;
-  description: string;
-  total_amount: number;
-  date: string;
-  category?: string;
-  paid_by_user_id: string;
-  shared_with_user_id: string;
-  status: 'unsettled' | 'settled';
-  paid_by_user_name: string;
-  shared_with_user_name: string;
-}
+import { SharedExpense } from '@/lib/types';
 
 interface Friend {
   id: string;

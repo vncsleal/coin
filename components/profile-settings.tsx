@@ -31,11 +31,15 @@ export function ProfileSettings() {
     })
   }
 
+  function handleCurrencyChange(value: string) {
+    setCurrency(value as CurrencyCode)
+  }
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="currency">Moeda Padrão</Label>
-        <Select value={currency} onValueChange={setCurrency}>
+        <Select value={currency} onValueChange={handleCurrencyChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>

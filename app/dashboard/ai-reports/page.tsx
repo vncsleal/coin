@@ -3,7 +3,6 @@ import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { AICounseling } from "@/components/ai-counseling"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Brain, FileText, Zap } from "lucide-react"
 
 export default async function AIReportsPage() {
