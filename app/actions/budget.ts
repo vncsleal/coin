@@ -11,10 +11,11 @@ export async function setBudget(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const amount = Number.parseFloat(formData.get("amount") as string)
+  const amountString = (formData.get("amount") as string).replace(",", ".").trim();
+  const amount = Number.parseFloat(amountString);
 
-  if (!amount || amount <= 0) {
-    throw new Error("Invalid amount")
+  if (isNaN(amount) || amount <= 0) {
+    throw new Error("Invalid amount");
   }
 
   const currentDate = new Date()
