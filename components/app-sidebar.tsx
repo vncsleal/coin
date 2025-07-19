@@ -74,6 +74,11 @@ const friendshipsNav = [
     url: "/dashboard/shared-expenses",
     icon: Handshake,
   },
+  {
+    title: "Rendas Compartilhadas",
+    url: "/dashboard/shared-incomes",
+    icon: Handshake,
+  },
 ]
 
 

@@ -246,6 +246,31 @@ Forneça de 3 a 5 dicas corriqueiras e numeradas (1., 2., 3.) para otimizar a ge
       case "shared_expenses_category_table":
         prompt = `Aja como um consultor financeiro. Analise os seguintes dados de despesas compartilhadas por categoria: ${JSON.stringify(financialData.sharedExpensesByCategory)}. Identifique as categorias de maior impacto, comente sobre a distribuição percentual e ofereça 3-5 recomendações específicas para gerenciar ou reduzir gastos nessas categorias. Responda sempre em português do Brasil (pt-BR).`;
         break;
+      case "shared_incomes_monthly_chart":
+        prompt = `Aja como um analista financeiro. Analise os seguintes dados de rendas compartilhadas mensais: ${JSON.stringify(financialData.monthlySharedIncomes)}. Identifique tendências, picos ou quedas, e forneça 3 dicas práticas para otimizar minhas rendas compartilhadas ao longo do tempo. Responda sempre em português do Brasil (pt-BR).`;
+        break;
+      case "shared_incomes_category_table":
+        prompt = `Aja como um consultor financeiro. Analise os seguintes dados de rendas compartilhadas por categoria: ${JSON.stringify(financialData.sharedIncomesByCategory)}. Identifique as categorias de maior impacto, comente sobre a distribuição percentual e ofereça 3-5 recomendações específicas para gerenciar ou aumentar rendas nessas categorias. Responda sempre em português do Brasil (pt-BR).`;
+        break;
+      case "shared_incomes_painel_summary":
+        prompt = `${expertInstruction}
+
+Analise os seguintes dados de rendas compartilhadas para ${userName}:
+- Total Economizado Juntos: ${formatCurrency(financialData.totalJointSavings)}
+- Sua Contribuição: ${formatCurrency(financialData.myTotalContribution)}
+- Contribuição do Amigo: ${formatCurrency(financialData.friendTotalContribution)}
+
+Use o seguinte formato em Markdown:
+
+## Resumo Conciso
+Escreva um breve parágrafo descrevendo o estado atual das economias conjuntas.
+
+## Dicas Acionáveis
+Forneça de 3 a 5 dicas corriqueiras e numeradas (1., 2., 3.) para otimizar a gestão, focando em:
+- Como aumentar a economia conjunta
+- Como manter a motivação para economizar
+- Estratégias para alcançar metas financeiras em conjunto`;
+        break;
       default:
         prompt = `Aja como um consultor financeiro de elite. Analise os dados fornecidos e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.
 

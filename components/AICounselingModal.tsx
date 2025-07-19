@@ -26,7 +26,10 @@ interface AICounselingModalProps {
     | "monthly_shared_expenditure"
     | "shared_expenses_painel_summary"
     | "shared_expenses_monthly_chart"
-    | "shared_expenses_category_table";
+    | "shared_expenses_category_table"
+    | "shared_incomes_monthly_chart"
+    | "shared_incomes_category_table"
+    | "shared_incomes_painel_summary";
   data: DashboardStats | SharedExpensesAIStats | SharedExpensesPainelStats; 
 }
 

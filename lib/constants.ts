@@ -16,3 +16,12 @@ export const EXPENSE_TAGS = [
   'Viagem',
   'Outros',
 ];
+
+export const INCOME_TAGS = [
+  'Salário',
+  'Freelance',
+  'Investimentos',
+  'Presente',
+  'Vendas',
+  'Outros',
+];

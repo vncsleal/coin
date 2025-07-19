@@ -42,6 +42,19 @@ export interface SharedExpense {
   shared_with_user_name: string
 }
 
+export interface SharedIncome {
+  id: string
+  description: string
+  total_amount: number
+  date: string
+  category?: string
+  received_by_user_id: string
+  shared_with_user_id: string
+  status: 'unsettled' | 'settled'
+  received_by_user_name: string
+  shared_with_user_name: string
+}
+
 export interface DashboardStats {
   monthlyIncome: number
   monthlyExpenditure: number

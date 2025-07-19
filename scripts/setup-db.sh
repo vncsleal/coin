@@ -25,6 +25,7 @@ fi
 # Run database setup scripts in a specific order
 psql "$DATABASE_URL" -f ./scripts/009-friends-table.sql
 psql "$DATABASE_URL" -f ./scripts/010-shared-expenses-table.sql
+psql "$DATABASE_URL" -f ./scripts/011-shared-incomes-table.sql
 
 # Verify tables were created
 echo "
