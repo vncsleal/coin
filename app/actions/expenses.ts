@@ -12,7 +12,7 @@ export async function addExpense(formData: FormData) {
   }
 
   const name = formData.get("name") as string
-  const amount = Number.parseFloat(formData.get("amount") as string)
+  const amount = Number.parseFloat((formData.get("amount") as string).replace(',', '.'))
   const tag = formData.get("tag") as string
   const date = formData.get("date") as string
 
@@ -37,7 +37,7 @@ export async function updateExpense(id: number, formData: FormData) {
   }
 
   const name = formData.get("name") as string
-  const amount = Number.parseFloat(formData.get("amount") as string)
+  const amount = Number.parseFloat((formData.get("amount") as string).replace(',', '.'))
   const tag = formData.get("tag") as string
   const date = formData.get("date") as string
 
