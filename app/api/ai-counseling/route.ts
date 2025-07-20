@@ -6,6 +6,7 @@ import { google } from "@ai-sdk/google"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { formatCurrency } from "@/lib/currency"
+import { getDaysInMonth, startOfMonth, differenceInDays } from "date-fns"
 
 // Define Cutia's character and personality
 const CUTIA_PERSONA = `Você é a Cutia, uma cutia sul-americana especialista em finanças pessoais. Suas características:
@@ -179,6 +180,19 @@ export async function POST(request: Request) {
           amount: Number(row.total),
         }));
 
+        // Calculate projection metrics
+        const now = new Date();
+        const startOfCurrentMonth = startOfMonth(now);
+        const daysInCurrentMonth = getDaysInMonth(now);
+        const daysElapsed = differenceInDays(now, startOfCurrentMonth) + 1; // +1 to include today
+        const daysRemaining = daysInCurrentMonth - daysElapsed;
+        
+        // Calculate daily averages and projections
+        const dailyAverageExpense = daysElapsed > 0 ? totalExpenditure / daysElapsed : 0;
+        const projectedMonthlyExpense = dailyAverageExpense * daysInCurrentMonth;
+        const projectedRemainingBudget = currentBudget - projectedMonthlyExpense;
+        const projectedNetBalance = totalIncome - projectedMonthlyExpense;
+
         // Create financial data object
         financialData = {
           currentBudget,
@@ -189,6 +203,15 @@ export async function POST(request: Request) {
           totalIncome,
           netBalance,
           expensesByTag,
+          // Projection data
+          currentDate: format(now, "dd/MM/yyyy"),
+          daysInMonth: daysInCurrentMonth,
+          daysElapsed,
+          daysRemaining,
+          dailyAverageExpense,
+          projectedMonthlyExpense,
+          projectedRemainingBudget,
+          projectedNetBalance,
         };
       }
 
@@ -200,17 +223,24 @@ export async function POST(request: Request) {
 
       const expertInstruction = `${CUTIA_PERSONA}
 
-Responda como se fosse uma conversa natural entre amigos. Seja direta, calorosa e útil. Use linguagem coloquial brasileira. Mantenha as respostas entre 50-150 palavras. Foque na pergunta específica do usuário.`;
+Responda como se fosse uma conversa natural entre amigos. Seja direta, calorosa e útil. Use linguagem coloquial brasileira. Mantenha as respostas entre 50-150 palavras. 
+
+IMPORTANTE: Responda APENAS o que foi perguntado. Não adicione projeções ou análises extras se não foram solicitadas. Seja precisa e direta na resposta.`;
 
       prompt = `Responda como uma consultora financeira amigável em uma conversa informal. Use dados reais dos gastos abaixo:
 
-Orçamento Mensal: R$ ${financialData.currentBudget.toFixed(2)}
-Gastos Individuais: R$ ${financialData.totalIndividualExpenditure.toFixed(2)}
-Gastos Compartilhados (sua parte): R$ ${financialData.totalSharedExpenditure.toFixed(2)}
-Total de Gastos: R$ ${financialData.totalExpenditure.toFixed(2)}
-Receitas: R$ ${financialData.totalIncome.toFixed(2)}
-Saldo Restante do Orçamento: R$ ${financialData.remainingBudget.toFixed(2)}
-Saldo Líquido (Receitas - Gastos): R$ ${financialData.netBalance.toFixed(2)}
+**SITUAÇÃO ATUAL (${financialData.currentDate} - Dia ${financialData.daysElapsed} de ${financialData.daysInMonth}):**
+- Orçamento Mensal: R$ ${financialData.currentBudget.toFixed(2)}
+- Gastos até Agora: R$ ${financialData.totalExpenditure.toFixed(2)}
+- Receitas: R$ ${financialData.totalIncome.toFixed(2)}
+- Saldo Atual: R$ ${financialData.netBalance.toFixed(2)}
+
+**PROJEÇÕES PARA O FIM DO MÊS:**
+- Média Diária de Gastos: R$ ${financialData.dailyAverageExpense.toFixed(2)}
+- Gasto Projetado Total: R$ ${financialData.projectedMonthlyExpense.toFixed(2)}
+- Orçamento Restante Projetado: R$ ${financialData.projectedRemainingBudget.toFixed(2)}
+- Saldo Final Projetado: R$ ${financialData.projectedNetBalance.toFixed(2)}
+- Dias Restantes: ${financialData.daysRemaining}
 
 ${conversationHistory ? `\nContexto da conversa:\n${conversationHistory}\n` : ""}
 
@@ -218,6 +248,13 @@ Gastos por Categoria:
 ${(financialData.expensesByTag || []).map((exp) => `- ${exp.tag}: R$ ${exp.amount.toFixed(2)}`).join("\n")}
 
 ${customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0 ? `\n\nPergunta do usuário: ${customPrompt}` : ""}
+
+INSTRUÇÕES: 
+- Responda APENAS o que foi perguntado especificamente
+- Use dados atuais para perguntas sobre "agora" ou "até agora"  
+- Use dados projetados APENAS se perguntarem sobre "fim do mês" ou "futuro"
+- Seja direta e não ofereça análises extras não solicitadas
+- Mantenha o foco na pergunta específica do usuário
 
 ${expertInstruction}`;
 
