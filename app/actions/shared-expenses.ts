@@ -106,17 +106,17 @@ export async function getSharedPainelStats() {
       )
       SELECT
         COALESCE(SUM(total_amount), 0) AS "totalSpent",
-        COALESCE(SUM(total_amount / 2), 0) AS "myShare",
-        COALESCE(SUM(CASE WHEN shared_with_user_id = ${userId} THEN total_amount / 2 ELSE 0 END), 0) AS "iOwe",
-        COALESCE(SUM(CASE WHEN paid_by_user_id = ${userId} THEN total_amount / 2 ELSE 0 END), 0) AS "theyOweMe"
+        COALESCE(SUM(CASE WHEN paid_by_user_id = ${userId} THEN total_amount ELSE 0 END), 0) AS "totalPaidByMe",
+        COALESCE(SUM(total_amount / 2), 0) AS "myDuePortion",
+        COALESCE(SUM(CASE WHEN paid_by_user_id = ${userId} THEN total_amount ELSE 0 END), 0) - COALESCE(SUM(total_amount / 2), 0) AS "balance"
       FROM user_expenses;
     `;
 
   return stats[0] as {
     totalSpent: number;
-    myShare: number;
-    iOwe: number;
-    theyOweMe: number;
+    totalPaidByMe: number;
+    myDuePortion: number;
+    balance: number;
   }
 }
 

@@ -9,7 +9,7 @@ import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import MarkdownRenderer from "@/components/ui/markdown-renderer"
 
-import { DashboardStats, SharedExpensesAIStats, SharedExpensesPainelStats } from "@/lib/types"
+import { DashboardStats, SharedExpensesAIStats, SharedExpensesPainelStats, SharedIncomesPainelStats } from "@/lib/types"
 
 interface AICounselingModalProps {
   counselingType: 
@@ -30,7 +30,7 @@ interface AICounselingModalProps {
     | "shared_incomes_monthly_chart"
     | "shared_incomes_category_table"
     | "shared_incomes_painel_summary";
-  data: DashboardStats | SharedExpensesAIStats | SharedExpensesPainelStats; 
+  data: DashboardStats | SharedExpensesAIStats | SharedExpensesPainelStats | SharedIncomesPainelStats; 
 }
 
 export function AICounselingModal({ counselingType, data }: AICounselingModalProps) {

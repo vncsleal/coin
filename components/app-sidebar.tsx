@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboard, Receipt, Wallet, Users, FileText, Download, Search, BarChart3, User, UserPlus, PieChart, Settings, LifeBuoy, LogOut, Handshake, Target } from "lucide-react"
+import { LayoutDashboard, Receipt, Wallet, Users, FileText, Download, Search, BarChart3, User, UserPlus, PieChart, Settings, LifeBuoy, LogOut, Handshake, Target, PiggyBank } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -77,7 +77,7 @@ const friendshipsNav = [
   {
     title: "Rendas Compartilhadas",
     url: "/dashboard/shared-incomes",
-    icon: Handshake,
+    icon: PiggyBank,
   },
 ]
 

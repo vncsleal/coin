@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, Users, ArrowRightLeft, Sparkles } from 'lucide-react';
+import { DollarSign, Users, ArrowRightLeft, Sparkles, PiggyBank } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { getSharedPainelStats } from '@/app/actions/shared-expenses';
 import { AICounselingModal } from '@/components/AICounselingModal';
 
 export async function SharedExpensesPainel() {
   const stats = await getSharedPainelStats();
+
+  const balanceColorClass = stats.balance >= 0 ? "text-green-500" : "text-red-500";
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -26,39 +28,39 @@ export async function SharedExpensesPainel() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
             <DollarSign className="h-4 w-4 text-muted-foreground" />
-            <CardTitle className="text-sm font-medium">Minha Parte</CardTitle>
+            <CardTitle className="text-sm font-medium">Minha Parte Devida</CardTitle>
           </div>
           <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(stats.myShare)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(stats.myDuePortion)}</div>
           <p className="text-xs text-muted-foreground">Minha responsabilidade no total</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
-            <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
-            <CardTitle className="text-sm font-medium">Eu Devo</CardTitle>
+            <PiggyBank className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Pago por Mim</CardTitle>
           </div>
           <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-red-500">{formatCurrency(stats.iOwe)}</div>
-          <p className="text-xs text-muted-foreground">Quanto preciso pagar aos meus amigos</p>
+          <div className="text-2xl font-bold">{formatCurrency(stats.totalPaidByMe)}</div>
+          <p className="text-xs text-muted-foreground">Valor total que paguei em despesas compartilhadas</p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
             <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
-            <CardTitle className="text-sm font-medium">Me Devem</CardTitle>
+            <CardTitle className="text-sm font-medium">Balanço</CardTitle>
           </div>
           <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-500">{formatCurrency(stats.theyOweMe)}</div>
-          <p className="text-xs text-muted-foreground">Quanto meus amigos precisam me pagar</p>
+          <div className={`text-2xl font-bold ${balanceColorClass}`}>{formatCurrency(stats.balance)}</div>
+          <p className="text-xs text-muted-foreground">Diferença entre o que paguei e minha parte devida</p>
         </CardContent>
       </Card>
     </div>

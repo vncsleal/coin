@@ -24,10 +24,9 @@ interface SharedIncomesTabsProps {
   monthlyChartData: { month: string; total: number }[];
   categoryChartData: { category: string; total: number; percentage: number }[];
   painelStats: {
-    totalReceived: number;
-    myShare: number;
-    iShouldReceive: number;
-    theyShouldReceive: number;
+    totalJointSavings: number;
+    myTotalContribution: number;
+    friendTotalContribution: number;
   };
 }
 

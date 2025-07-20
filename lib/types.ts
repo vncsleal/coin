@@ -55,6 +55,12 @@ export interface SharedIncome {
   shared_with_user_name: string
 }
 
+export interface SharedIncomesPainelStats {
+  totalJointSavings: number;
+  myTotalContribution: number;
+  friendTotalContribution: number;
+}
+
 export interface DashboardStats {
   monthlyIncome: number
   monthlyExpenditure: number
@@ -71,16 +77,16 @@ export interface DashboardStats {
 
 export interface SharedExpensesAIStats {
   totalSpent: number;
-  myShare: number;
-  iOwe: number;
-  theyOweMe: number;
+  totalPaidByMe: number;
+  myDuePortion: number;
+  balance: number;
   monthlySharedExpenses: { month: string; total: number }[];
   sharedExpensesByCategory: { category: string; total: number; percentage: number }[];
 }
 
 export interface SharedExpensesPainelStats {
   totalSpent: number;
-  myShare: number;
-  iOwe: number;
-  theyOweMe: number;
+  totalPaidByMe: number;
+  myDuePortion: number;
+  balance: number;
 }

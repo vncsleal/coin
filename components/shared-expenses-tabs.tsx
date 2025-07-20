@@ -25,9 +25,9 @@ interface SharedExpensesTabsProps {
   categoryChartData: { category: string; total: number; percentage: number }[];
   painelStats: {
     totalSpent: number;
-    myShare: number;
-    iOwe: number;
-    theyOweMe: number;
+    totalPaidByMe: number;
+    myDuePortion: number;
+    balance: number;
   };
 }
 

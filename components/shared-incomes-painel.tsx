@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { formatCurrency } from "@/lib/currency"
 import { DollarSign, TrendingUp, TrendingDown } from "lucide-react"
 import { AICounselingModal } from "@/components/AICounselingModal"
-import { SharedExpensesPainelStats } from "@/lib/types"
+import { SharedIncomesPainelStats } from "@/lib/types"
 
 interface SharedIncomesPainelProps {
   painelStats: {
