@@ -15,7 +15,7 @@ import { SharedIncomeForm } from '@/components/shared-income-form';
 import { EditSharedIncomeModal } from '@/components/EditSharedIncomeModal';
 import { deleteSharedIncome, getSharedIncomes, getMonthlySharedIncomesChartData, getSharedIncomesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-incomes';
 import { Button } from '@/components/ui/button';
-import { SharedIncome } from '@/lib/types';
+import { SharedIncome, SharedIncomesPainelStats, SharedIncomesAIStats } from '@/lib/types';
 import { AICounselingModal } from '@/components/AICounselingModal';
 import { SharedIncomesPainel } from '@/components/shared-incomes-painel';
 
@@ -39,7 +39,7 @@ export function SharedIncomesTabs({
   const [sharedIncomes, setSharedIncomes] = useState<SharedIncome[]>(initialSharedIncomes);
   const [monthlySharedIncomes, setMonthlySharedIncomes] = useState<{ month: string; total: number }[]>(initialMonthlyChartData);
   const [sharedIncomesByCategory, setSharedIncomesByCategory] = useState<{ category: string; total: number; percentage: number }[]>(initialCategoryChartData);
-  const [painelStats, setPainelStats] = useState(initialPainelStats);
+  const [painelStats, setPainelStats] = useState<SharedIncomesPainelStats>(initialPainelStats);
   const [selectedIncomes, setSelectedIncomes] = useState<string[]>([]);
   const { toast } = useToast();
 
@@ -289,7 +289,7 @@ export function SharedIncomesTabs({
                   <BarChart className="h-5 w-5 text-muted-foreground" />
                   <CardTitle>Rendas Compartilhadas Mensais</CardTitle>
                 </div>
-                <AICounselingModal counselingType="shared_incomes_monthly_chart" data={aiCounselingData} />
+                <AICounselingModal counselingType="shared_incomes_monthly_chart" data={aiCounselingData as SharedIncomesAIStats} />
               </div>
               <CardDescription>Visão geral das rendas compartilhadas ao longo do tempo.</CardDescription>
             </CardHeader>
@@ -313,7 +313,7 @@ export function SharedIncomesTabs({
                   <BarChart className="h-5 w-5 text-muted-foreground" />
                   <CardTitle>Rendas por Categoria</CardTitle>
                 </div>
-                <AICounselingModal counselingType="shared_incomes_category_table" data={aiCounselingData} />
+                <AICounselingModal counselingType="shared_incomes_category_table" data={aiCounselingData as SharedIncomesAIStats} />
               </div>
               <CardDescription>Distribuição das rendas compartilhadas por categoria.</CardDescription>
             </CardHeader>

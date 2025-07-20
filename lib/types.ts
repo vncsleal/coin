@@ -61,6 +61,14 @@ export interface SharedIncomesPainelStats {
   friendTotalContribution: number;
 }
 
+export interface SharedIncomesAIStats {
+  totalJointSavings: number;
+  myTotalContribution: number;
+  friendTotalContribution: number;
+  monthlySharedIncomes: { month: string; total: number }[];
+  sharedIncomesByCategory: { category: string; total: number; percentage: number }[];
+}
+
 export interface DashboardStats {
   monthlyIncome: number
   monthlyExpenditure: number
