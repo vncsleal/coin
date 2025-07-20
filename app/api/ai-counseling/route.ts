@@ -92,7 +92,7 @@ export async function POST(request: Request) {
   await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`)
 
   try {
-    const { counselingType, data, startDate, endDate } = await request.json()
+    const { counselingType, data, startDate, endDate, customPrompt } = await request.json()
 
     // Get user's display name for personalization
     const userResult = await sql`
@@ -103,10 +103,10 @@ export async function POST(request: Request) {
     `
     const userName = userResult[0]?.display_name.split(" ")[0] || "você"
 
+    let prompt = ""
     if (counselingType === "report") {
       const financialData = await getFinancialDataForRange(userId, startDate, endDate)
-
-      const prompt = `
+      prompt = `
         ${CUTIA_PERSONA}
 
         Crie um relatório financeiro detalhado e perspicaz para ${userName} no período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
@@ -147,143 +147,72 @@ export async function POST(request: Request) {
         - A resposta deve ser estruturada, clara e profissional.
         - Responda sempre em português do Brasil (pt-BR).
       `
+      if (customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0) {
+        prompt += `\n\n**Prompt Personalizado:** ${customPrompt}`
+      }
+    } else if (counselingType === "general") {
+      const currentMonth = format(new Date(), "MM");
+      const currentYear = format(new Date(), "yyyy");
 
-      const { text } = await generateText({
-        model: google("gemini-1.5-flash"),
-        prompt,
-        maxTokens: 3000, // Increased for detailed, lengthy reports
-      })
+      const currentBudgetRes = await sql`
+        SELECT amount FROM budgets
+        WHERE user_id = ${userId} AND month = ${currentMonth} AND year = ${currentYear}
+      `;
+      const currentBudget = Number(currentBudgetRes[0]?.amount || 0);
 
-      return NextResponse.json({ analysis: text })
-    }
+      const expensesByTagRes = await sql`
+        SELECT tag, SUM(amount) as total
+        FROM expenses
+        WHERE user_id = ${userId}
+        GROUP BY tag
+        ORDER BY total DESC
+      `;
+      const expensesByTag = expensesByTagRes.map((row) => ({
+        tag: row.tag,
+        amount: Number(row.total),
+      }));
 
-    // Get user's financial data
-    const currentDate = new Date()
+      const historicalSpending = await sql`
+        SELECT 
+          EXTRACT(MONTH FROM date) as month,
+          EXTRACT(YEAR FROM date) as year,
+          SUM(amount) as total
+        FROM expenses 
+        WHERE user_id = ${userId}
+        AND date >= CURRENT_DATE - INTERVAL '3 months'
+        GROUP BY EXTRACT(MONTH FROM date), EXTRACT(YEAR FROM date)
+        ORDER BY year DESC, month DESC
+      `;
 
-    // Get last 3 months spending for trend analysis (still needed as it's not passed from frontend)
-    const historicalSpending = await sql`
-      SELECT 
-        EXTRACT(MONTH FROM date) as month,
-        EXTRACT(YEAR FROM date) as year,
-        SUM(amount) as total
-      FROM expenses 
-      WHERE user_id = ${userId}
-      AND date >= CURRENT_DATE - INTERVAL '3 months'
-      GROUP BY EXTRACT(MONTH FROM date), EXTRACT(YEAR FROM date)
-      ORDER BY year DESC, month DESC
-    `
+      const financialData = {
+        currentBudget,
+        expensesByTag,
+        historicalSpending: historicalSpending.map((row) => ({
+          month: row.month,
+          year: row.year,
+          total: Number(row.total),
+        })),
+      };
 
-    const financialData = {
-      ...data, // Use data passed from frontend
-      historicalSpending: historicalSpending.map((row) => ({
-        month: row.month,
-        year: row.year,
-        total: Number(row.total),
-      })),
-    }
-
-    let prompt = ""
-    const expertInstruction = `${CUTIA_PERSONA}
+      const expertInstruction = `${CUTIA_PERSONA}
 
 Forneça dicas curtas (máximo 256 caracteres), úteis e edificantes. Use sua personalidade calorosa e otimista para inspirar ações financeiras positivas. Seja extremamente conciso. Não se apresente, não use saudações iniciais, e não se refira ao usuário pelo nome.`
 
-    switch (counselingType) {
-      case "monthly_income":
-        prompt = `Minha renda mensal é de ${financialData.monthlyIncome}. Analise essa renda e me dê dicas de como posso aumentá-la ou diversificá-la. ${expertInstruction}`;
-        break;
-      case "net_balance":
-        prompt = `Meu balanço mensal (renda - despesas) é de ${financialData.netBalance}. O que esse número significa para minha saúde financeira? Me dê conselhos sobre como melhorar esse indicador. ${expertInstruction}`;
-        break;
-      case "monthly_incomes_chart":
-        prompt = `Analise meus dados de renda mensal: ${JSON.stringify(financialData.monthlyIncomes || [])}. Aponte as tendências e me dê estratégias para estabilizar ou aumentar minhas fontes de renda. ${expertInstruction}`;
-        break;
-      case "monthly_expenditure":
-        prompt = `Meu gasto mensal atual é de ${financialData.monthlyExpenditure}. Analise estes dados e os gastos por categoria: ${JSON.stringify(financialData.expensesByTag || [])}. Me dê estratégias práticas e imediatas para reduzir este valor sem sacrificar o essencial. ${expertInstruction}`;
-        break;
-      case "daily_average":
-        prompt = `Com base na minha média de gastos diária de ${financialData.dailyAverage}, me diga de forma direta se estou no caminho certo. Projete meu gasto mensal e me dê um conselho chave para otimizar. Meu orçamento é ${financialData.currentBudget}. ${expertInstruction}`;
-        break;
-      case "current_budget":
-        prompt = `Meu orçamento é ${financialData.currentBudget} e meu gasto atual é ${financialData.monthlyExpenditure}. Me dê 3 ações críticas e objetivas para garantir que eu termine o mês dentro do orçamento. ${expertInstruction}`;
-        break;
-      case "remaining_budget":
-        prompt = `Com ${financialData.remainingBudget} de orçamento restante, quais são as 3 principais prioridades para o resto do mês? Seja direto e acionável. ${expertInstruction}`;
-        break;
-      case "monthly_expenses_chart":
-        prompt = `Com base nestes dados históricos de despesas mensais: ${JSON.stringify(financialData.monthlyExpenses || [])}, aponte a tendência mais preocupante e a mais positiva. Dê uma dica poderosa para cada uma. ${expertInstruction}`;
-        break;
-      case "expenses_by_category_chart":
-        prompt = `Analisando minhas despesas por categoria: ${JSON.stringify(financialData.expensesByTag || [])}, identifique a de maior gasto e me dê duas táticas não óbvias para reduzir custos nela imediatamente. ${expertInstruction}`;
-        break;
-      case "total_expenses_by_category_chart":        prompt = `Olhando meus gastos de longo prazo por categoria: ${JSON.stringify(financialData.totalExpensesByTag || [])}, qual mudança de hábito teria o maior impacto financeiro? Forneça uma estratégia clara. ${expertInstruction}`;
-        break;
-      case "monthly_shared_expenditure":
-        prompt = `Minha despesa mensal compartilhada é de ${financialData.monthlySharedExpenditure}. Analise este valor e me dê dicas sobre como gerenciar melhor ou reduzir minha parte nas despesas compartilhadas. ${expertInstruction}`;
-        break;
-      case "shared_expenses_painel_summary":
-      case "shared_expenses_painel_summary":        prompt = `${expertInstruction}
-
-Analise os seguintes dados de despesas compartilhadas para ${userName}:
-- Gasto Coletivo Total: ${formatCurrency(financialData.totalSpent)}
-- Minha Parte: ${formatCurrency(financialData.myShare)}
-- Eu Devo: ${formatCurrency(financialData.iOwe)}
-- Me Devem: ${formatCurrency(financialData.theyOweMe)}
-
-Use o seguinte formato em Markdown:
-
-## Resumo Conciso
-Escreva um breve parágrafo descrevendo o estado atual dos gastos compartilhados.
-
-## Dicas Acionáveis
-Forneça de 3 a 5 dicas corriqueiras e numeradas (1., 2., 3.) para otimizar a gestão, focando em:
-- Como receber valores de forma eficiente
-- Como gerenciar quem deve
-- Estratégias para evitar desequilíbrios financeiros`;
-        break;
-      case "shared_expenses_monthly_chart":
-        prompt = `Aja como um analista financeiro. Analise os seguintes dados de despesas compartilhadas mensais: ${JSON.stringify(financialData.monthlySharedExpenses)}. Identifique tendências, picos ou quedas, e forneça 3 dicas práticas para otimizar meus gastos compartilhados ao longo do tempo. Responda sempre em português do Brasil (pt-BR).`;
-        break;
-      case "shared_expenses_category_table":
-        prompt = `Aja como um consultor financeiro. Analise os seguintes dados de despesas compartilhadas por categoria: ${JSON.stringify(financialData.sharedExpensesByCategory)}. Identifique as categorias de maior impacto, comente sobre a distribuição percentual e ofereça 3-5 recomendações específicas para gerenciar ou reduzir gastos nessas categorias. Responda sempre em português do Brasil (pt-BR).`;
-        break;
-      case "shared_incomes_monthly_chart":
-        prompt = `Aja como um analista financeiro. Analise os seguintes dados de rendas compartilhadas mensais: ${JSON.stringify(financialData.monthlySharedIncomes)}. Identifique tendências, picos ou quedas, e forneça 3 dicas práticas para otimizar minhas rendas compartilhadas ao longo do tempo. Responda sempre em português do Brasil (pt-BR).`;
-        break;
-      case "shared_incomes_category_table":
-        prompt = `Aja como um consultor financeiro. Analise os seguintes dados de rendas compartilhadas por categoria: ${JSON.stringify(financialData.sharedIncomesByCategory)}. Identifique as categorias de maior impacto, comente sobre a distribuição percentual e ofereça 3-5 recomendações específicas para gerenciar ou aumentar rendas nessas categorias. Responda sempre em português do Brasil (pt-BR).`;
-        break;
-      case "shared_incomes_painel_summary":
-        prompt = `${expertInstruction}
-
-Analise os seguintes dados de rendas compartilhadas para ${userName}:
-- Total Economizado Juntos: ${formatCurrency(financialData.totalJointSavings)}
-- Sua Contribuição: ${formatCurrency(financialData.myTotalContribution)}
-- Contribuição do Amigo: ${formatCurrency(financialData.friendTotalContribution)}
-
-Use o seguinte formato em Markdown:
-
-## Resumo Conciso
-Escreva um breve parágrafo descrevendo o estado atual das economias conjuntas.
-
-## Dicas Acionáveis
-Forneça de 3 a 5 dicas corriqueiras e numeradas (1., 2., 3.) para otimizar a gestão, focando em:
-- Como aumentar a economia conjunta
-- Como manter a motivação para economizar
-- Estratégias para alcançar metas financeiras em conjunto`;
-        break;
-      default:
-        prompt = `Aja como um consultor financeiro de elite. Analise os dados fornecidos e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.
+      prompt = `Aja como um consultor financeiro de elite. Analise os dados fornecidos e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.
 
         Orçamento Mensal: ${financialData.currentBudget}
         Gastos por Categoria:
-        ${(financialData.expensesByTag || []).map((exp: { tag: string; amount: number }) => `- ${exp.tag}: ${exp.amount}`).join("\n")}
+        ${(financialData.expensesByTag || []).map((exp) => `- ${exp.tag}: ${exp.amount}`).join("\n")}
 
         Histórico de Gastos (últimos 3 meses):
-        ${(financialData.historicalSpending || []).map((hist: { month: number; year: number; total: number }) => `- ${hist.month}/${hist.year}: ${hist.total}`).join("\n")}
+        ${(financialData.historicalSpending || []).map((hist) => `- ${hist.month}/${hist.year}: ${hist.total}`).join("\n")}
+
+        ${customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0 ? `\n**Prompt Personalizado:** ${customPrompt}` : ""}
 
         ${expertInstruction}
-        `;
-        break;
+      `;
+    } else {
+      return NextResponse.json({ error: "Tipo de análise inválido." }, { status: 400 })
     }
 
     const { text } = await generateText({

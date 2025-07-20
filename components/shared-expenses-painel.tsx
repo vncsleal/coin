@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Users, ArrowRightLeft, PiggyBank } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { getSharedPainelStats } from '@/app/actions/shared-expenses';
-import { AICounselingModal } from '@/components/AICounselingModal';
 
 export async function SharedExpensesPainel() {
   const stats = await getSharedPainelStats();
@@ -14,10 +13,10 @@ export async function SharedExpensesPainel() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-muted-foreground" />
+            
             <CardTitle className="text-sm font-medium">Gasto Coletivo</CardTitle>
           </div>
-          <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
+          <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(stats.totalSpent)}</div>
@@ -27,10 +26,10 @@ export async function SharedExpensesPainel() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            
             <CardTitle className="text-sm font-medium">Minha Parte Devida</CardTitle>
           </div>
-          <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(stats.myDuePortion)}</div>
@@ -40,10 +39,10 @@ export async function SharedExpensesPainel() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
-            <PiggyBank className="h-4 w-4 text-muted-foreground" />
+            
             <CardTitle className="text-sm font-medium">Total Pago por Mim</CardTitle>
           </div>
-          <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
+          <PiggyBank className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(stats.totalPaidByMe)}</div>
@@ -53,10 +52,10 @@ export async function SharedExpensesPainel() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center gap-2">
-            <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
+            
             <CardTitle className="text-sm font-medium">Balanço</CardTitle>
           </div>
-          <AICounselingModal counselingType="shared_expenses_painel_summary" data={stats} />
+          <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className={`text-2xl font-bold ${balanceColorClass}`}>{formatCurrency(stats.balance)}</div>

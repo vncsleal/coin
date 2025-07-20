@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { NotificationCenter } from "@/components/notification-center"
 import { AmountVisibilityToggle } from "@/components/amount-visibility-toggle"
+import { AICounselingButton } from "@/components/ai-counseling-button"
 
 export default function DashboardLayout({
   children,
@@ -19,6 +20,7 @@ export default function DashboardLayout({
           <div className="ml-auto flex items-center gap-2">
             <AmountVisibilityToggle />
             <NotificationCenter />
+            <AICounselingButton />
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>

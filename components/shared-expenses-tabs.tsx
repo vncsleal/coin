@@ -4,7 +4,7 @@
 import { useState, ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2, Sparkles } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2, PieChart } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +16,7 @@ import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
 import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-expenses';
 import { Button } from '@/components/ui/button';
 import { SharedExpense } from '@/lib/types';
-import { AICounselingModal } from '@/components/AICounselingModal';
+
 
 interface SharedExpensesTabsProps {
   painel: ReactNode;
@@ -56,11 +56,7 @@ export function SharedExpensesTabs({
     setPainelStats(newPainelStats);
   };
 
-  const aiCounselingData = {
-    ...painelStats,
-    monthlySharedExpenses,
-    sharedExpensesByCategory,
-  };
+  
 
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
     const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
@@ -288,10 +284,10 @@ export function SharedExpensesTabs({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <BarChart className="h-5 w-5 text-muted-foreground" />
+                  
                   <CardTitle>Despesas Compartilhadas Mensais</CardTitle>
                 </div>
-                <AICounselingModal counselingType="shared_expenses_monthly_chart" data={aiCounselingData} />
+                <BarChart className="h-4 w-4 text-muted-foreground" />
               </div>
               <CardDescription>Visão geral das despesas compartilhadas ao longo do tempo.</CardDescription>
             </CardHeader>
@@ -312,10 +308,10 @@ export function SharedExpensesTabs({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <BarChart className="h-5 w-5 text-muted-foreground" />
+                  
                   <CardTitle>Despesas por Categoria</CardTitle>
                 </div>
-                <AICounselingModal counselingType="shared_expenses_category_table" data={aiCounselingData} />
+                <PieChart className="h-4 w-4 text-muted-foreground" />
               </div>
               <CardDescription>Distribuição das despesas compartilhadas por categoria.</CardDescription>
             </CardHeader>

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/currency"
-import { AICounselingModal } from "@/components/AICounselingModal"
+import { DollarSign, Users, ArrowRightLeft, PiggyBank } from "lucide-react"
 
 interface SharedIncomesPainelProps {
   painelStats: {
@@ -18,7 +18,7 @@ export function SharedIncomesPainel({ painelStats }: SharedIncomesPainelProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Economizado Juntos</CardTitle>
-          <AICounselingModal counselingType="shared_incomes_painel_summary" data={painelStats} />
+          <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(painelStats.totalJointSavings)}</div>
@@ -28,7 +28,7 @@ export function SharedIncomesPainel({ painelStats }: SharedIncomesPainelProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Minha Contribuição</CardTitle>
-          <AICounselingModal counselingType="shared_incomes_painel_summary" data={painelStats} />
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(painelStats.myTotalContribution)}</div>
@@ -38,7 +38,7 @@ export function SharedIncomesPainel({ painelStats }: SharedIncomesPainelProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Contribuição do Amigo</CardTitle>
-          <AICounselingModal counselingType="shared_incomes_painel_summary" data={painelStats} />
+          <PiggyBank className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(painelStats.friendTotalContribution)}</div>
@@ -48,7 +48,7 @@ export function SharedIncomesPainel({ painelStats }: SharedIncomesPainelProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Balanço Conjunto</CardTitle>
-          <AICounselingModal counselingType="shared_incomes_painel_summary" data={painelStats} />
+          <ArrowRightLeft className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{formatCurrency(painelStats.myTotalContribution - painelStats.friendTotalContribution)}</div>

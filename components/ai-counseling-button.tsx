@@ -2,9 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Loader2, Sparkles } from "lucide-react"
 import { toast } from "sonner"
@@ -12,17 +9,10 @@ import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import MarkdownRenderer from "@/components/ui/markdown-renderer"
 
-
-
-interface AICounselingModalProps {
-  counselingType: "general";
-}
-
-export function AICounselingModal({ counselingType }: AICounselingModalProps) {
+export function AICounselingButton() {
   const [analysis, setAnalysis] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const [customPrompt, setCustomPrompt] = useState("")
 
   const getAnalysis = async () => {
     setIsLoading(true)
@@ -34,8 +24,7 @@ export function AICounselingModal({ counselingType }: AICounselingModalProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          counselingType: counselingType,
-          customPrompt: customPrompt
+          counselingType: "general",
         }),
       })
 
@@ -61,7 +50,7 @@ export function AICounselingModal({ counselingType }: AICounselingModalProps) {
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
               <Button variant="ghost" size="icon" onClick={() => { setIsOpen(true); getAnalysis(); }}>
-                <Sparkles className="h-4 w-4 text-white" />
+                <Sparkles className="h-4 w-4" />
               </Button>
             </DialogTrigger>
           </TooltipTrigger>
@@ -77,28 +66,18 @@ export function AICounselingModal({ counselingType }: AICounselingModalProps) {
             Receba insights e dicas personalizadas com base nos seus dados financeiros.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="customPrompt">Prompt Personalizado (Opcional)</Label>
-            <Input
-              id="customPrompt"
-              placeholder="Ex: Me dê dicas para economizar mais este mês."
-              value={customPrompt}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomPrompt(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
+        <div className="py-4">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-32">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="mt-2 text-muted-foreground">Analisando suas finanças...</p>
             </div>
           ) : analysis ? (
-            <ScrollArea className="h-96 rounded-md border p-4">
+            <div className="max-h-96 overflow-y-auto">
               <MarkdownRenderer content={analysis} />
-            </ScrollArea>
+            </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center">Selecione um tipo de análise ou insira um prompt personalizado e clique em "Gerar Nova Análise".</p>
+            <p className="text-sm text-muted-foreground text-center">Nenhuma análise disponível.</p>
           )}
         </div>
         <Button onClick={getAnalysis} disabled={isLoading}>

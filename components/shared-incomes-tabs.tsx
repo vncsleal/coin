@@ -4,7 +4,7 @@
 import { useState} from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2 } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2, PieChart } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +16,7 @@ import { EditSharedIncomeModal } from '@/components/EditSharedIncomeModal';
 import { deleteSharedIncome, getSharedIncomes, getMonthlySharedIncomesChartData, getSharedIncomesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-incomes';
 import { Button } from '@/components/ui/button';
 import { SharedIncome, SharedIncomesPainelStats, SharedIncomesAIStats } from '@/lib/types';
-import { AICounselingModal } from '@/components/AICounselingModal';
+
 import { SharedIncomesPainel } from '@/components/shared-incomes-painel';
 
 interface SharedIncomesTabsProps {
@@ -52,12 +52,6 @@ export function SharedIncomesTabs({
     setSharedIncomesByCategory(categoryData);
     const newPainelStats = await getSharedPainelStats();
     setPainelStats(newPainelStats);
-  };
-
-  const aiCounselingData = {
-    ...painelStats,
-    monthlySharedIncomes,
-    sharedIncomesByCategory,
   };
 
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
@@ -289,7 +283,7 @@ export function SharedIncomesTabs({
                   <BarChart className="h-5 w-5 text-muted-foreground" />
                   <CardTitle>Rendas Compartilhadas Mensais</CardTitle>
                 </div>
-                <AICounselingModal counselingType="shared_incomes_monthly_chart" data={aiCounselingData as SharedIncomesAIStats} />
+                <BarChart className="h-4 w-4 text-muted-foreground" />
               </div>
               <CardDescription>Visão geral das rendas compartilhadas ao longo do tempo.</CardDescription>
             </CardHeader>
@@ -313,7 +307,7 @@ export function SharedIncomesTabs({
                   <BarChart className="h-5 w-5 text-muted-foreground" />
                   <CardTitle>Rendas por Categoria</CardTitle>
                 </div>
-                <AICounselingModal counselingType="shared_incomes_category_table" data={aiCounselingData as SharedIncomesAIStats} />
+                <PieChart className="h-4 w-4 text-muted-foreground" />
               </div>
               <CardDescription>Distribuição das rendas compartilhadas por categoria.</CardDescription>
             </CardHeader>
