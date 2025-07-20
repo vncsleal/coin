@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
-import { getAvailableCurrencies, DEFAULT_CURRENCY, CurrencyCode, CURRENCIES } from "@/lib/currency"
+import { getAvailableCurrencies, DEFAULT_CURRENCY, CurrencyCode } from "@/lib/currency"
 import { saveUserCurrencyPreference, getUserCurrencyPreference } from "@/lib/client-preferences"
 import { useEffect } from "react"
 

@@ -1,10 +1,10 @@
 
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState} from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2, Sparkles } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -189,7 +189,7 @@ export function SharedIncomesTabs({
               <div className="text-center py-12">
                 <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground font-medium text-lg">Nenhuma renda compartilhada ainda</p>
-                <p className="text-sm text-muted-foreground mt-2">Comece a registrar rendas compartilhadas na aba "Adicionar Renda".</p>
+                <p className="text-sm text-muted-foreground mt-2">Comece a registrar rendas compartilhadas na aba `&quot;Adicionar Renda&quot;`.</p>
               </div>
             ) : (
               <div className="rounded-md border">

@@ -4,7 +4,6 @@ import * as React from "react"
 import CurrencyInputField from "react-currency-input-field"
 
 import { cn } from "@/lib/utils"
-import { Input } from "@/components/ui/input"
 import { CURRENCIES, DEFAULT_CURRENCY, type CurrencyCode } from "@/lib/currency"
 
 export interface CurrencyInputProps

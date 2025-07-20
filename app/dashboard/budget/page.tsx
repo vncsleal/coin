@@ -91,7 +91,7 @@ export default async function BudgetPage() {
                 <div className="text-center py-12">
                   <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground font-medium text-lg">Nenhum orçamento definido ainda</p>
-                  <p className="text-sm text-muted-foreground mt-2">Defina seu orçamento mensal na aba "Definir Orçamento" para ver a visão geral.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Defina seu orçamento mensal na aba `&quot;Definir Orçamento&quot;` para ver a visão geral.</p>
                 </div>
               ) : (
                 <BudgetOverview budget={currentBudget} />

@@ -1,10 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/currency"
-import { DollarSign, TrendingUp, TrendingDown } from "lucide-react"
 import { AICounselingModal } from "@/components/AICounselingModal"
-import { SharedIncomesPainelStats } from "@/lib/types"
 
 interface SharedIncomesPainelProps {
   painelStats: {

@@ -85,7 +85,7 @@ export default async function ExpensesPage() {
                 <div className="text-center py-12">
                   <Receipt className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground font-medium text-lg">Nenhuma despesa registrada ainda</p>
-                  <p className="text-sm text-muted-foreground mt-2">Comece a adicionar suas despesas na aba "Adicionar Despesa".</p>
+                  <p className="text-sm text-muted-foreground mt-2">Comece a adicionar suas despesas na aba `&quot;Adicionar Despesa&quot;`.</p>
                 </div>
               ) : (
                 <ExpenseList expenses={expenses} />

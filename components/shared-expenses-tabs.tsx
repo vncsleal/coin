@@ -191,7 +191,7 @@ export function SharedExpensesTabs({
               <div className="text-center py-12">
                 <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground font-medium text-lg">Nenhuma despesa compartilhada ainda</p>
-                <p className="text-sm text-muted-foreground mt-2">Comece a registrar despesas compartilhadas na aba "Adicionar Despesa".</p>
+                <p className="text-sm text-muted-foreground mt-2">Comece a registrar despesas compartilhadas na aba `&quot;Adicionar Despesa&quot;`.</p>
               </div>
             ) : (
               <div className="rounded-md border">

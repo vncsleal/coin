@@ -329,7 +329,7 @@ export default function FriendsPage() {
                 <div className="text-center py-12">
                   <UserX className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground font-medium text-lg">Nenhum amigo ainda</p>
-                  <p className="text-sm text-muted-foreground mt-2">Comece a buscar e adicionar amigos na aba "Buscar Amigos"!</p>
+                  <p className="text-sm text-muted-foreground mt-2">Comece a buscar e adicionar amigos na aba `&quot;Buscar Amigos&quot;`!</p>
                 </div>
               ) : (
                 <div className="space-y-4">

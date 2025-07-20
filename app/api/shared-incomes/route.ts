@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const { userId } = await auth();
 
   if (!userId) {

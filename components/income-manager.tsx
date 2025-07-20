@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "sonner"
 import { formatCurrency } from "@/lib/currency"
-import { PlusCircle, Trash2, Pencil } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import { Income } from "@/lib/types"
 import { IncomeForm } from "@/components/income-form"
 import { EditIncomeModal } from "@/components/EditIncomeModal"

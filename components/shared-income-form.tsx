@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { cn, safeDateParse, safeFormatDateForSubmission, formatDateBR } from '@/lib/utils';
+import { cn, safeDateParse, safeFormatDateForSubmission } from '@/lib/utils';
 import { INCOME_TAGS } from '@/lib/constants';
 import { addSharedIncome, updateSharedIncome } from '@/app/actions/shared-incomes';
 import { useToast } from "@/hooks/use-toast";

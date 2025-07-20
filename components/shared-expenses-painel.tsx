@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DollarSign, Users, ArrowRightLeft, Sparkles, PiggyBank } from 'lucide-react';
+import { DollarSign, Users, ArrowRightLeft, PiggyBank } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { getSharedPainelStats } from '@/app/actions/shared-expenses';
 import { AICounselingModal } from '@/components/AICounselingModal';

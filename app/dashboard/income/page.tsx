@@ -23,7 +23,7 @@ export default function IncomePage() {
       if (!response.ok) throw new Error("Falha ao buscar rendas.");
       const data = await response.json();
       setIncomes(data.incomes);
-    } catch (error) {
+    } catch {
       toast.error("Não foi possível carregar as rendas.");
     } finally {
       setIsLoading(false);
@@ -39,7 +39,7 @@ export default function IncomePage() {
       await deleteIncome(id);
       toast.success("Renda excluída com sucesso!");
       fetchIncomes(); // Refresh the list
-    } catch (error) {
+    } catch  {
       toast.error("Não foi possível excluir a renda.");
     }
   }
@@ -103,7 +103,7 @@ export default function IncomePage() {
                 <div className="text-center py-12">
                   <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground font-medium text-lg">Nenhuma renda registrada ainda</p>
-                  <p className="text-sm text-muted-foreground mt-2">Comece a adicionar suas fontes de renda na aba "Adicionar Renda".</p>
+                  <p className="text-sm text-muted-foreground mt-2">Comece a adicionar suas fontes de renda na aba `&quot;Adicionar Renda&quot;`.</p>
                 </div>
               ) : (
                 <div className="rounded-md border">
