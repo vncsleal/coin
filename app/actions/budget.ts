@@ -11,7 +11,11 @@ export async function setBudget(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const amountString = (formData.get("amount") as string).replace(",", ".").trim();
+  const amountString = (formData.get("amount") as string)
+    .replace("R$", "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .trim();
   const amount = Number.parseFloat(amountString);
 
   if (isNaN(amount) || amount <= 0) {
