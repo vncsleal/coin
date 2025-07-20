@@ -92,18 +92,13 @@ export async function POST(request: Request) {
   await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`)
 
   try {
-    const { counselingType, data, startDate, endDate, customPrompt } = await request.json()
+    const { counselingType, data, startDate, endDate, customPrompt, messages, refreshData = false } = await request.json()
 
-    // Get user's display name for personalization
-    const userResult = await sql`
-      SELECT display_name
-      FROM users
-      WHERE id = ${userId}
-      LIMIT 1
-    `
-    const userName = userResult[0]?.display_name.split(" ")[0] || "você"
+    // Check if this is the first message in conversation or if data refresh is requested
+    const isFirstMessage = !Array.isArray(messages) || messages.length === 0
+    const shouldFetchFreshData = isFirstMessage || refreshData
 
-    let prompt = ""
+    let prompt = "";
     if (counselingType === "report") {
       const financialData = await getFinancialDataForRange(userId, startDate, endDate)
       prompt = `
@@ -111,119 +106,135 @@ export async function POST(request: Request) {
 
         Crie um relatório financeiro detalhado e perspicaz para ${userName} no período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
 
-        **Dados Financeiros:**
-        - **Total de Despesas:** ${formatCurrency(financialData.totalExpenses)}
-        - **Renda (se aplicável):** (não disponível)
-        - **Balanço (Renda - Despesas):** ${formatCurrency(-financialData.totalExpenses)}
-        - **Média de Gasto Diário:** ${formatCurrency(financialData.dailyAverage)}
-
         **Análise de Despesas por Categoria:**
         ${financialData.expensesByCategory.map((item) => `- **${item.tag}:** ${formatCurrency(item.total)} (${item.percentage}%)`).join("\n")}
-
-        **Principais Despesas:**
-        ${financialData.topExpenses.map((exp) => `- ${exp.name} em ${format(new Date(exp.date), "dd/MM/yyyy", { locale: ptBR })}: ${formatCurrency(exp.amount)}`).join("\n")}
-
-        **O relatório deve incluir as seguintes seções, com títulos claros e formatação em Markdown:**
-
-        1.  **Resumo Executivo:** Um parágrafo conciso com os principais destaques financeiros do período.
-        2.  **Análise de Padrões de Consumo:**
-            - Identifique as 3 principais categorias de gastos.
-            - Analise a distribuição de despesas. Há alguma concentração excessiva?
-            - Comente sobre a frequência e o volume das transações.
-        3.  **Visualização de Dados (Simulado):**
-            - Descreva um gráfico de pizza para "Distribuição de Despesas por Categoria".
-            - Descreva um gráfico de barras para "Top 5 Despesas".
-        4.  **Insights e Observações:**
-            - Destaque tendências importantes (ex: aumento de gastos em uma categoria específica).
-            - Aponte anomalias ou despesas inesperadas.
-            - Avalie a saúde financeira geral com base nos dados.
-        5.  **Dicas e Recomendações Acionáveis:**
-            - Forneça 3-5 dicas práticas e personalizadas para otimizar os gastos.
-            - Sugira áreas para economia potencial.
-            - Recomende estratégias para melhorar a gestão financeira com base nos padrões observados.
-
-        **Instruções de Formato:**
-        - Use Markdown para formatar o relatório com títulos, listas e negrito.
-        - A resposta deve ser estruturada, clara e profissional.
-        - Responda sempre em português do Brasil (pt-BR).
-      `
-      if (customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0) {
-        prompt += `\n\n**Prompt Personalizado:** ${customPrompt}`
-      }
+      `;
     } else if (counselingType === "general") {
-      const currentMonth = format(new Date(), "MM");
-      const currentYear = format(new Date(), "yyyy");
+      // Use cached financial data if available and not requesting fresh data
+      let financialData;
+      
+      if (!shouldFetchFreshData && data && data.financialSummary) {
+        // Reuse cached financial data from previous request
+        financialData = data.financialSummary;
+      } else {
+        // Fetch fresh financial data
+        // Budgets
+        const currentMonth = format(new Date(), "MM");
+        const currentYear = format(new Date(), "yyyy");
+        const currentBudgetRes = await sql`
+          SELECT amount FROM budgets
+          WHERE user_id = ${userId} AND month = ${currentMonth} AND year = ${currentYear}
+        `;
+        const currentBudget = Number(currentBudgetRes[0]?.amount || 0);
 
-      const currentBudgetRes = await sql`
-        SELECT amount FROM budgets
-        WHERE user_id = ${userId} AND month = ${currentMonth} AND year = ${currentYear}
-      `;
-      const currentBudget = Number(currentBudgetRes[0]?.amount || 0);
+        // Get monthly individual expenditure (same as dashboard)
+        const monthlyIndividualExpenditure = await sql`
+          SELECT COALESCE(SUM(amount), 0) as total
+          FROM expenses 
+          WHERE user_id = ${userId}
+          AND EXTRACT(MONTH FROM date) = ${currentMonth}
+          AND EXTRACT(YEAR FROM date) = ${currentYear}
+        `;
 
-      const expensesByTagRes = await sql`
-        SELECT tag, SUM(amount) as total
-        FROM expenses
-        WHERE user_id = ${userId}
-        GROUP BY tag
-        ORDER BY total DESC
-      `;
-      const expensesByTag = expensesByTagRes.map((row) => ({
-        tag: row.tag,
-        amount: Number(row.total),
-      }));
+        // Get monthly shared expenditure (user's portion - same as dashboard)
+        const monthlySharedExpenditureResult = await sql`
+          SELECT
+            COALESCE(SUM(CASE
+              WHEN paid_by_user_id = ${userId} THEN total_amount / 2
+              WHEN shared_with_user_id = ${userId} THEN total_amount / 2
+              ELSE 0
+            END), 0) as total
+          FROM shared_expenses
+          WHERE (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+          AND EXTRACT(MONTH FROM date) = ${currentMonth}
+          AND EXTRACT(YEAR FROM date) = ${currentYear}
+        `;
 
-      const historicalSpending = await sql`
-        SELECT 
-          EXTRACT(MONTH FROM date) as month,
-          EXTRACT(YEAR FROM date) as year,
-          SUM(amount) as total
-        FROM expenses 
-        WHERE user_id = ${userId}
-        AND date >= CURRENT_DATE - INTERVAL '3 months'
-        GROUP BY EXTRACT(MONTH FROM date), EXTRACT(YEAR FROM date)
-        ORDER BY year DESC, month DESC
-      `;
+        // Get monthly income (same as dashboard)
+        const monthlyIncomeTotal = await sql`
+          SELECT COALESCE(SUM(amount), 0) as total
+          FROM incomes
+          WHERE user_id = ${userId}
+          AND EXTRACT(MONTH FROM date) = ${currentMonth}
+          AND EXTRACT(YEAR FROM date) = ${currentYear}
+        `;
 
-      const financialData = {
-        currentBudget,
-        expensesByTag,
-        historicalSpending: historicalSpending.map((row) => ({
-          month: row.month,
-          year: row.year,
-          total: Number(row.total),
-        })),
-      };
+        const totalIndividualExpenditure = Number(monthlyIndividualExpenditure[0]?.total || 0);
+        const totalSharedExpenditure = Number(monthlySharedExpenditureResult[0]?.total || 0);
+        const totalExpenditure = totalIndividualExpenditure + totalSharedExpenditure;
+        const totalIncome = Number(monthlyIncomeTotal[0]?.total || 0);
+        const remainingBudget = currentBudget - totalExpenditure;
+        const netBalance = totalIncome - totalExpenditure;
+
+        // Expenses by tag
+        const expensesByTagRes = await sql`
+          SELECT tag, SUM(amount) as total
+          FROM expenses
+          WHERE user_id = ${userId}
+          GROUP BY tag
+          ORDER BY total DESC
+        `;
+        const expensesByTag = expensesByTagRes.map((row) => ({
+          tag: row.tag,
+          amount: Number(row.total),
+        }));
+
+        // Create financial data object
+        financialData = {
+          currentBudget,
+          totalExpenditure,
+          remainingBudget,
+          totalIndividualExpenditure,
+          totalSharedExpenditure,
+          totalIncome,
+          netBalance,
+          expensesByTag,
+        };
+      }
+
+      // Conversational context: include previous messages
+      let conversationHistory = "";
+      if (Array.isArray(messages) && messages.length > 0) {
+        conversationHistory = messages.map((msg) => `${msg.role === "user" ? "Usuário" : "Tia Cutia"}: ${msg.content}`).join("\n");
+      }
 
       const expertInstruction = `${CUTIA_PERSONA}
 
-Forneça dicas curtas (máximo 256 caracteres), úteis e edificantes. Use sua personalidade calorosa e otimista para inspirar ações financeiras positivas. Seja extremamente conciso. Não se apresente, não use saudações iniciais, e não se refira ao usuário pelo nome.`
+Responda como se fosse uma conversa natural entre amigos. Seja direta, calorosa e útil. Use linguagem coloquial brasileira. Mantenha as respostas entre 50-150 palavras. Foque na pergunta específica do usuário.`;
 
-      prompt = `Aja como um consultor financeiro de elite. Analise os dados fornecidos e me dê um diagnóstico rápido e 3 recomendações estratégicas de alto impacto. Seja conciso e direto ao ponto.
+      prompt = `Responda como uma consultora financeira amigável em uma conversa informal. Use dados reais dos gastos abaixo:
 
-        Orçamento Mensal: ${financialData.currentBudget}
-        Gastos por Categoria:
-        ${(financialData.expensesByTag || []).map((exp) => `- ${exp.tag}: ${exp.amount}`).join("\n")}
+Orçamento Mensal: R$ ${financialData.currentBudget.toFixed(2)}
+Gastos Individuais: R$ ${financialData.totalIndividualExpenditure.toFixed(2)}
+Gastos Compartilhados (sua parte): R$ ${financialData.totalSharedExpenditure.toFixed(2)}
+Total de Gastos: R$ ${financialData.totalExpenditure.toFixed(2)}
+Receitas: R$ ${financialData.totalIncome.toFixed(2)}
+Saldo Restante do Orçamento: R$ ${financialData.remainingBudget.toFixed(2)}
+Saldo Líquido (Receitas - Gastos): R$ ${financialData.netBalance.toFixed(2)}
 
-        Histórico de Gastos (últimos 3 meses):
-        ${(financialData.historicalSpending || []).map((hist) => `- ${hist.month}/${hist.year}: ${hist.total}`).join("\n")}
+${conversationHistory ? `\nContexto da conversa:\n${conversationHistory}\n` : ""}
 
-        ${customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0 ? `\n**Prompt Personalizado:** ${customPrompt}` : ""}
+Gastos por Categoria:
+${(financialData.expensesByTag || []).map((exp) => `- ${exp.tag}: R$ ${exp.amount.toFixed(2)}`).join("\n")}
 
-        ${expertInstruction}
-      `;
-    } else {
-      return NextResponse.json({ error: "Tipo de análise inválido." }, { status: 400 })
-    }
+${customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0 ? `\n\nPergunta do usuário: ${customPrompt}` : ""}
 
-    const { text } = await generateText({
-      model: google("gemini-1.5-flash"),
-      prompt,
-      maxTokens: 256, // Increased to prevent truncation of tweet-sized responses
-    })
+${expertInstruction}`;
 
-    return NextResponse.json({ analysis: text })
-  } catch (error) {
+      const { text } = await generateText({
+        model: google("gemini-1.5-flash"),
+        prompt,
+        maxTokens: 400, // Increased for more conversational responses
+      })
+
+      return NextResponse.json({ 
+        analysis: text,
+        financialSummary: shouldFetchFreshData ? financialData : undefined // Return fresh data only when fetched
+      })
+    } // end of else if (counselingType === "general")
+  } // end of try block
+  catch (error) {
     console.error("AI Counseling error:", error)
     return NextResponse.json({ error: "Failed to generate analysis" }, { status: 500 })
   }
-}
+} // end of POST function
