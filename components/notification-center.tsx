@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback, useRef } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,9 +21,6 @@ interface Notification {
 export function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
-  const [lastFetch, setLastFetch] = useState<Date>(new Date())
-  const [isUserActive, setIsUserActive] = useState(true)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleFriendRequest = async (requestId: string, action: 'accept' | 'deny') => {
     try {
@@ -45,31 +42,12 @@ export function NotificationCenter() {
     }
   };
 
-  // Track user activity for smart polling
-  useEffect(() => {
-    const handleActivity = () => setIsUserActive(true)
-    const handleInactivity = () => setIsUserActive(false)
-
-    // Listen for user activity
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart']
-    events.forEach(event => document.addEventListener(event, handleActivity, true))
-
-    // Set user as inactive after 2 minutes of no activity (shorter timeout)
-    const inactivityTimer = setTimeout(handleInactivity, 2 * 60 * 1000)
-
-    return () => {
-      events.forEach(event => document.removeEventListener(event, handleActivity, true))
-      clearTimeout(inactivityTimer)
-    }
-  }, [])
-
   const fetchNotifications = useCallback(async () => {
     try {
       const response = await fetch("/api/notifications")
       if (response.ok) {
         const data = await response.json()
         setNotifications(data)
-        setLastFetch(new Date())
       } else {
         console.error("Failed to fetch notifications:", response.statusText)
       }
@@ -80,56 +58,10 @@ export function NotificationCenter() {
     }
   }, [])
 
-  // Smart polling based on user activity and data freshness
+  // Fetch notifications only on component mount (page navigation)
   useEffect(() => {
-    // Initial fetch
     fetchNotifications()
-
-    // Set up polling interval
-    const setupPolling = () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-
-      // Determine polling frequency - much more sparse intervals
-      const now = new Date()
-      const timeSinceLastFetch = now.getTime() - lastFetch.getTime()
-      const fifteenMinutes = 15 * 60 * 1000
-      
-      let pollInterval: number
-      if (!isUserActive) {
-        pollInterval = 60 * 60 * 1000 // 1 hour when inactive
-      } else if (timeSinceLastFetch > fifteenMinutes) {
-        pollInterval = 10 * 60 * 1000 // 10 minutes if data is getting stale
-      } else {
-        pollInterval = 15 * 60 * 1000 // 15 minutes normal polling for active users
-      }
-
-      intervalRef.current = setInterval(fetchNotifications, pollInterval)
-    }
-
-    setupPolling()
-
-    // Cleanup interval on unmount
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [isUserActive, lastFetch, fetchNotifications])
-
-  // Fetch immediately when user becomes active
-  useEffect(() => {
-    if (isUserActive) {
-      const timeSinceLastFetch = new Date().getTime() - lastFetch.getTime()
-      const tenMinutes = 10 * 60 * 1000
-      
-      // If data is older than 10 minutes and user just became active, fetch immediately
-      if (timeSinceLastFetch > tenMinutes) {
-        fetchNotifications()
-      }
-    }
-  }, [isUserActive, lastFetch, fetchNotifications])
+  }, [fetchNotifications])
 
   
 
