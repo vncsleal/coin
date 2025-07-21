@@ -10,6 +10,7 @@ import { Trash2 } from "lucide-react"
 import { Income } from "@/lib/types"
 import { IncomeForm } from "@/components/income-form"
 import { EditIncomeModal } from "@/components/EditIncomeModal"
+import { deleteIncome, getIncomes } from "@/app/actions/incomes"
 
 export function IncomeManager() {
   const [incomes, setIncomes] = useState<Income[]>([])
@@ -17,10 +18,8 @@ export function IncomeManager() {
 
   async function fetchIncomes() {
     try {
-      const response = await fetch("/api/incomes")
-      if (!response.ok) throw new Error("Falha ao buscar rendas.")
-      const data = await response.json()
-      setIncomes(data.incomes)
+      const data = await getIncomes()
+      setIncomes(data)
     } catch (error) {
       toast.error("Não foi possível carregar as rendas.")
     } finally {
@@ -34,18 +33,11 @@ export function IncomeManager() {
 
   async function handleDelete(id: number) {
     try {
-      const response = await fetch("/api/incomes", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-
-      if (!response.ok) throw new Error("Falha ao excluir renda.");
-
-      toast.success("Renda excluída com sucesso!");
-      fetchIncomes(); // Refresh the list
+      await deleteIncome(id)
+      toast.success("Renda excluída com sucesso!")
+      fetchIncomes() // Refresh the list
     } catch (error) {
-      toast.error("Não foi possível excluir a renda.");
+      toast.error("Não foi possível excluir a renda.")
     }
   }
 

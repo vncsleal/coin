@@ -13,7 +13,7 @@ import { IncomeChart } from '@/components/income-chart';
 import { formatCurrency } from '@/lib/currency';
 import { SharedIncomeForm } from '@/components/shared-income-form';
 import { EditSharedIncomeModal } from '@/components/EditSharedIncomeModal';
-import { deleteSharedIncome, getSharedIncomes, getMonthlySharedIncomesChartData, getSharedIncomesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-incomes';
+import { deleteSharedIncome, getSharedIncomes, getMonthlySharedIncomesChartData, getSharedIncomesByCategoryData, getSharedPainelStats, updateSharedIncomeStatus, batchSettleSharedIncomes } from '@/app/actions/shared-incomes';
 import { Button } from '@/components/ui/button';
 import { SharedIncome, SharedIncomesPainelStats, SharedIncomesAIStats } from '@/lib/types';
 
@@ -57,15 +57,7 @@ export function SharedIncomesTabs({
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
     const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
     try {
-      const response = await fetch('/api/shared-incomes', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to toggle status');
-      }
+      await updateSharedIncomeStatus(id, newStatus);
       toast({
         title: 'Status da renda atualizado!',
         description: `A renda foi marcada como ${newStatus === 'settled' ? 'liquidada' : 'não liquidada'}.`,
@@ -90,18 +82,10 @@ export function SharedIncomesTabs({
       return;
     }
     try {
-      const response = await fetch('/api/shared-incomes/batch-settle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedIncomes }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to batch settle incomes');
-      }
+      const settledCount = await batchSettleSharedIncomes(selectedIncomes);
       toast({
         title: 'Sucesso',
-        description: `${selectedIncomes.length} rendas liquidadas com sucesso!`,
+        description: `${settledCount} rendas liquidadas com sucesso!`,
       });
       setSelectedIncomes([]); // Clear selection
       refetchData();

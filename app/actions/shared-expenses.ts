@@ -232,3 +232,38 @@ export async function getSharedExpensesByCategoryData() {
     percentage: number;
   }[];
 }
+
+export async function updateSharedExpenseStatus(id: string, status: "unsettled" | "settled") {
+  const { userId } = await auth()
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  await sql`
+    UPDATE shared_expenses
+    SET status = ${status}
+    WHERE id = ${id} AND (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+  `
+
+  revalidatePath("/dashboard/shared-expenses")
+  revalidatePath("/dashboard")
+}
+
+export async function batchSettleSharedExpenses(ids: string[]) {
+  const { userId } = await auth()
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  const result = await sql`
+    UPDATE shared_expenses
+    SET status = 'settled'
+    WHERE id = ANY(${ids}) AND (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+    RETURNING id
+  `
+
+  revalidatePath("/dashboard/shared-expenses")
+  revalidatePath("/dashboard")
+  
+  return result.length
+}

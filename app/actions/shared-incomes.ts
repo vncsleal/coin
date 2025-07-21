@@ -230,3 +230,38 @@ export async function getSharedPainelStats() {
     friendTotalContribution: number;
   }
 }
+
+export async function updateSharedIncomeStatus(id: string, status: "unsettled" | "settled") {
+  const { userId } = await auth()
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  await sql`
+    UPDATE shared_incomes
+    SET status = ${status}
+    WHERE id = ${id} AND (received_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+  `
+
+  revalidatePath("/dashboard/shared-incomes")
+  revalidatePath("/dashboard")
+}
+
+export async function batchSettleSharedIncomes(ids: string[]) {
+  const { userId } = await auth()
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  const result = await sql`
+    UPDATE shared_incomes
+    SET status = 'settled'
+    WHERE id = ANY(${ids}) AND (received_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+    RETURNING id
+  `
+
+  revalidatePath("/dashboard/shared-incomes")
+  revalidatePath("/dashboard")
+  
+  return result.length
+}

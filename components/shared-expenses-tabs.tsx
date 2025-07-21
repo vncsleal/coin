@@ -13,7 +13,7 @@ import { ExpenseChart } from '@/components/expense-chart';
 import { formatCurrency } from '@/lib/currency';
 import { SharedExpenseForm } from '@/components/shared-expense-form';
 import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
-import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats } from '@/app/actions/shared-expenses';
+import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats, updateSharedExpenseStatus, batchSettleSharedExpenses } from '@/app/actions/shared-expenses';
 import { Button } from '@/components/ui/button';
 import { SharedExpense } from '@/lib/types';
 
@@ -61,15 +61,7 @@ export function SharedExpensesTabs({
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
     const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
     try {
-      const response = await fetch('/api/shared-expenses', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to toggle status');
-      }
+      await updateSharedExpenseStatus(id, newStatus);
       toast({
         title: 'Status da despesa atualizado!',
         description: `A despesa foi marcada como ${newStatus === 'settled' ? 'liquidada' : 'não liquidada'}.`,
@@ -94,18 +86,10 @@ export function SharedExpensesTabs({
       return;
     }
     try {
-      const response = await fetch('/api/shared-expenses/batch-settle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedExpenses }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to batch settle expenses');
-      }
+      const settledCount = await batchSettleSharedExpenses(selectedExpenses);
       toast({
         title: 'Sucesso',
-        description: `${selectedExpenses.length} despesas liquidadas com sucesso!`,
+        description: `${settledCount} despesas liquidadas com sucesso!`,
       });
       setSelectedExpenses([]); // Clear selection
       refetchData();

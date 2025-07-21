@@ -70,3 +70,22 @@ export async function deleteExpense(id: number) {
   revalidatePath("/dashboard")
   revalidatePath("/dashboard/expenses")
 }
+
+export async function getExpenses() {
+  const { userId } = await auth()
+
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  const expenses = await sql`
+    SELECT * FROM expenses 
+    WHERE user_id = ${userId}
+    ORDER BY date DESC, created_at DESC
+  `
+
+  return expenses.map((expense) => ({
+    ...expense,
+    amount: Number(expense.amount),
+  }))
+}

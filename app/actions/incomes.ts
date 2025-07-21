@@ -65,3 +65,22 @@ export async function deleteIncome(id: number) {
   revalidatePath("/dashboard/income")
   revalidatePath("/dashboard")
 }
+
+export async function getIncomes() {
+  const { userId } = await auth()
+  if (!userId) {
+    throw new Error("Unauthorized")
+  }
+
+  const incomes = await sql`
+    SELECT id, name, amount, date
+    FROM incomes
+    WHERE user_id = ${userId}
+    ORDER BY date DESC
+  `
+
+  return incomes.map((income) => ({
+    ...income,
+    amount: Number(income.amount),
+  }))
+}

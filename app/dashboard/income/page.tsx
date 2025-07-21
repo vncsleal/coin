@@ -11,7 +11,7 @@ import { PlusCircle, List, DollarSign, Trash2 } from "lucide-react";
 import { Income } from "@/lib/types";
 import { IncomeForm } from "@/components/income-form";
 import { EditIncomeModal } from "@/components/EditIncomeModal";
-import { deleteIncome } from "@/app/actions/incomes";
+import { deleteIncome, getIncomes } from "@/app/actions/incomes";
 
 export default function IncomePage() {
   const [incomes, setIncomes] = useState<Income[]>([]);
@@ -19,10 +19,8 @@ export default function IncomePage() {
 
   async function fetchIncomes() {
     try {
-      const response = await fetch("/api/incomes");
-      if (!response.ok) throw new Error("Falha ao buscar rendas.");
-      const data = await response.json();
-      setIncomes(data.incomes);
+      const data = await getIncomes();
+      setIncomes(data);
     } catch {
       toast.error("Não foi possível carregar as rendas.");
     } finally {

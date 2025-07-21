@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ExpenseSearch } from "@/components/expense-search"
 import { ExpenseList } from "@/components/expense-list"
+import { getExpenses } from "@/app/actions/expenses"
 import type { Expense } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 
@@ -18,12 +19,9 @@ export function AdvancedExpenseManager() {
 
   async function fetchExpenses() {
     try {
-      const response = await fetch("/api/expenses")
-      if (response.ok) {
-        const data = await response.json()
-        setExpenses(data)
-        setFilteredExpenses(data)
-      }
+      const data = await getExpenses()
+      setExpenses(data)
+      setFilteredExpenses(data)
     } catch (error) {
       toast({
         title: "Error",
