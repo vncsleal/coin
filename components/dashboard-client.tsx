@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ExpenseChart } from "@/components/expense-chart"
 import { ExpensePieChart } from "@/components/expense-pie-chart"
-import { DollarSign, TrendingUp, Target, TrendingDown, Scale, BarChart, PieChart } from "lucide-react"
+import { DollarSign, TrendingUp, Target, TrendingDown, Scale, BarChart, PieChart, List } from "lucide-react"
 import { formatCurrency } from "@/lib/currency"
 import { IncomeChart } from "@/components/income-chart"
 import type { DashboardStats } from "@/lib/types"
@@ -15,6 +16,13 @@ interface DashboardClientProps {
 
 export function DashboardClient({ stats }: DashboardClientProps) {
   const [showAmounts, setShowAmounts] = useState(false)
+
+  // Calculate percentages for total expenses by category
+  const totalExpensesSum = stats.totalExpensesByTag.reduce((sum, item) => sum + item.amount, 0)
+  const totalExpensesByTagWithPercentage = stats.totalExpensesByTag.map(item => ({
+    ...item,
+    percentage: totalExpensesSum > 0 ? (item.amount / totalExpensesSum) * 100 : 0
+  }))
 
   // Load preference from localStorage on component mount
   useEffect(() => {
@@ -176,10 +184,35 @@ export function DashboardClient({ stats }: DashboardClientProps) {
               <CardTitle>Total de Despesas por Categoria</CardTitle>
               <CardDescription>Detalhamento de gastos de todos os tempos</CardDescription>
             </div>
-            <PieChart className="h-4 w-4 text-muted-foreground" />
+            <List className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <ExpensePieChart data={stats.totalExpensesByTag} showAmounts={showAmounts} />
+            {totalExpensesByTagWithPercentage.length === 0 ? (
+              <div className="text-center py-12">
+                <BarChart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground font-medium text-lg">Sem dados para exibir</p>
+                <p className="text-sm text-muted-foreground mt-2">Adicione despesas para ver a tabela.</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead className="text-right">Porcentagem</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {totalExpensesByTagWithPercentage.map((item) => (
+                    <TableRow key={item.tag}>
+                      <TableCell>{item.tag}</TableCell>
+                      <TableCell className="text-right">{formatAmount(item.amount)}</TableCell>
+                      <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
       </div>

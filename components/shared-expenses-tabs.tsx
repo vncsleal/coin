@@ -4,7 +4,7 @@
 import { useState, ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2, PieChart } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -408,7 +408,7 @@ export function SharedExpensesTabs({
                   
                   <CardTitle>Despesas por Categoria</CardTitle>
                 </div>
-                <PieChart className="h-4 w-4 text-muted-foreground" />
+                <List className="h-4 w-4 text-muted-foreground" />
               </div>
               <CardDescription>Distribuição das despesas compartilhadas por categoria.</CardDescription>
             </CardHeader>
