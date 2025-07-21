@@ -126,7 +126,8 @@ export function SharedExpensesTabs({
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="add" className="flex items-center gap-2">
           <PlusCircle className="h-4 w-4" />
-          Adicionar Despesa
+          <span className="hidden sm:inline">Adicionar Despesa</span>
+          <span className="sm:hidden">Adicionar</span>
         </TabsTrigger>
         <TabsTrigger value="list" className="flex items-center gap-2">
           <List className="h-4 w-4" />
@@ -166,7 +167,7 @@ export function SharedExpensesTabs({
             </div>
             <CardDescription>Todas as despesas que você compartilhou ou que foram compartilhadas com você.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="w-full overflow-x-hidden">
             {sharedExpenses.length === 0 ? (
               <div className="text-center py-12">
                 <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -174,87 +175,199 @@ export function SharedExpensesTabs({
                 <p className="text-sm text-muted-foreground mt-2">Comece a registrar despesas compartilhadas na aba `&quot;Adicionar Despesa&quot;`.</p>
               </div>
             ) : (
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>
-                        <Checkbox
-                          checked={selectedExpenses.length === sharedExpenses.length && sharedExpenses.length > 0}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedExpenses(sharedExpenses.map(exp => exp.id));
-                            } else {
-                              setSelectedExpenses([]);
-                            }
-                          }}
-                        />
-                      </TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Pago Por</TableHead>
-                      <TableHead>Compartilhado Com</TableHead>
-                      <TableHead className="text-right">Valor Total</TableHead>
-                      <TableHead className="text-right">Sua Parte</TableHead>
-                      <TableHead className="text-right">Status</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sharedExpenses.map((expense) => (
-                      <TableRow key={expense.id}>
-                        <TableCell>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden md:block rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>
                           <Checkbox
-                            checked={selectedExpenses.includes(expense.id)}
+                            checked={selectedExpenses.length === sharedExpenses.length && sharedExpenses.length > 0}
                             onCheckedChange={(checked) => {
-                              setSelectedExpenses(prev =>
-                                checked ? [...prev, expense.id] : prev.filter(id => id !== expense.id)
-                              );
+                              if (checked) {
+                                setSelectedExpenses(sharedExpenses.map(exp => exp.id));
+                              } else {
+                                setSelectedExpenses([]);
+                              }
                             }}
                           />
-                        </TableCell>
-                        <TableCell className="font-medium">{expense.description}</TableCell>
-                        <TableCell>{expense.category || 'Sem Categoria'}</TableCell>
-                        <TableCell className="text-muted-foreground">{formatDate(expense.date)}</TableCell>
-                        <TableCell>{expense.paid_by_user_name}</TableCell>
-                        <TableCell>{expense.shared_with_user_name}</TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount)}</TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount / 2)}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant={expense.status === 'settled' ? 'secondary' : 'default'}
-                            size="sm"
-                            className="w-[120px]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleStatus(expense.id, expense.status);
-                            }}
-                          >
-                            {expense.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
-                          </Button>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
+                        </TableHead>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Pago Por</TableHead>
+                        <TableHead>Compartilhado Com</TableHead>
+                        <TableHead className="text-right">Valor Total</TableHead>
+                        <TableHead className="text-right">Sua Parte</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sharedExpenses.map((expense) => (
+                        <TableRow key={expense.id}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedExpenses.includes(expense.id)}
+                              onCheckedChange={(checked) => {
+                                setSelectedExpenses(prev =>
+                                  checked ? [...prev, expense.id] : prev.filter(id => id !== expense.id)
+                                );
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">{expense.description}</TableCell>
+                          <TableCell>{expense.category || 'Sem Categoria'}</TableCell>
+                          <TableCell className="text-muted-foreground">{formatDate(expense.date)}</TableCell>
+                          <TableCell>{expense.paid_by_user_name}</TableCell>
+                          <TableCell>{expense.shared_with_user_name}</TableCell>
+                          <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount)}</TableCell>
+                          <TableCell className="text-right font-semibold">{formatCurrency(expense.total_amount / 2)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant={expense.status === 'settled' ? 'secondary' : 'default'}
+                              size="sm"
+                              className="w-[120px]"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleStatus(expense.id, expense.status);
+                              }}
+                            >
+                              {expense.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <EditSharedExpenseModal expense={expense} />
+                              <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)} className="h-8 w-8">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Excluir</span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {selectedExpenses.length > 0 && (
+                    <div className="p-4 border-t flex justify-end">
+                      <Button onClick={handleBatchSettle}>
+                        Marcar como Liquidado ({selectedExpenses.length})
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4 w-full overflow-hidden">
+                  {/* Mobile batch actions header */}
+                  {selectedExpenses.length > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-accent rounded-lg min-w-0">
+                      <span className="text-sm font-medium truncate">
+                        {selectedExpenses.length} selecionada(s)
+                      </span>
+                      <Button onClick={handleBatchSettle} size="sm" className="ml-2 flex-shrink-0">
+                        Liquidar
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Select all option for mobile */}
+                  <div className="flex items-center gap-2 p-2 min-w-0">
+                    <Checkbox
+                      checked={selectedExpenses.length === sharedExpenses.length && sharedExpenses.length > 0}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedExpenses(sharedExpenses.map(exp => exp.id));
+                        } else {
+                          setSelectedExpenses([]);
+                        }
+                      }}
+                      className="flex-shrink-0"
+                    />
+                    <span className="text-sm text-muted-foreground">Selecionar todas</span>
+                  </div>
+
+                  {sharedExpenses.map((expense) => (
+                    <Card key={expense.id} className="p-3 w-full overflow-hidden">
+                      <div className="flex flex-col space-y-3 min-w-0">
+                        {/* Header with checkbox, title and actions */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <Checkbox
+                              checked={selectedExpenses.includes(expense.id)}
+                              onCheckedChange={(checked) => {
+                                setSelectedExpenses(prev =>
+                                  checked ? [...prev, expense.id] : prev.filter(id => id !== expense.id)
+                                );
+                              }}
+                              className="mt-1 flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-sm truncate">{expense.description}</h3>
+                              <div className="flex flex-col gap-1 mt-1">
+                                <p className="text-xs text-muted-foreground truncate">
+                                  <span className="font-medium">Categoria:</span> {expense.category || 'Sem Categoria'}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatDate(expense.date)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 ml-2 flex-shrink-0">
                             <EditSharedExpenseModal expense={expense} />
                             <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)} className="h-8 w-8">
                               <Trash2 className="h-4 w-4" />
                               <span className="sr-only">Excluir</span>
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {selectedExpenses.length > 0 && (
-                  <div className="p-4 border-t flex justify-end">
-                    <Button onClick={handleBatchSettle}>
-                      Marcar como Liquidado ({selectedExpenses.length})
-                    </Button>
-                  </div>
-                )}
-              </div>
+                        </div>
+
+                        {/* People information */}
+                        <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+                          <div className="min-w-0">
+                            <span className="text-xs text-muted-foreground block">Pago por</span>
+                            <span className="text-sm font-medium block truncate">{expense.paid_by_user_name}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-xs text-muted-foreground block">Compartilhado com</span>
+                            <span className="text-sm font-medium block truncate">{expense.shared_with_user_name}</span>
+                          </div>
+                        </div>
+
+                        {/* Amount and status */}
+                        <div className="flex flex-col gap-3 pt-2 border-t">
+                          <div className="flex flex-col">
+                            <span className="text-xs text-muted-foreground">Total / Sua parte</span>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-red-600 text-sm">
+                                {formatCurrency(expense.total_amount)}
+                              </span>
+                              <span className="text-muted-foreground">/</span>
+                              <span className="font-semibold text-orange-600 text-sm">
+                                {formatCurrency(expense.total_amount / 2)}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            variant={expense.status === 'settled' ? 'secondary' : 'default'}
+                            size="sm"
+                            className="w-full text-xs px-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStatus(expense.id, expense.status);
+                            }}
+                          >
+                            {expense.status === 'settled' ? 'Liquidado' : 'Pendente'}
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

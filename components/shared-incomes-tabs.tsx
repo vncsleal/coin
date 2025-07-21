@@ -122,7 +122,8 @@ export function SharedIncomesTabs({
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="add" className="flex items-center gap-2">
           <PlusCircle className="h-4 w-4" />
-          Adicionar Renda
+          <span className="hidden sm:inline">Adicionar Renda</span>
+          <span className="sm:hidden">Adicionar</span>
         </TabsTrigger>
         <TabsTrigger value="list" className="flex items-center gap-2">
           <List className="h-4 w-4" />
@@ -162,7 +163,7 @@ export function SharedIncomesTabs({
             </div>
             <CardDescription>Todas as rendas que você compartilhou ou que foram compartilhadas com você.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="w-full overflow-x-hidden">
             {sharedIncomes.length === 0 ? (
               <div className="text-center py-12">
                 <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -170,87 +171,199 @@ export function SharedIncomesTabs({
                 <p className="text-sm text-muted-foreground mt-2">Comece a registrar rendas compartilhadas na aba `&quot;Adicionar Renda&quot;`.</p>
               </div>
             ) : (
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>
-                        <Checkbox
-                          checked={selectedIncomes.length === sharedIncomes.length && sharedIncomes.length > 0}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setSelectedIncomes(sharedIncomes.map(inc => inc.id));
-                            } else {
-                              setSelectedIncomes([]);
-                            }
-                          }}
-                        />
-                      </TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Recebido Por</TableHead>
-                      <TableHead>Compartilhado Com</TableHead>
-                      <TableHead className="text-right">Valor Total</TableHead>
-                      <TableHead className="text-right">Sua Parte</TableHead>
-                      <TableHead className="text-right">Status</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sharedIncomes.map((income) => (
-                      <TableRow key={income.id}>
-                        <TableCell>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden md:block rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>
                           <Checkbox
-                            checked={selectedIncomes.includes(income.id)}
+                            checked={selectedIncomes.length === sharedIncomes.length && sharedIncomes.length > 0}
                             onCheckedChange={(checked) => {
-                              setSelectedIncomes(prev =>
-                                checked ? [...prev, income.id] : prev.filter(id => id !== income.id)
-                              );
+                              if (checked) {
+                                setSelectedIncomes(sharedIncomes.map(inc => inc.id));
+                              } else {
+                                setSelectedIncomes([]);
+                              }
                             }}
                           />
-                        </TableCell>
-                        <TableCell className="font-medium">{income.description}</TableCell>
-                        <TableCell>{income.category || 'Sem Categoria'}</TableCell>
-                        <TableCell className="text-muted-foreground">{formatDate(income.date)}</TableCell>
-                        <TableCell>{income.received_by_user_name}</TableCell>
-                        <TableCell>{income.shared_with_user_name}</TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(income.total_amount)}</TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(income.total_amount / 2)}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant={income.status === 'settled' ? 'secondary' : 'default'}
-                            size="sm"
-                            className="w-[120px]"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleStatus(income.id, income.status);
-                            }}
-                          >
-                            {income.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
-                          </Button>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
+                        </TableHead>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Recebido Por</TableHead>
+                        <TableHead>Compartilhado Com</TableHead>
+                        <TableHead className="text-right">Valor Total</TableHead>
+                        <TableHead className="text-right">Sua Parte</TableHead>
+                        <TableHead className="text-right">Status</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sharedIncomes.map((income) => (
+                        <TableRow key={income.id}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedIncomes.includes(income.id)}
+                              onCheckedChange={(checked) => {
+                                setSelectedIncomes(prev =>
+                                  checked ? [...prev, income.id] : prev.filter(id => id !== income.id)
+                                );
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">{income.description}</TableCell>
+                          <TableCell>{income.category || 'Sem Categoria'}</TableCell>
+                          <TableCell className="text-muted-foreground">{formatDate(income.date)}</TableCell>
+                          <TableCell>{income.received_by_user_name}</TableCell>
+                          <TableCell>{income.shared_with_user_name}</TableCell>
+                          <TableCell className="text-right font-semibold text-green-600">{formatCurrency(income.total_amount)}</TableCell>
+                          <TableCell className="text-right font-semibold text-green-600">{formatCurrency(income.total_amount / 2)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant={income.status === 'settled' ? 'secondary' : 'default'}
+                              size="sm"
+                              className="w-[120px]"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleStatus(income.id, income.status);
+                              }}
+                            >
+                              {income.status === 'settled' ? 'Liquidado' : 'Não Liquidado'}
+                            </Button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <EditSharedIncomeModal income={income} />
+                              <Button variant="ghost" size="sm" onClick={() => handleDelete(income.id)} className="h-8 w-8">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Excluir</span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {selectedIncomes.length > 0 && (
+                    <div className="p-4 border-t flex justify-end">
+                      <Button onClick={handleBatchSettle}>
+                        Marcar como Liquidado ({selectedIncomes.length})
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-4 w-full overflow-hidden">
+                  {/* Mobile batch actions header */}
+                  {selectedIncomes.length > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-accent rounded-lg min-w-0">
+                      <span className="text-sm font-medium truncate">
+                        {selectedIncomes.length} selecionada(s)
+                      </span>
+                      <Button onClick={handleBatchSettle} size="sm" className="ml-2 flex-shrink-0">
+                        Liquidar
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Select all option for mobile */}
+                  <div className="flex items-center gap-2 p-2 min-w-0">
+                    <Checkbox
+                      checked={selectedIncomes.length === sharedIncomes.length && sharedIncomes.length > 0}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedIncomes(sharedIncomes.map(inc => inc.id));
+                        } else {
+                          setSelectedIncomes([]);
+                        }
+                      }}
+                      className="flex-shrink-0"
+                    />
+                    <span className="text-sm text-muted-foreground">Selecionar todas</span>
+                  </div>
+
+                  {sharedIncomes.map((income) => (
+                    <Card key={income.id} className="p-3 w-full overflow-hidden">
+                      <div className="flex flex-col space-y-3 min-w-0">
+                        {/* Header with checkbox, title and actions */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <Checkbox
+                              checked={selectedIncomes.includes(income.id)}
+                              onCheckedChange={(checked) => {
+                                setSelectedIncomes(prev =>
+                                  checked ? [...prev, income.id] : prev.filter(id => id !== income.id)
+                                );
+                              }}
+                              className="mt-1 flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-medium text-sm truncate">{income.description}</h3>
+                              <div className="flex flex-col gap-1 mt-1">
+                                <p className="text-xs text-muted-foreground truncate">
+                                  <span className="font-medium">Categoria:</span> {income.category || 'Sem Categoria'}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {formatDate(income.date)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 ml-2 flex-shrink-0">
                             <EditSharedIncomeModal income={income} />
                             <Button variant="ghost" size="sm" onClick={() => handleDelete(income.id)} className="h-8 w-8">
                               <Trash2 className="h-4 w-4" />
                               <span className="sr-only">Excluir</span>
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {selectedIncomes.length > 0 && (
-                  <div className="p-4 border-t flex justify-end">
-                    <Button onClick={handleBatchSettle}>
-                      Marcar como Liquidado ({selectedIncomes.length})
-                    </Button>
-                  </div>
-                )}
-              </div>
+                        </div>
+
+                        {/* People information */}
+                        <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+                          <div className="min-w-0">
+                            <span className="text-xs text-muted-foreground block">Recebido por</span>
+                            <span className="text-sm font-medium block truncate">{income.received_by_user_name}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-xs text-muted-foreground block">Compartilhado com</span>
+                            <span className="text-sm font-medium block truncate">{income.shared_with_user_name}</span>
+                          </div>
+                        </div>
+
+                        {/* Amount and status */}
+                        <div className="flex flex-col gap-3 pt-2 border-t">
+                          <div className="flex flex-col">
+                            <span className="text-xs text-muted-foreground">Total / Sua parte</span>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold text-green-600 text-sm">
+                                {formatCurrency(income.total_amount)}
+                              </span>
+                              <span className="text-muted-foreground">/</span>
+                              <span className="font-semibold text-green-600 text-sm">
+                                {formatCurrency(income.total_amount / 2)}
+                              </span>
+                            </div>
+                          </div>
+                          <Button
+                            variant={income.status === 'settled' ? 'secondary' : 'default'}
+                            size="sm"
+                            className="w-full text-xs px-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStatus(income.id, income.status);
+                            }}
+                          >
+                            {income.status === 'settled' ? 'Liquidado' : 'Pendente'}
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

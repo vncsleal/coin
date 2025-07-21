@@ -53,7 +53,8 @@ export default function IncomePage() {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="add" className="flex items-center gap-2">
             <PlusCircle className="h-4 w-4" />
-            Adicionar Renda
+            <span className="hidden sm:inline">Adicionar Renda</span>
+            <span className="sm:hidden">Adicionar</span>
           </TabsTrigger>
           <TabsTrigger value="list" className="flex items-center gap-2">
             <List className="h-4 w-4" />
@@ -104,40 +105,74 @@ export default function IncomePage() {
                   <p className="text-sm text-muted-foreground mt-2">Comece a adicionar suas fontes de renda na aba `&quot;Adicionar Renda&quot;`.</p>
                 </div>
               ) : (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nome</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead className="text-right">Valor</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {incomes.map((income) => (
-                        <TableRow key={income.id} className="hover:bg-accent/50 transition-colors">
-                          <TableCell className="font-medium">{income.name}</TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {new Date(income.date).toLocaleDateString("pt-BR", { timeZone: 'UTC' })}
-                          </TableCell>
-                          <TableCell className="text-right font-semibold text-green-600">
-                            {formatCurrency(income.amount)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
+                <>
+                  {/* Desktop Table */}
+                  <div className="hidden md:block rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nome</TableHead>
+                          <TableHead>Data</TableHead>
+                          <TableHead className="text-right">Valor</TableHead>
+                          <TableHead className="text-right">Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {incomes.map((income) => (
+                          <TableRow key={income.id} className="hover:bg-accent/50 transition-colors">
+                            <TableCell className="font-medium">{income.name}</TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {new Date(income.date).toLocaleDateString("pt-BR", { timeZone: 'UTC' })}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold text-green-600">
+                              {formatCurrency(income.amount)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <EditIncomeModal income={income} />
+                                <Button variant="ghost" size="sm" onClick={() => handleDelete(income.id)} className="h-8 w-8">
+                                  <Trash2 className="h-4 w-4" />
+                                  <span className="sr-only">Excluir</span>
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Cards */}
+                  <div className="md:hidden space-y-4">
+                    {incomes.map((income) => (
+                      <Card key={income.id} className="p-4">
+                        <div className="flex flex-col space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h3 className="font-medium text-sm">{income.name}</h3>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(income.date).toLocaleDateString("pt-BR", { timeZone: 'UTC' })}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 ml-2">
                               <EditIncomeModal income={income} />
                               <Button variant="ghost" size="sm" onClick={() => handleDelete(income.id)} className="h-8 w-8">
                                 <Trash2 className="h-4 w-4" />
                                 <span className="sr-only">Excluir</span>
                               </Button>
                             </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                          </div>
+                          <div className="flex justify-between items-center pt-2 border-t">
+                            <span className="text-xs text-muted-foreground">Valor</span>
+                            <span className="font-semibold text-green-600">
+                              {formatCurrency(income.amount)}
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>

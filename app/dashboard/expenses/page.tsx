@@ -42,7 +42,8 @@ export default async function ExpensesPage() {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="add" className="flex items-center gap-2">
             <PlusCircle className="h-4 w-4" />
-            Adicionar Despesa
+            <span className="hidden sm:inline">Adicionar Despesa</span>
+            <span className="sm:hidden">Adicionar</span>
           </TabsTrigger>
           <TabsTrigger value="list" className="flex items-center gap-2">
             <List className="h-4 w-4" />

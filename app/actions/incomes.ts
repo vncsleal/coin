@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server"
 import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import { Income } from "@/lib/types"
 
 export async function addIncome(formData: FormData) {
   const { userId } = await auth()
@@ -66,21 +67,26 @@ export async function deleteIncome(id: number) {
   revalidatePath("/dashboard")
 }
 
-export async function getIncomes() {
+export async function getIncomes(): Promise<Income[]> {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
   }
 
   const incomes = await sql`
-    SELECT id, name, amount, date
+    SELECT id, user_id, name, amount, date, created_at, updated_at
     FROM incomes
     WHERE user_id = ${userId}
     ORDER BY date DESC
   `
 
   return incomes.map((income) => ({
-    ...income,
+    id: income.id as number,
+    user_id: income.user_id as string,
+    name: income.name as string,
     amount: Number(income.amount),
+    date: income.date as string,
+    created_at: income.created_at as string,
+    updated_at: income.updated_at as string,
   }))
 }
