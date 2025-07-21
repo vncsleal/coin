@@ -13,7 +13,8 @@ async function getMonthlySpending(userId: string): Promise<number> {
   const currentMonth = currentDate.getMonth() + 1
   const currentYear = currentDate.getFullYear()
 
-  const result = await sql`
+  // Get monthly expenditure from individual expenses
+  const monthlyIndividualExpenditure = await sql`
     SELECT COALESCE(SUM(amount), 0) as total
     FROM expenses 
     WHERE user_id = ${userId}
@@ -21,7 +22,24 @@ async function getMonthlySpending(userId: string): Promise<number> {
     AND EXTRACT(YEAR FROM date) = ${currentYear}
   `
 
-  return Number(result[0]?.total || 0)
+  // Get monthly shared expenditure (user's portion)
+  const monthlySharedExpenditureResult = await sql`
+    SELECT
+      COALESCE(SUM(CASE
+        WHEN paid_by_user_id = ${userId} THEN total_amount / 2
+        WHEN shared_with_user_id = ${userId} THEN total_amount / 2
+        ELSE 0
+      END), 0) as total
+    FROM shared_expenses
+    WHERE (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+    AND EXTRACT(MONTH FROM date) = ${currentMonth}
+    AND EXTRACT(YEAR FROM date) = ${currentYear}
+  `
+
+  const totalIndividualExpenditure = Number(monthlyIndividualExpenditure[0]?.total || 0)
+  const totalSharedExpenditure = Number(monthlySharedExpenditureResult[0]?.total || 0)
+  
+  return totalIndividualExpenditure + totalSharedExpenditure
 }
 
 export async function BudgetOverview({ budget }: BudgetOverviewProps) {
