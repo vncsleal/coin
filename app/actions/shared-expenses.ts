@@ -100,7 +100,8 @@ export async function getSharedPainelStats() {
         SELECT
           se.total_amount,
           se.paid_by_user_id,
-          se.shared_with_user_id
+          se.shared_with_user_id,
+          se.status
         FROM shared_expenses se
         WHERE se.paid_by_user_id = ${userId} OR se.shared_with_user_id = ${userId}
       )
@@ -108,7 +109,7 @@ export async function getSharedPainelStats() {
         COALESCE(SUM(total_amount), 0) AS "totalSpent",
         COALESCE(SUM(CASE WHEN paid_by_user_id = ${userId} THEN total_amount ELSE 0 END), 0) AS "totalPaidByMe",
         COALESCE(SUM(total_amount / 2), 0) AS "myDuePortion",
-        COALESCE(SUM(CASE WHEN paid_by_user_id = ${userId} THEN total_amount ELSE 0 END), 0) - COALESCE(SUM(total_amount / 2), 0) AS "balance"
+        COALESCE(SUM(CASE WHEN status = 'unsettled' AND paid_by_user_id = ${userId} THEN total_amount ELSE 0 END), 0) - COALESCE(SUM(CASE WHEN status = 'unsettled' THEN total_amount / 2 ELSE 0 END), 0) AS "balance"
       FROM user_expenses;
     `;
 

@@ -59,7 +59,7 @@ export async function SharedExpensesPainel() {
         </CardHeader>
         <CardContent>
           <div className={`text-2xl font-bold ${balanceColorClass}`}>{formatCurrency(stats.balance)}</div>
-          <p className="text-xs text-muted-foreground">Diferença entre o que paguei e minha parte devida</p>
+          <p className="text-xs text-muted-foreground">Diferença entre o que paguei e minha parte devida (apenas despesas pendentes)</p>
         </CardContent>
       </Card>
     </div>
