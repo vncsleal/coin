@@ -164,8 +164,8 @@ export function DashboardClient({ stats }: DashboardClientProps) {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 grid-cols-1 xl:grid-cols-2">
+        <Card className="">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Despesas por Categoria</CardTitle>
@@ -178,7 +178,7 @@ export function DashboardClient({ stats }: DashboardClientProps) {
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card className="">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Total de Despesas por Categoria</CardTitle>
@@ -194,24 +194,44 @@ export function DashboardClient({ stats }: DashboardClientProps) {
                 <p className="text-sm text-muted-foreground mt-2">Adicione despesas para ver a tabela.</p>
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="text-right">Porcentagem</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden md:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead className="text-right">Total</TableHead>
+                        <TableHead className="text-right">Porcentagem</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {totalExpensesByTagWithPercentage.map((item) => (
+                        <TableRow key={item.tag}>
+                          <TableCell>{item.tag}</TableCell>
+                          <TableCell className="text-right">{formatAmount(item.amount)}</TableCell>
+                          <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-3">
                   {totalExpensesByTagWithPercentage.map((item) => (
-                    <TableRow key={item.tag}>
-                      <TableCell>{item.tag}</TableCell>
-                      <TableCell className="text-right">{formatAmount(item.amount)}</TableCell>
-                      <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
-                    </TableRow>
+                    <div key={item.tag} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{item.tag}</p>
+                        <p className="text-sm text-muted-foreground">{item.percentage.toFixed(2)}%</p>
+                      </div>
+                      <div className="text-right font-semibold">
+                        {formatAmount(item.amount)}
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

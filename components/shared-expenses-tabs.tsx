@@ -420,24 +420,44 @@ export function SharedExpensesTabs({
                   <p className="text-sm text-muted-foreground mt-2">Adicione despesas compartilhadas para ver a tabela.</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
-                      <TableHead className="text-right">Porcentagem</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <>
+                  {/* Desktop Table */}
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Categoria</TableHead>
+                          <TableHead className="text-right">Total</TableHead>
+                          <TableHead className="text-right">Porcentagem</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {sharedExpensesByCategory.map((item) => (
+                          <TableRow key={item.category}>
+                            <TableCell>{item.category}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(item.total)}</TableCell>
+                            <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Cards */}
+                  <div className="md:hidden space-y-3">
                     {sharedExpensesByCategory.map((item) => (
-                      <TableRow key={item.category}>
-                        <TableCell>{item.category}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(item.total)}</TableCell>
-                        <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
-                      </TableRow>
+                      <div key={item.category} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{item.category}</p>
+                          <p className="text-sm text-muted-foreground">{item.percentage.toFixed(2)}%</p>
+                        </div>
+                        <div className="text-right font-semibold">
+                          {formatCurrency(item.total)}
+                        </div>
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>
