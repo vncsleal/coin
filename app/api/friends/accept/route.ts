@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       UPDATE friends
       SET status = 'accepted'
       WHERE id = ${requestId} AND friend_user_id = ${userId} AND status = 'pending'
-      RETURNING id;
+      RETURNING id, user_id, friend_user_id;
     `;
 
     if (result.length === 0) {

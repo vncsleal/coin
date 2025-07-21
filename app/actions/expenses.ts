@@ -4,6 +4,8 @@ import { auth } from "@clerk/nextjs/server"
 import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
+import { addExpenseSchema, updateExpenseSchema, deleteExpenseSchema } from "@/lib/schemas";
+
 export async function addExpense(formData: FormData) {
   const { userId } = await auth()
 
@@ -11,14 +13,21 @@ export async function addExpense(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const name = formData.get("name") as string
-  const amount = Number.parseFloat((formData.get("amount") as string).replace(',', '.'))
-  const tag = formData.get("tag") as string
-  const date = formData.get("date") as string
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
-  if (!name || !amount || !tag || !date) {
-    throw new Error("Missing required fields")
+  const validatedFields = addExpenseSchema.safeParse({
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    tag: formData.get("tag"),
+    date: formData.get("date"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
   }
+
+  const { name, amount: amountString, tag, date } = validatedFields.data;
+  const amount = Number.parseFloat(amountString.replace(",", "."));
 
   await sql`
     INSERT INTO expenses (user_id, name, amount, tag, date)
@@ -36,14 +45,22 @@ export async function updateExpense(id: number, formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const name = formData.get("name") as string
-  const amount = Number.parseFloat((formData.get("amount") as string).replace(',', '.'))
-  const tag = formData.get("tag") as string
-  const date = formData.get("date") as string
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
-  if (!name || !amount || !tag || !date) {
-    throw new Error("Missing required fields")
+  const validatedFields = updateExpenseSchema.safeParse({
+    id,
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    tag: formData.get("tag"),
+    date: formData.get("date"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
   }
+
+  const { name, amount: amountString, tag, date } = validatedFields.data;
+  const amount = Number.parseFloat(amountString.replace(",", "."));
 
   await sql`
     UPDATE expenses
@@ -60,6 +77,14 @@ export async function deleteExpense(id: number) {
 
   if (!userId) {
     throw new Error("Unauthorized")
+  }
+
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
+  const validatedFields = deleteExpenseSchema.safeParse({ id });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid ID");
   }
 
   await sql`

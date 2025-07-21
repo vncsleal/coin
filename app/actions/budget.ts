@@ -4,6 +4,8 @@ import { auth } from "@clerk/nextjs/server"
 import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
+import { setBudgetSchema } from "@/lib/schemas";
+
 export async function setBudget(formData: FormData) {
   const { userId } = await auth()
 
@@ -11,7 +13,17 @@ export async function setBudget(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const amountString = (formData.get("amount") as string)
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
+  const validatedFields = setBudgetSchema.safeParse({
+    amount: formData.get("amount"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid amount");
+  }
+
+  const amountString = validatedFields.data.amount
     .replace("R$", "")
     .replace(/\./g, "")
     .replace(",", ".")

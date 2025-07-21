@@ -4,21 +4,30 @@ import { auth } from "@clerk/nextjs/server"
 import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
+import { addSharedExpenseSchema, updateSharedExpenseSchema, deleteSharedExpenseSchema } from "@/lib/schemas";
+
 export async function addSharedExpense(formData: FormData) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
   }
 
-  const description = formData.get("description") as string
-  const total_amount = Number.parseFloat(formData.get("total_amount") as string)
-  const date = formData.get("date") as string
-  const category = formData.get("category") as string | null
-  const shared_with_user_id = formData.get("shared_with_user_id") as string
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
-  if (!description || !total_amount || !date || !shared_with_user_id) {
-    throw new Error("Missing required fields")
+  const validatedFields = addSharedExpenseSchema.safeParse({
+    description: formData.get("description"),
+    total_amount: formData.get("total_amount"),
+    date: formData.get("date"),
+    category: formData.get("category"),
+    shared_with_user_id: formData.get("shared_with_user_id"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
   }
+
+  const { description, total_amount: totalAmountString, date, category, shared_with_user_id } = validatedFields.data;
+  const total_amount = Number.parseFloat(totalAmountString);
 
   await sql`
     INSERT INTO shared_expenses (
@@ -49,15 +58,23 @@ export async function updateSharedExpense(id: string, formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const description = formData.get("description") as string
-  const total_amount = Number.parseFloat(formData.get("total_amount") as string)
-  const date = formData.get("date") as string
-  const category = formData.get("category") as string | null
-  const shared_with_user_id = formData.get("shared_with_user_id") as string
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
-  if (!description || !total_amount || !date || !shared_with_user_id) {
-    throw new Error("Missing required fields")
+  const validatedFields = updateSharedExpenseSchema.safeParse({
+    id,
+    description: formData.get("description"),
+    total_amount: formData.get("total_amount"),
+    date: formData.get("date"),
+    category: formData.get("category"),
+    shared_with_user_id: formData.get("shared_with_user_id"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
   }
+
+  const { description, total_amount: totalAmountString, date, category, shared_with_user_id } = validatedFields.data;
+  const total_amount = Number.parseFloat(totalAmountString);
 
   await sql`
     UPDATE shared_expenses
@@ -78,6 +95,14 @@ export async function deleteSharedExpense(id: string) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
+  }
+
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
+  const validatedFields = deleteSharedExpenseSchema.safeParse({ id });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid ID");
   }
 
   await sql`

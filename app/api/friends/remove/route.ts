@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       DELETE FROM friends
       WHERE (user_id = ${userId} AND friend_user_id = ${friendId} AND status = 'accepted')
          OR (user_id = ${friendId} AND friend_user_id = ${userId} AND status = 'accepted')
-      RETURNING id;
+      RETURNING id, user_id, friend_user_id;
     `;
 
     if (result.length === 0) {

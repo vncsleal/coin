@@ -5,19 +5,28 @@ import { sql } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { Income } from "@/lib/types"
 
+import { addIncomeSchema, updateIncomeSchema, deleteIncomeSchema } from "@/lib/schemas";
+
 export async function addIncome(formData: FormData) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
   }
 
-  const name = formData.get("name") as string
-  const amount = Number.parseFloat(formData.get("amount") as string)
-  const date = formData.get("date") as string
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
-  if (!name || !amount || !date) {
-    throw new Error("Missing required fields")
+  const validatedFields = addIncomeSchema.safeParse({
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    date: formData.get("date"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
   }
+
+  const { name, amount: amountString, date } = validatedFields.data;
+  const amount = Number.parseFloat(amountString);
 
   await sql`
     INSERT INTO incomes (user_id, name, amount, date)
@@ -34,13 +43,21 @@ export async function updateIncome(id: number, formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  const name = formData.get("name") as string
-  const amount = Number.parseFloat(formData.get("amount") as string)
-  const date = formData.get("date") as string
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
-  if (!name || !amount || !date) {
-    throw new Error("Missing required fields")
+  const validatedFields = updateIncomeSchema.safeParse({
+    id,
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    date: formData.get("date"),
+  });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid fields");
   }
+
+  const { name, amount: amountString, date } = validatedFields.data;
+  const amount = Number.parseFloat(amountString);
 
   await sql`
     UPDATE incomes
@@ -56,6 +73,14 @@ export async function deleteIncome(id: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
+  }
+
+  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
+
+  const validatedFields = deleteIncomeSchema.safeParse({ id });
+
+  if (!validatedFields.success) {
+    throw new Error("Invalid ID");
   }
 
   await sql`

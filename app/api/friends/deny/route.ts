@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const result = await sql`
       DELETE FROM friends
       WHERE id = ${requestId} AND friend_user_id = ${userId} AND status = 'pending'
-      RETURNING id;
+      RETURNING id, user_id, friend_user_id;
     `;
 
     if (result.length === 0) {
