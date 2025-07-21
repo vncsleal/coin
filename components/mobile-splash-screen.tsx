@@ -8,13 +8,13 @@ export default function MobileSplashScreen() {
         alt="Cutia Logo"
         width={128}
         height={128}
-        className="mb-4 animate-bounce" // Added a small animation for splash effect
+        className="mb-4 " 
       />
       <h1 className="text-5xl font-bold tracking-tight flex items-center gap-2">
         Cutia
-        <span className="text-base font-medium bg-primary/10 text-primary px-3 py-1 rounded-full align-middle ml-2">beta</span>
+        <span className="text-base font-medium bg-primary/10 text-primary px-3 py-1 rounded align-middle ml-2">beta</span>
       </h1>
-      <p className="text-lg text-muted-foreground mt-4">Carregando...</p>
+      <p className="text-lg text-muted-foreground mt-4 animate-pulse">Carregando...</p>
     </div>
   );
 }
