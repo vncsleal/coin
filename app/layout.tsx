@@ -5,6 +5,8 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { ptBR } from '@clerk/localizations'
+import MobileSplashScreen from "@/components/mobile-splash-screen"
+import SplashScreenWrapper from "@/components/splash-screen-wrapper"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -71,7 +73,9 @@ export default function RootLayout({
       <html lang="pt-BR" suppressHydrationWarning>
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            {children}
+            <SplashScreenWrapper>
+              {children}
+            </SplashScreenWrapper>
             <Toaster />
           </ThemeProvider>
         </body>

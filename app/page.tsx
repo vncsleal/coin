@@ -1,10 +1,16 @@
-import { SignedIn, SignedOut, SignInButton, SignOutButton } from "@clerk/nextjs"
-
-import Link from "next/link"
+import { SignInButton, SignOutButton } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -14,16 +20,9 @@ export default function HomePage() {
           <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded align-middle ml-1">beta</span>
         </h1>
         <div className="ml-auto flex items-center gap-2">
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button>Entrar</Button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <SignOutButton>
-              <Button>Sair</Button>
-            </SignOutButton>
-          </SignedIn>
+          <SignInButton mode="modal">
+            <Button>Entrar</Button>
+          </SignInButton>
         </div>
       </header>
       <main className="flex flex-1 flex-col items-center justify-center p-4 text-center">
@@ -35,16 +34,9 @@ export default function HomePage() {
         <p className="text-lg text-muted-foreground mb-8">
           Controle Financeiro Inteligente
         </p>
-        <SignedOut>
-          <SignInButton mode="modal">
-            <Button size="lg">Começar</Button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <Link href="/dashboard">
-            <Button size="lg">Ir para o Painel</Button>
-          </Link>
-        </SignedIn>
+        <SignInButton mode="modal">
+          <Button size="lg">Começar</Button>
+        </SignInButton>
       </main>
     </div>
   )
