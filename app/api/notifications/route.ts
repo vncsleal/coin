@@ -46,15 +46,18 @@ export async function GET() {
       WHERE friend_user_id = ${userId} AND status = 'pending';
     `;
 
-    // Add friend request notifications
+    // Add friend request notifications (expire after 7 days)
     pendingFriendRequests.forEach(request => {
-      notifications.push({
-        id: `friend-request-${request.id}`,
-        type: "info",
-        title: "Novo Pedido de Amizade",
-        message: `${request.sender_name || 'Um usuário'} quer ser seu amigo.`,
-        timestamp: request.created_at.toISOString(),
-      });
+      const daysSinceRequest = Math.floor((Date.now() - new Date(request.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceRequest <= 7) { // Only show requests from last 7 days
+        notifications.push({
+          id: `friend-request-${request.id}`,
+          type: "info",
+          title: "Novo Pedido de Amizade",
+          message: `${request.sender_name || 'Um usuário'} quer ser seu amigo.`,
+          timestamp: request.created_at.toISOString(),
+        });
+      }
     });
 
     // Fetch unsettled shared expenses where current user is shared_with_user_id
@@ -70,15 +73,18 @@ export async function GET() {
       WHERE shared_with_user_id = ${userId} AND status = 'unsettled';
     `;
 
-    // Add shared expense notifications
+    // Add shared expense notifications (expire after 7 days)
     unsettledSharedExpenses.forEach(expense => {
-      notifications.push({
-        id: `shared-expense-${expense.id}`,
-        type: "info",
-        title: "Nova Despesa Compartilhada",
-        message: `${expense.paid_by_user_name || 'Um usuário'} compartilhou uma despesa de R${Number(expense.total_amount).toFixed(2)} com você.`,
-        timestamp: expense.created_at.toISOString(),
-      });
+      const daysSinceExpense = Math.floor((Date.now() - new Date(expense.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceExpense <= 7) { // Only show expenses from last 7 days
+        notifications.push({
+          id: `shared-expense-${expense.id}`,
+          type: "info",
+          title: "Nova Despesa Compartilhada",
+          message: `${expense.paid_by_user_name || 'Um usuário'} compartilhou uma despesa de R${Number(expense.total_amount).toFixed(2)} com você.`,
+          timestamp: expense.created_at.toISOString(),
+        });
+      }
     });
     const budgetAmount = Number(budget[0]?.amount || 0)
     const spentAmount = Number(spending[0]?.total || 0)
