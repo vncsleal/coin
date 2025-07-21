@@ -15,7 +15,7 @@ import { SharedIncomeForm } from '@/components/shared-income-form';
 import { EditSharedIncomeModal } from '@/components/EditSharedIncomeModal';
 import { deleteSharedIncome, getSharedIncomes, getMonthlySharedIncomesChartData, getSharedIncomesByCategoryData, getSharedPainelStats, updateSharedIncomeStatus, batchSettleSharedIncomes } from '@/app/actions/shared-incomes';
 import { Button } from '@/components/ui/button';
-import { SharedIncome, SharedIncomesPainelStats, SharedIncomesAIStats } from '@/lib/types';
+import { SharedIncome, SharedIncomesPainelStats} from '@/lib/types';
 
 import { SharedIncomesPainel } from '@/components/shared-incomes-painel';
 

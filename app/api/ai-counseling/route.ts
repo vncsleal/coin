@@ -105,7 +105,7 @@ export async function POST(request: Request) {
       prompt = `
         ${CUTIA_PERSONA}
 
-        Crie um relatório financeiro detalhado e perspicaz para ${userName} no período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
+        Crie um relatório financeiro detalhado e perspicaz para o período de ${format(new Date(startDate), "dd/MM/yyyy", { locale: ptBR })} a ${format(new Date(endDate), "dd/MM/yyyy", { locale: ptBR })}.
 
         **Análise de Despesas por Categoria:**
         ${financialData.expensesByCategory.map((item) => `- **${item.tag}:** ${formatCurrency(item.total)} (${item.percentage}%)`).join("\n")}
@@ -245,7 +245,7 @@ IMPORTANTE: Responda APENAS o que foi perguntado. Não adicione projeções ou a
 ${conversationHistory ? `\nContexto da conversa:\n${conversationHistory}\n` : ""}
 
 Gastos por Categoria:
-${(financialData.expensesByTag || []).map((exp) => `- ${exp.tag}: R$ ${exp.amount.toFixed(2)}`).join("\n")}
+${(financialData.expensesByTag || []).map((exp: { tag: string; amount: number }) => `- ${exp.tag}: R$ ${exp.amount.toFixed(2)}`).join("\n")}
 
 ${customPrompt && typeof customPrompt === "string" && customPrompt.trim().length > 0 ? `\n\nPergunta do usuário: ${customPrompt}` : ""}
 
