@@ -218,17 +218,19 @@ export function DashboardClient({ stats }: DashboardClientProps) {
                 </div>
 
                 {/* Mobile Cards */}
-                <div className="md:hidden space-y-3">
+                <div className="md:hidden space-y-2">
                   {totalExpensesByTagWithPercentage.map((item) => (
-                    <div key={item.tag} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{item.tag}</p>
-                        <p className="text-sm text-muted-foreground">{item.percentage.toFixed(2)}%</p>
-                      </div>
-                      <div className="text-right font-semibold">
-                        {formatAmount(item.amount)}
-                      </div>
-                    </div>
+                    <Card key={item.tag}>
+                      <CardContent className="p-4 flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium">{item.tag}</p>
+                          <p className="text-xs text-muted-foreground">{item.percentage.toFixed(2)}%</p>
+                        </div>
+                        <div className="text-base font-bold">
+                          {formatAmount(item.amount)}
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </>
