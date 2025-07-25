@@ -33,10 +33,15 @@ export function SharedExpenseForm({ expenseToEdit, onSave }: SharedExpenseFormPr
   const [amount, setAmount] = useState<string>(expenseToEdit?.total_amount?.toString() || '');
   
   // Safe date parsing with utility function
-  const [date, setDate] = useState<Date | undefined>(() => {
-    const parsedDate = safeDateParse(expenseToEdit?.date);
-    return parsedDate || new Date();
-  });
+  const [date, setDate] = useState<Date | undefined>(undefined);
+
+  useEffect(() => {
+    if (expenseToEdit?.date) {
+      setDate(new Date(expenseToEdit.date));
+    } else {
+      setDate(new Date());
+    }
+  }, [expenseToEdit?.date]);
 
   const handleDateChange = React.useCallback((newDate: Date | undefined) => {
     setDate(newDate);

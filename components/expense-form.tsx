@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,9 +30,15 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
   const [name, setName] = useState(expenseToEdit?.name || '');
   const [amount, setAmount] = useState(expenseToEdit?.amount.toString() || '');
   const [tag, setTag] = useState(expenseToEdit?.tag || '');
-  const [date, setDate] = useState<Date | undefined>(
-    expenseToEdit?.date ? new Date(expenseToEdit.date) : new Date()
-  );
+  const [date, setDate] = useState<Date | undefined>(undefined);
+
+  useEffect(() => {
+    if (expenseToEdit?.date) {
+      setDate(new Date(expenseToEdit.date));
+    } else {
+      setDate(new Date());
+    }
+  }, [expenseToEdit?.date]);
 
   const handleDateChange = React.useCallback((newDate: Date | undefined) => {
     setDate(newDate);

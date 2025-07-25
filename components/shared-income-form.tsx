@@ -32,10 +32,15 @@ export function SharedIncomeForm({ incomeToEdit, onSave }: SharedIncomeFormProps
   const [description, setDescription] = useState(incomeToEdit?.description || '');
   const [amount, setAmount] = useState<string>(incomeToEdit?.total_amount?.toString() || '');
   
-  const [date, setDate] = useState<Date | undefined>(() => {
-    const parsedDate = safeDateParse(incomeToEdit?.date);
-    return parsedDate || new Date();
-  });
+  const [date, setDate] = useState<Date | undefined>(undefined);
+
+  useEffect(() => {
+    if (incomeToEdit?.date) {
+      setDate(new Date(incomeToEdit.date));
+    } else {
+      setDate(new Date());
+    }
+  }, [incomeToEdit?.date]);
 
   const handleDateChange = React.useCallback((newDate: Date | undefined) => {
     setDate(newDate);

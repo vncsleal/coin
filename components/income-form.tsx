@@ -50,6 +50,12 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
         amount: incomeToEdit.amount.toString(),
         date: new Date(incomeToEdit.date),
       });
+    } else {
+      form.reset({
+        name: "",
+        amount: "",
+        date: new Date(),
+      });
     }
   }, [incomeToEdit, form]);
 
