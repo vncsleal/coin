@@ -4,10 +4,10 @@ import { redirect } from "next/navigation"
 import { sql } from "@/lib/db"
 import type { Expense } from "@/lib/types"
 import { ExpenseForm } from "@/components/expense-form"
-import { ExpenseList } from "@/components/expense-list"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PlusCircle, List, Receipt } from "lucide-react"
+import { List, PlusCircle, Receipt } from "lucide-react"
+import { ExpenseListClient } from "@/components/ExpenseListClient"
 
 async function getExpenses(userId: string): Promise<Expense[]> {
   const expenses = await sql`
@@ -70,29 +70,7 @@ export default async function ExpensesPage() {
 
         {/* List Tab */}
         <TabsContent value="list">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <List className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle>Despesas Recentes</CardTitle>
-                </div>
-               
-              </div>
-              <CardDescription>Seus últimos lançamentos de despesas</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {expenses.length === 0 ? (
-                <div className="text-center py-12">
-                  <Receipt className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground font-medium text-lg">Nenhuma despesa registrada ainda</p>
-                  <p className="text-sm text-muted-foreground mt-2">Comece a adicionar suas despesas na aba `&quot;Adicionar Despesa&quot;`.</p>
-                </div>
-              ) : (
-                <ExpenseList expenses={expenses} />
-              )}
-            </CardContent>
-          </Card>
+          <ExpenseListClient initialExpenses={expenses} />
         </TabsContent>
       </Tabs>
     </div>

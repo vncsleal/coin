@@ -1,10 +1,12 @@
 
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useDebounce } from '@/hooks/use-debounce';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2 } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2, Search } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -16,6 +18,8 @@ import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
 import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats, updateSharedExpenseStatus, batchSettleSharedExpenses } from '@/app/actions/shared-expenses';
 import { Button } from '@/components/ui/button';
 import { SharedExpense } from '@/lib/types';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 interface SharedExpensesTabsProps {
@@ -45,6 +49,34 @@ export function SharedExpensesTabs({
   const [selectedExpenses, setSelectedExpenses] = useState<string[]>([]);
   const { toast } = useToast();
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "all");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  useEffect(() => {
+    setSharedExpenses(initialSharedExpenses);
+    setMonthlySharedExpenses(initialMonthlyChartData);
+    setSharedExpensesByCategory(initialCategoryChartData);
+    setPainelStats(initialPainelStats);
+  }, [initialSharedExpenses, initialMonthlyChartData, initialCategoryChartData, initialPainelStats]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedSearchQuery) {
+      params.set("search", debouncedSearchQuery);
+    } else {
+      params.delete("search");
+    }
+    if (selectedCategory && selectedCategory !== "all") {
+      params.set("category", selectedCategory);
+    } else {
+      params.delete("category");
+    }
+    router.replace(`${window.location.pathname}?${params.toString()}`);
+  }, [debouncedSearchQuery, selectedCategory, searchParams, router]);
+
   const refetchData = async () => {
     const expenses = await getSharedExpenses();
     setSharedExpenses(expenses);
@@ -55,8 +87,6 @@ export function SharedExpensesTabs({
     const newPainelStats = await getSharedPainelStats();
     setPainelStats(newPainelStats);
   };
-
-  
 
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
     const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
@@ -121,6 +151,19 @@ export function SharedExpensesTabs({
     }
   };
 
+  const uniqueCategories = Array.from(new Set(initialSharedExpenses.map(expense => expense.category).filter(Boolean))) as string[];
+
+  const filteredSharedExpenses = sharedExpenses.filter((expense) => {
+    const searchLower = debouncedSearchQuery.toLowerCase();
+    const matchesSearch = (
+      expense.description.toLowerCase().includes(searchLower) ||
+      (expense.paid_by_user_name?.toLowerCase() ?? '').includes(searchLower) ||
+      (expense.shared_with_user_name?.toLowerCase() ?? '').includes(searchLower)
+    );
+    const matchesCategory = selectedCategory === "all" || expense.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <Tabs defaultValue="add" className="space-y-6">
       <TabsList className="grid w-full grid-cols-3">
@@ -164,11 +207,42 @@ export function SharedExpensesTabs({
                 <List className="h-5 w-5 text-muted-foreground" />
                 <CardTitle>Minhas Despesas Compartilhadas</CardTitle>
               </div>
+              <div className="flex gap-2">
+                <div className="relative flex-1 md:grow-0">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Pesquisar despesas compartilhadas..."
+                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filtrar por Categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as Categorias</SelectItem>
+                    {uniqueCategories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <CardDescription>Todas as despesas que você compartilhou ou que foram compartilhadas com você.</CardDescription>
           </CardHeader>
           <CardContent className="w-full overflow-x-hidden">
-            {sharedExpenses.length === 0 ? (
+            {filteredSharedExpenses.length === 0 && debouncedSearchQuery ? (
+              <div className="text-center py-12">
+                <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground font-medium text-lg">Nenhuma despesa compartilhada encontrada para "{debouncedSearchQuery}"</p>
+                <p className="text-sm text-muted-foreground mt-2">Tente ajustar sua pesquisa ou filtros.</p>
+              </div>
+            ) : filteredSharedExpenses.length === 0 ? (
               <div className="text-center py-12">
                 <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground font-medium text-lg">Nenhuma despesa compartilhada ainda</p>
@@ -183,10 +257,10 @@ export function SharedExpensesTabs({
                       <TableRow>
                         <TableHead>
                           <Checkbox
-                            checked={selectedExpenses.length === sharedExpenses.length && sharedExpenses.length > 0}
+                            checked={selectedExpenses.length === filteredSharedExpenses.length && filteredSharedExpenses.length > 0}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                setSelectedExpenses(sharedExpenses.map(exp => exp.id));
+                                setSelectedExpenses(filteredSharedExpenses.map(exp => exp.id));
                               } else {
                                 setSelectedExpenses([]);
                               }
@@ -205,7 +279,7 @@ export function SharedExpensesTabs({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {sharedExpenses.map((expense) => (
+                      {filteredSharedExpenses.map((expense) => (
                         <TableRow key={expense.id}>
                           <TableCell>
                             <Checkbox
@@ -276,10 +350,10 @@ export function SharedExpensesTabs({
                   {/* Select all option for mobile */}
                   <div className="flex items-center gap-2 p-2 min-w-0">
                     <Checkbox
-                      checked={selectedExpenses.length === sharedExpenses.length && sharedExpenses.length > 0}
+                      checked={selectedExpenses.length === filteredSharedExpenses.length && filteredSharedExpenses.length > 0}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedExpenses(sharedExpenses.map(exp => exp.id));
+                          setSelectedExpenses(filteredSharedExpenses.map(exp => exp.id));
                         } else {
                           setSelectedExpenses([]);
                         }
@@ -289,7 +363,7 @@ export function SharedExpensesTabs({
                     <span className="text-sm text-muted-foreground">Selecionar todas</span>
                   </div>
 
-                  {sharedExpenses.map((expense) => (
+                  {filteredSharedExpenses.map((expense) => (
                     <Card key={expense.id} className="p-3 w-full overflow-hidden">
                       <div className="flex flex-col space-y-3 min-w-0">
                         {/* Header with checkbox, title and actions */}
