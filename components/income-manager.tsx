@@ -9,7 +9,7 @@ import { formatCurrency } from "@/lib/currency"
 import { Trash2 } from "lucide-react"
 import { Income } from "@/lib/types"
 import { IncomeForm } from "@/components/income-form"
-import { EditIncomeModal } from "@/components/EditIncomeModal"
+import { EditIncomeModal } from "@/components/edit-income-modal"
 import { deleteIncome, getIncomes } from "@/app/actions/incomes"
 
 export function IncomeManager() {

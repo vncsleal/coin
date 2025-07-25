@@ -7,7 +7,7 @@ import { ExpenseForm } from "@/components/expense-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { List, PlusCircle, Receipt } from "lucide-react"
-import { ExpenseListClient } from "@/components/ExpenseListClient"
+import { ExpenseListClient } from "@/components/expense-list-client"
 
 async function getExpenses(userId: string): Promise<Expense[]> {
   const expenses = await sql`

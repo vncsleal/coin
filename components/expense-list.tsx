@@ -10,7 +10,7 @@ import { Expense } from "@/lib/types"
 import { Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { EditExpenseModal } from "./EditExpenseModal"
+import { EditExpenseModal } from "@/components/edit-expense-modal"
 
 interface ExpenseListProps {
   expenses: Expense[]

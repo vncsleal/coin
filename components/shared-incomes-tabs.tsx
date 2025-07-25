@@ -1,10 +1,12 @@
 
 'use client';
 
-import { useState} from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useDebounce } from '@/hooks/use-debounce';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import { PlusCircle, DollarSign, List, BarChart, Trash2, PieChart } from 'lucide-react';
+import { PlusCircle, DollarSign, List, BarChart, Trash2, PieChart, Search } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from "@/hooks/use-toast";
@@ -12,10 +14,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { IncomeChart } from '@/components/income-chart';
 import { formatCurrency } from '@/lib/currency';
 import { SharedIncomeForm } from '@/components/shared-income-form';
-import { EditSharedIncomeModal } from '@/components/EditSharedIncomeModal';
+import { EditSharedIncomeModal } from '@/components/edit-shared-income-modal';
 import { deleteSharedIncome, getSharedIncomes, getMonthlySharedIncomesChartData, getSharedIncomesByCategoryData, getSharedPainelStats, updateSharedIncomeStatus, batchSettleSharedIncomes } from '@/app/actions/shared-incomes';
 import { Button } from '@/components/ui/button';
 import { SharedIncome, SharedIncomesPainelStats} from '@/lib/types';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 import { SharedIncomesPainel } from '@/components/shared-incomes-painel';
 
@@ -41,7 +46,39 @@ export function SharedIncomesTabs({
   const [sharedIncomesByCategory, setSharedIncomesByCategory] = useState<{ category: string; total: number; percentage: number }[]>(initialCategoryChartData);
   const [painelStats, setPainelStats] = useState<SharedIncomesPainelStats>(initialPainelStats);
   const [selectedIncomes, setSelectedIncomes] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const { toast } = useToast();
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "all");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  useEffect(() => {
+    setSharedIncomes(initialSharedIncomes);
+    setMonthlySharedIncomes(initialMonthlyChartData);
+    setSharedIncomesByCategory(initialCategoryChartData);
+    setPainelStats(initialPainelStats);
+  }, [initialSharedIncomes, initialMonthlyChartData, initialCategoryChartData, initialPainelStats]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedSearchQuery) {
+      params.set("search", debouncedSearchQuery);
+    } else {
+      params.delete("search");
+    }
+    if (selectedCategory && selectedCategory !== "all") {
+      params.set("category", selectedCategory);
+    } else {
+      params.delete("category");
+    }
+    // Reset to first page when search or category changes
+    setCurrentPage(1);
+    router.replace(`${window.location.pathname}?${params.toString()}`);
+  }, [debouncedSearchQuery, selectedCategory, searchParams, router]);
 
   const refetchData = async () => {
     const incomes = await getSharedIncomes();
@@ -117,6 +154,49 @@ export function SharedIncomesTabs({
     }
   };
 
+  // Filtering logic
+  const filteredSharedIncomes = sharedIncomes.filter((income) => {
+    const searchLower = debouncedSearchQuery.toLowerCase();
+    const matchesSearch = (
+      income.description.toLowerCase().includes(searchLower) ||
+      (income.received_by_user_name?.toLowerCase() ?? '').includes(searchLower) ||
+      (income.shared_with_user_name?.toLowerCase() ?? '').includes(searchLower)
+    );
+    const matchesCategory = selectedCategory === "all" || income.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredSharedIncomes.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedIncomes = filteredSharedIncomes.slice(startIndex, endIndex);
+
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const half = Math.floor(maxVisiblePages / 2);
+      let start = Math.max(currentPage - half, 1);
+      let end = Math.min(start + maxVisiblePages - 1, totalPages);
+      
+      if (end - start < maxVisiblePages - 1) {
+        start = Math.max(end - maxVisiblePages + 1, 1);
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  };
+
   return (
     <Tabs defaultValue="add" className="space-y-6">
       <TabsList className="grid w-full grid-cols-3">
@@ -160,11 +240,42 @@ export function SharedIncomesTabs({
                 <List className="h-5 w-5 text-muted-foreground" />
                 <CardTitle>Minhas Rendas Compartilhadas</CardTitle>
               </div>
+              <div className="flex gap-2">
+                <div className="relative flex-1 md:grow-0">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Pesquisar rendas compartilhadas..."
+                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filtrar por Categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as Categorias</SelectItem>
+                    {Array.from(new Set(initialSharedIncomes.map(income => income.category).filter(Boolean))).map((category) => (
+                      <SelectItem key={category} value={category as string}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <CardDescription>Todas as rendas que você compartilhou ou que foram compartilhadas com você.</CardDescription>
           </CardHeader>
           <CardContent className="w-full overflow-x-hidden">
-            {sharedIncomes.length === 0 ? (
+            {filteredSharedIncomes.length === 0 && debouncedSearchQuery ? (
+              <div className="text-center py-12">
+                <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground font-medium text-lg">Nenhuma renda compartilhada encontrada para "{debouncedSearchQuery}"</p>
+                <p className="text-sm text-muted-foreground mt-2">Tente ajustar sua pesquisa ou filtros.</p>
+              </div>
+            ) : filteredSharedIncomes.length === 0 ? (
               <div className="text-center py-12">
                 <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground font-medium text-lg">Nenhuma renda compartilhada ainda</p>
@@ -179,10 +290,10 @@ export function SharedIncomesTabs({
                       <TableRow>
                         <TableHead>
                           <Checkbox
-                            checked={selectedIncomes.length === sharedIncomes.length && sharedIncomes.length > 0}
+                            checked={selectedIncomes.length === paginatedIncomes.length && paginatedIncomes.length > 0}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                setSelectedIncomes(sharedIncomes.map(inc => inc.id));
+                                setSelectedIncomes(paginatedIncomes.map(inc => inc.id));
                               } else {
                                 setSelectedIncomes([]);
                               }
@@ -201,7 +312,7 @@ export function SharedIncomesTabs({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {sharedIncomes.map((income) => (
+                      {paginatedIncomes.map((income) => (
                         <TableRow key={income.id}>
                           <TableCell>
                             <Checkbox
@@ -272,10 +383,10 @@ export function SharedIncomesTabs({
                   {/* Select all option for mobile */}
                   <div className="flex items-center gap-2 p-2 min-w-0">
                     <Checkbox
-                      checked={selectedIncomes.length === sharedIncomes.length && sharedIncomes.length > 0}
+                      checked={selectedIncomes.length === paginatedIncomes.length && paginatedIncomes.length > 0}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedIncomes(sharedIncomes.map(inc => inc.id));
+                          setSelectedIncomes(paginatedIncomes.map(inc => inc.id));
                         } else {
                           setSelectedIncomes([]);
                         }
@@ -285,7 +396,7 @@ export function SharedIncomesTabs({
                     <span className="text-sm text-muted-foreground">Selecionar todas</span>
                   </div>
 
-                  {sharedIncomes.map((income) => (
+                  {paginatedIncomes.map((income) => (
                     <Card key={income.id} className="p-3 w-full overflow-hidden">
                       <div className="flex flex-col space-y-3 min-w-0">
                         {/* Header with checkbox, title and actions */}
@@ -363,6 +474,41 @@ export function SharedIncomesTabs({
                     </Card>
                   ))}
                 </div>
+                
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-6 flex justify-center">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        
+                        {generatePageNumbers().map((page, index) => (
+                          <PaginationItem key={index}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
               </>
             )}
           </CardContent>

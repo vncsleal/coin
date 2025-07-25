@@ -14,12 +14,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ExpenseChart } from '@/components/expense-chart';
 import { formatCurrency } from '@/lib/currency';
 import { SharedExpenseForm } from '@/components/shared-expense-form';
-import { EditSharedExpenseModal } from '@/components/EditSharedExpenseModal';
+import { EditSharedExpenseModal } from '@/components/edit-shared-expense-modal';
 import { deleteSharedExpense, getSharedExpenses, getMonthlySharedExpensesChartData, getSharedExpensesByCategoryData, getSharedPainelStats, updateSharedExpenseStatus, batchSettleSharedExpenses } from '@/app/actions/shared-expenses';
 import { Button } from '@/components/ui/button';
 import { SharedExpense } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 
 interface SharedExpensesTabsProps {
@@ -47,6 +48,8 @@ export function SharedExpensesTabs({
   const [sharedExpensesByCategory, setSharedExpensesByCategory] = useState<{ category: string; total: number; percentage: number }[]>(initialCategoryChartData);
   const [painelStats, setPainelStats] = useState(initialPainelStats);
   const [selectedExpenses, setSelectedExpenses] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   const { toast } = useToast();
 
   const searchParams = useSearchParams();
@@ -74,6 +77,8 @@ export function SharedExpensesTabs({
     } else {
       params.delete("category");
     }
+    // Reset to first page when search or category changes
+    setCurrentPage(1);
     router.replace(`${window.location.pathname}?${params.toString()}`);
   }, [debouncedSearchQuery, selectedCategory, searchParams, router]);
 
@@ -163,6 +168,37 @@ export function SharedExpensesTabs({
     const matchesCategory = selectedCategory === "all" || expense.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredSharedExpenses.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedExpenses = filteredSharedExpenses.slice(startIndex, endIndex);
+
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const half = Math.floor(maxVisiblePages / 2);
+      let start = Math.max(currentPage - half, 1);
+      let end = Math.min(start + maxVisiblePages - 1, totalPages);
+      
+      if (end - start < maxVisiblePages - 1) {
+        start = Math.max(end - maxVisiblePages + 1, 1);
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+    
+    return pages;
+  };
 
   return (
     <Tabs defaultValue="add" className="space-y-6">
@@ -257,10 +293,10 @@ export function SharedExpensesTabs({
                       <TableRow>
                         <TableHead>
                           <Checkbox
-                            checked={selectedExpenses.length === filteredSharedExpenses.length && filteredSharedExpenses.length > 0}
+                            checked={selectedExpenses.length === paginatedExpenses.length && paginatedExpenses.length > 0}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                setSelectedExpenses(filteredSharedExpenses.map(exp => exp.id));
+                                setSelectedExpenses(paginatedExpenses.map(exp => exp.id));
                               } else {
                                 setSelectedExpenses([]);
                               }
@@ -279,7 +315,7 @@ export function SharedExpensesTabs({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredSharedExpenses.map((expense) => (
+                      {paginatedExpenses.map((expense) => (
                         <TableRow key={expense.id}>
                           <TableCell>
                             <Checkbox
@@ -350,10 +386,10 @@ export function SharedExpensesTabs({
                   {/* Select all option for mobile */}
                   <div className="flex items-center gap-2 p-2 min-w-0">
                     <Checkbox
-                      checked={selectedExpenses.length === filteredSharedExpenses.length && filteredSharedExpenses.length > 0}
+                      checked={selectedExpenses.length === paginatedExpenses.length && paginatedExpenses.length > 0}
                       onCheckedChange={(checked) => {
                         if (checked) {
-                          setSelectedExpenses(filteredSharedExpenses.map(exp => exp.id));
+                          setSelectedExpenses(paginatedExpenses.map(exp => exp.id));
                         } else {
                           setSelectedExpenses([]);
                         }
@@ -363,7 +399,7 @@ export function SharedExpensesTabs({
                     <span className="text-sm text-muted-foreground">Selecionar todas</span>
                   </div>
 
-                  {filteredSharedExpenses.map((expense) => (
+                  {paginatedExpenses.map((expense) => (
                     <Card key={expense.id} className="p-3 w-full overflow-hidden">
                       <div className="flex flex-col space-y-3 min-w-0">
                         {/* Header with checkbox, title and actions */}
@@ -441,6 +477,41 @@ export function SharedExpensesTabs({
                     </Card>
                   ))}
                 </div>
+                
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-6 flex justify-center">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        
+                        {generatePageNumbers().map((page, index) => (
+                          <PaginationItem key={index}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
               </>
             )}
           </CardContent>
