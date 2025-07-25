@@ -26,7 +26,7 @@ export async function addIncome(formData: FormData) {
   }
 
   const { name, amount: amountString, date } = validatedFields.data;
-  const amount = Number.parseFloat(amountString);
+  const amount = Number.parseFloat(amountString.replace(",", "."));
 
   await sql`
     INSERT INTO incomes (user_id, name, amount, date)
@@ -57,7 +57,7 @@ export async function updateIncome(id: number, formData: FormData) {
   }
 
   const { name, amount: amountString, date } = validatedFields.data;
-  const amount = Number.parseFloat(amountString);
+  const amount = Number.parseFloat(amountString.replace(",", "."));
 
   await sql`
     UPDATE incomes

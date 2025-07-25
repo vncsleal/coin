@@ -27,7 +27,7 @@ export async function addSharedExpense(formData: FormData) {
   }
 
   const { description, total_amount: totalAmountString, date, category, shared_with_user_id } = validatedFields.data;
-  const total_amount = Number.parseFloat(totalAmountString);
+  const total_amount = Number.parseFloat(totalAmountString.replace(",", "."));
 
   await sql`
     INSERT INTO shared_expenses (
@@ -74,7 +74,7 @@ export async function updateSharedExpense(id: string, formData: FormData) {
   }
 
   const { description, total_amount: totalAmountString, date, category, shared_with_user_id } = validatedFields.data;
-  const total_amount = Number.parseFloat(totalAmountString);
+  const total_amount = Number.parseFloat(totalAmountString.replace(",", "."));
 
   await sql`
     UPDATE shared_expenses
