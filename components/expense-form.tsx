@@ -1,10 +1,12 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { addExpense, updateExpense } from "@/app/actions/expenses"
@@ -17,113 +19,169 @@ import { getUserCurrencyPreference } from "@/lib/client-preferences"
 import { CURRENCIES } from "@/lib/currency"
 import React from "react"
 
+const expenseSchema = z.object({
+  name: z.string().min(1, "O nome é obrigatório."),
+  amount: z.string().min(1, "O valor deve ser positivo."),
+  tag: z.string().min(1, "A categoria é obrigatória."),
+  date: z.date({ required_error: "A data é obrigatória." }),
+})
+
+type ExpenseFormValues = z.infer<typeof expenseSchema>
+
 interface ExpenseFormProps {
   expenseToEdit?: Expense;
   onSave?: () => void;
 }
 
 export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
-
-  const [name, setName] = useState(expenseToEdit?.name || '');
-  const [amount, setAmount] = useState(expenseToEdit?.amount.toString() || '');
-  const [tag, setTag] = useState(expenseToEdit?.tag || '');
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const form = useForm<ExpenseFormValues>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: expenseToEdit ? {
+      name: expenseToEdit.name,
+      amount: expenseToEdit.amount.toString(),
+      tag: expenseToEdit.tag,
+      date: new Date(expenseToEdit.date),
+    } : {
+      name: "",
+      amount: "",
+      tag: "",
+      date: new Date(),
+    },
+  });
 
   useEffect(() => {
-    if (expenseToEdit?.date) {
-      setDate(new Date(expenseToEdit.date));
+    if (expenseToEdit) {
+      form.reset({
+        name: expenseToEdit.name,
+        amount: expenseToEdit.amount.toString(),
+        tag: expenseToEdit.tag,
+        date: new Date(expenseToEdit.date),
+      });
     } else {
-      setDate(new Date());
+      form.reset({
+        name: "",
+        amount: "",
+        tag: "",
+        date: new Date(),
+      });
     }
-  }, [expenseToEdit?.date]);
+  }, [expenseToEdit, form]);
 
-  const handleDateChange = React.useCallback((newDate: Date | undefined) => {
-    setDate(newDate);
-  }, []);
+  const { toast } = useToast();
 
   const userCurrencyCode = getUserCurrencyPreference();
   const userCurrency = CURRENCIES[userCurrencyCode];
 
-  async function handleSubmit(formData: FormData) {
-    setIsLoading(true)
-    
-    formData.set("date", date?.toISOString().split("T")[0] || "");
-    formData.set("amount", amount || "");
-
+  const onSubmit = async (values: ExpenseFormValues) => {
     try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("amount", values.amount);
+      formData.append("tag", values.tag);
+      formData.append("date", values.date.toISOString().split("T")[0]);
+
       if (expenseToEdit) {
-        await updateExpense(expenseToEdit.id, formData)
+        await updateExpense(expenseToEdit.id, formData);
         toast({
           title: "Sucesso",
           description: "Despesa atualizada com sucesso",
-        })
+        });
+        onSave?.();
       } else {
-        await addExpense(formData)
+        await addExpense(formData);
         toast({
           title: "Sucesso",
           description: "Despesa adicionada com sucesso",
-        })
+        });
+        form.reset({
+          name: "",
+          amount: "",
+          tag: "",
+          date: new Date(),
+        });
       }
-      router.refresh()
-      onSave?.();
     } catch (error) {
       toast({
         title: "Erro",
-        description: `Falha ao ${expenseToEdit ? 'atualizar' : 'adicionar'} despesa`,
+        description: `Não foi possível ${expenseToEdit ? 'atualizar' : 'adicionar'} a despesa.`,
         variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
+      });
     }
-  }
+  };
 
   return (
-    <form action={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name">Nome da Despesa</Label>
-        <Input id="name" name="name" placeholder="Digite o nome da despesa" required value={name} onChange={(e) => setName(e.target.value)} />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="amount">Valor</Label>
-        <CurrencyInput 
-          id="amount" 
-          name="amount" 
-          placeholder={userCurrency.symbol + " 0,00"} 
-          required 
-          value={amount} 
-          onValueChange={(value) => setAmount(value || '')} 
-          currencyCode={userCurrencyCode}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nome da Despesa</FormLabel>
+              <FormControl>
+                <Input placeholder="Ex: Aluguel, Compras" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="tag">Categoria</Label>
-        <Select name="tag" required value={tag} onValueChange={setTag}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione a categoria" />
-          </SelectTrigger>
-          <SelectContent>
-            {EXPENSE_TAGS.map((t) => (
-              <SelectItem key={t} value={t}>
-                {t}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="date">Data</Label>
-        <DatePicker value={date} onChange={handleDateChange} />
-      </div>
-
-      <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? (expenseToEdit ? "Atualizando..." : "Adicionando...") : (expenseToEdit ? "Atualizar Despesa" : "Adicionar Despesa")}
-      </Button>
-    </form>
-  )
+        <FormField
+          control={form.control}
+          name="amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Valor</FormLabel>
+              <FormControl>
+                <CurrencyInput 
+                  placeholder={userCurrency.symbol + " 0,00"} 
+                  value={field.value}
+                  onValueChange={field.onChange} 
+                  currencyCode={userCurrencyCode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tag"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Categoria</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {EXPENSE_TAGS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Data</FormLabel>
+              <DatePicker value={field.value} onChange={React.useCallback(field.onChange, [field.onChange])} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full">
+          {expenseToEdit ? "Atualizar Despesa" : "Adicionar Despesa"}
+        </Button>
+      </form>
+    </Form>
+  );
 }

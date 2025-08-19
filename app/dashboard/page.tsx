@@ -4,19 +4,16 @@ import { redirect } from "next/navigation"
 import { sql } from "@/lib/db"
 import type { DashboardStats } from "@/lib/types"
 import { DashboardClient } from "@/components/dashboard-client"
+import { MonthPicker } from "@/components/ui/month-picker"
 
-async function getDashboardStats(userId: string): Promise<DashboardStats> {
-  const currentDate = new Date()
-  const currentMonth = currentDate.getMonth() + 1
-  const currentYear = currentDate.getFullYear()
-
+async function getDashboardStats(userId: string, month: number, year: number): Promise<DashboardStats> {
   // Get monthly income data for chart
   const monthlyIncomes = await sql`
     SELECT DATE(date) as date, SUM(amount) as amount
     FROM incomes
     WHERE user_id = ${userId}
-    AND EXTRACT(MONTH FROM date) = ${currentMonth}
-    AND EXTRACT(YEAR FROM date) = ${currentYear}
+    AND EXTRACT(MONTH FROM date) = ${month}
+    AND EXTRACT(YEAR FROM date) = ${year}
     GROUP BY DATE(date)
     ORDER BY date
   `
@@ -26,8 +23,8 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
     SELECT COALESCE(SUM(amount), 0) as total
     FROM incomes
     WHERE user_id = ${userId}
-    AND EXTRACT(MONTH FROM date) = ${currentMonth}
-    AND EXTRACT(YEAR FROM date) = ${currentYear}
+    AND EXTRACT(MONTH FROM date) = ${month}
+    AND EXTRACT(YEAR FROM date) = ${year}
   `
 
   // Get current month expenses for chart
@@ -35,8 +32,8 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
     SELECT DATE(date) as date, SUM(amount) as amount
     FROM expenses 
     WHERE user_id = ${userId} 
-    AND EXTRACT(MONTH FROM date) = ${currentMonth}
-    AND EXTRACT(YEAR FROM date) = ${currentYear}
+    AND EXTRACT(MONTH FROM date) = ${month}
+    AND EXTRACT(YEAR FROM date) = ${year}
     GROUP BY DATE(date)
     ORDER BY date
   `
@@ -47,8 +44,8 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
     SELECT COALESCE(SUM(amount), 0) as total
     FROM expenses 
     WHERE user_id = ${userId}
-    AND EXTRACT(MONTH FROM date) = ${currentMonth}
-    AND EXTRACT(YEAR FROM date) = ${currentYear}
+    AND EXTRACT(MONTH FROM date) = ${month}
+    AND EXTRACT(YEAR FROM date) = ${year}
   `
 
   // Get monthly shared expenditure (user's portion)
@@ -61,16 +58,16 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
       END), 0) as total
     FROM shared_expenses
     WHERE (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
-    AND EXTRACT(MONTH FROM date) = ${currentMonth}
-    AND EXTRACT(YEAR FROM date) = ${currentYear}
+    AND EXTRACT(MONTH FROM date) = ${month}
+    AND EXTRACT(YEAR FROM date) = ${year}
   `
 
   // Get current budget
   const budget = await sql`
     SELECT amount FROM budgets 
     WHERE user_id = ${userId} 
-    AND month = ${currentMonth} 
-    AND year = ${currentYear}
+    AND month = ${month} 
+    AND year = ${year}
   `
 
   // Get expenses by tag for current month
@@ -78,8 +75,8 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
     SELECT tag, SUM(amount) as amount
     FROM expenses 
     WHERE user_id = ${userId}
-    AND EXTRACT(MONTH FROM date) = ${currentMonth}
-    AND EXTRACT(YEAR FROM date) = ${currentYear}
+    AND EXTRACT(MONTH FROM date) = ${month}
+    AND EXTRACT(YEAR FROM date) = ${year}
     GROUP BY tag
     ORDER BY amount DESC
   `
@@ -98,7 +95,7 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const totalSharedExpenditure = Number(monthlySharedExpenditureResult[0]?.total || 0)
   const totalExpenditure = totalIndividualExpenditure + totalSharedExpenditure
   const currentBudget = Number(budget[0]?.amount || 0)
-  const daysInMonth = new Date(currentYear, currentMonth, 0).getDate()
+  const daysInMonth = new Date(year, month, 0).getDate()
   const dailyAverage = totalExpenditure / daysInMonth
 
   return {
@@ -128,15 +125,32 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   }
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: { month?: string, year?: string } }) {
   const { userId } = await auth()
 
   if (!userId) {
     redirect("/sign-in")
   }
 
-  const stats = await getDashboardStats(userId)
+  const currentDate = new Date()
+  const month = searchParams.month ? parseInt(searchParams.month) : currentDate.getMonth() + 1
+  const year = searchParams.year ? parseInt(searchParams.year) : currentDate.getFullYear()
 
-  return <DashboardClient stats={stats} />
+  const stats = await getDashboardStats(userId, month, year)
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Painel</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Visão geral da sua atividade financeira</p>
+        </div>
+        <div className="w-full lg:w-auto">
+          <MonthPicker date={new Date(year, month - 1)} />
+        </div>
+      </div>
+      <DashboardClient stats={stats} />
+    </div>
+  )
 }
 

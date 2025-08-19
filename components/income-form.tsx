@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -77,14 +77,19 @@ export function IncomeForm({ incomeToEdit, onSave }: IncomeFormProps) {
           title: "Sucesso",
           description: "Renda atualizada com sucesso",
         });
+        onSave?.();
       } else {
         await addIncome(formData);
         toast({
           title: "Sucesso",
           description: "Renda adicionada com sucesso",
         });
+        form.reset({
+          name: "",
+          amount: "",
+          date: new Date(),
+        });
       }
-      onSave?.();
     } catch (error) {
       toast({
         title: "Erro",

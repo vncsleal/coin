@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ExpenseChart } from "@/components/expense-chart"
 import { ExpensePieChart } from "@/components/expense-pie-chart"
-import { DollarSign, TrendingUp, Target, TrendingDown, Scale, BarChart, PieChart, List } from "lucide-react"
+import { DollarSign, TrendingUp, Target, TrendingDown, Scale, BarChart, PieChart, List, Eye, Calendar, Activity } from "lucide-react"
 import { formatCurrency } from "@/lib/currency"
 import { IncomeChart } from "@/components/income-chart"
 import type { DashboardStats } from "@/lib/types"
@@ -49,195 +50,198 @@ export function DashboardClient({ stats }: DashboardClientProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Painel</h1>
-        <p className="text-muted-foreground">Visão geral da sua atividade financeira neste mês</p>
-      </div>
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <Eye className="h-4 w-4" />
+            <span className="hidden sm:inline">Visão Geral</span>
+            <span className="sm:hidden">Visão</span>
+          </TabsTrigger>
+          <TabsTrigger value="monthly" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span className="hidden sm:inline">Análise Mensal</span>
+            <span className="sm:hidden">Mensal</span>
+          </TabsTrigger>
+          <TabsTrigger value="all-time" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            <span className="hidden sm:inline">Análise Geral</span>
+            <span className="sm:hidden">Geral</span>
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-sm font-medium">Renda Mensal</CardTitle>
-            </div>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatAmount(stats.monthlyIncome)}</div>
-          </CardContent>
-        </Card>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Renda Mensal</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{formatAmount(stats.monthlyIncome)}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              
-              <CardTitle className="text-sm font-medium">Despesa Mensal</CardTitle>
-            </div>
-            <TrendingDown className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{formatAmount(stats.monthlyExpenditure)}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Despesa Mensal</CardTitle>
+                <TrendingDown className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">{formatAmount(stats.monthlyExpenditure)}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              
-              <CardTitle className="text-sm font-medium">Despesa Mensal Compartilhada</CardTitle>
-            </div>
-            <TrendingDown className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{formatAmount(stats.monthlySharedExpenditure)}</div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Despesa Mensal Compartilhada</CardTitle>
+                <TrendingDown className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">{formatAmount(stats.monthlySharedExpenditure)}</div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              
-              <CardTitle className="text-sm font-medium">Balanço Mensal</CardTitle>
-            </div>
-            <Scale className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${stats.netBalance < 0 ? "text-red-600" : "text-green-600"}`}>
-              {formatAmount(stats.netBalance)}
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Balanço Mensal</CardTitle>
+                <Scale className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${stats.netBalance < 0 ? "text-red-600" : "text-green-600"}`}>
+                  {formatAmount(stats.netBalance)}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              
-              <CardTitle className="text-sm font-medium">Orçamento Restante</CardTitle>
-            </div>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${stats.remainingBudget < 0 ? "text-red-600" : "text-green-600"}`}>
-              {formatAmount(stats.remainingBudget)}
-            </div>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Orçamento Restante</CardTitle>
+                <Target className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${stats.remainingBudget < 0 ? "text-red-600" : "text-green-600"}`}>
+                  {formatAmount(stats.remainingBudget)}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              
-              <CardTitle className="text-sm font-medium">Média Diária</CardTitle>
-            </div>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatAmount(stats.dailyAverage)}</div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Média Diária</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatAmount(stats.dailyAverage)}</div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Rendas Mensais</CardTitle>
-              <CardDescription>Suas fontes de renda ao longo do mês</CardDescription>
-            </div>
-            <BarChart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pl-2">
-            <IncomeChart data={stats.monthlyIncomes} showAmounts={showAmounts} />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Despesas Mensais</CardTitle>
-              <CardDescription>Seus gastos diários ao longo do mês</CardDescription>
-            </div>
-            <BarChart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent className="pl-2">
-            <ExpenseChart data={stats.monthlyExpenses} showAmounts={showAmounts} />
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="monthly" className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Rendas Mensais</CardTitle>
+                  <CardDescription>Suas fontes de renda ao longo do mês</CardDescription>
+                </div>
+                <BarChart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pl-2">
+                <IncomeChart data={stats.monthlyIncomes} showAmounts={showAmounts} />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Despesas Mensais</CardTitle>
+                  <CardDescription>Seus gastos diários ao longo do mês</CardDescription>
+                </div>
+                <BarChart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="pl-2">
+                <ExpenseChart data={stats.monthlyExpenses} showAmounts={showAmounts} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-4 grid-cols-1">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Despesas por Categoria</CardTitle>
+                  <CardDescription>Detalhamento do mês atual</CardDescription>
+                </div>
+                <PieChart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <ExpensePieChart data={stats.expensesByTag} showAmounts={showAmounts} />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
 
-      <div className="grid gap-4 grid-cols-1 xl:grid-cols-2">
-        <Card className="">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Despesas por Categoria</CardTitle>
-              <CardDescription>Detalhamento do mês atual</CardDescription>
-            </div>
-            <PieChart className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <ExpensePieChart data={stats.expensesByTag} showAmounts={showAmounts} />
-          </CardContent>
-        </Card>
-
-        <Card className="">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Total de Despesas por Categoria</CardTitle>
-              <CardDescription>Detalhamento de gastos de todos os tempos</CardDescription>
-            </div>
-            <List className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {totalExpensesByTagWithPercentage.length === 0 ? (
-              <div className="text-center py-12">
-                <BarChart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground font-medium text-lg">Sem dados para exibir</p>
-                <p className="text-sm text-muted-foreground mt-2">Adicione despesas para ver a tabela.</p>
+        <TabsContent value="all-time" className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Total de Despesas por Categoria</CardTitle>
+                <CardDescription>Detalhamento de gastos de todos os tempos</CardDescription>
               </div>
-            ) : (
-              <>
-                {/* Desktop Table */}
-                <div className="hidden md:block">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Categoria</TableHead>
-                        <TableHead className="text-right">Total</TableHead>
-                        <TableHead className="text-right">Porcentagem</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {totalExpensesByTagWithPercentage.map((item) => (
-                        <TableRow key={item.tag}>
-                          <TableCell>{item.tag}</TableCell>
-                          <TableCell className="text-right">{formatAmount(item.amount)}</TableCell>
-                          <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
+              <List className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              {totalExpensesByTagWithPercentage.length === 0 ? (
+                <div className="text-center py-12">
+                  <BarChart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground font-medium text-lg">Sem dados para exibir</p>
+                  <p className="text-sm text-muted-foreground mt-2">Adicione despesas para ver a tabela.</p>
+                </div>
+              ) : (
+                <>
+                  {/* Desktop Table */}
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Categoria</TableHead>
+                          <TableHead className="text-right">Total</TableHead>
+                          <TableHead className="text-right">Porcentagem</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {totalExpensesByTagWithPercentage.map((item) => (
+                          <TableRow key={item.tag}>
+                            <TableCell>{item.tag}</TableCell>
+                            <TableCell className="text-right">{formatAmount(item.amount)}</TableCell>
+                            <TableCell className="text-right">{item.percentage.toFixed(2)}%</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
 
-                {/* Mobile Cards */}
-                <div className="md:hidden space-y-2">
-                  {totalExpensesByTagWithPercentage.map((item) => (
-                    <Card key={item.tag}>
-                      <CardContent className="p-4 flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium">{item.tag}</p>
-                          <p className="text-xs text-muted-foreground">{item.percentage.toFixed(2)}%</p>
-                        </div>
-                        <div className="text-base font-bold">
-                          {formatAmount(item.amount)}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                  {/* Mobile Cards */}
+                  <div className="md:hidden space-y-2">
+                    {totalExpensesByTagWithPercentage.map((item) => (
+                      <Card key={item.tag}>
+                        <CardContent className="p-4 flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium">{item.tag}</p>
+                            <p className="text-xs text-muted-foreground">{item.percentage.toFixed(2)}%</p>
+                          </div>
+                          <div className="text-base font-bold">
+                            {formatAmount(item.amount)}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
