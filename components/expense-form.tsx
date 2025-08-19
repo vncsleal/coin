@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -10,11 +10,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { addExpense, updateExpense } from "@/app/actions/expenses"
+import { getCategories } from "@/app/actions/categories"
+import { EXPENSE_TAGS } from "@/lib/constants"
 import type { Expense } from "@/lib/types"
 
 import { DatePicker } from "@/components/ui/date-picker"
 import { CurrencyInput } from "@/components/ui/currency-input"
-import { EXPENSE_TAGS } from "@/lib/constants"
 import { getUserCurrencyPreference } from "@/lib/client-preferences"
 import { CURRENCIES } from "@/lib/currency"
 import React from "react"
@@ -34,6 +35,7 @@ interface ExpenseFormProps {
 }
 
 export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
+  const [categories, setCategories] = useState<string[]>([])
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
     defaultValues: expenseToEdit ? {
@@ -48,6 +50,16 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
       date: new Date(),
     },
   });
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const customCategories = await getCategories('expense');
+      const customCategoryNames = customCategories.map(c => c.name);
+      const combined = [...new Set([...EXPENSE_TAGS, ...customCategoryNames])];
+      setCategories(combined);
+    }
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (expenseToEdit) {
@@ -156,9 +168,9 @@ export function ExpenseForm({ expenseToEdit, onSave }: ExpenseFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {EXPENSE_TAGS.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
+                  {categories.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
                     </SelectItem>
                   ))}
                 </SelectContent>

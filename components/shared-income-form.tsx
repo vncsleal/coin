@@ -1,13 +1,18 @@
-'use client';
+'use client'
 
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { DatePicker } from "@/components/ui/date-picker";
-import { cn, safeDateParse, safeFormatDateForSubmission } from '@/lib/utils';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { cn } from '@/lib/utils';
 import { INCOME_TAGS } from '@/lib/constants';
+import { getCategories } from '@/app/actions/categories';
 import { addSharedIncome, updateSharedIncome } from '@/app/actions/shared-incomes';
 import { useToast } from "@/hooks/use-toast";
 import { getUserCurrencyPreference } from "@/lib/client-preferences";
@@ -23,33 +28,42 @@ interface Friend {
   avatar_url?: string;
 }
 
+const sharedIncomeSchema = z.object({
+  description: z.string().min(1, "A descrição é obrigatória."),
+  total_amount: z.string().min(1, "O valor deve ser positivo."),
+  date: z.date({ required_error: "A data é obrigatória." }),
+  category: z.string().optional(),
+  shared_with_user_id: z.string().min(1, "Selecione um amigo."),
+});
+
+type SharedIncomeFormValues = z.infer<typeof sharedIncomeSchema>;
+
 interface SharedIncomeFormProps {
   incomeToEdit?: SharedIncome;
   onSave?: () => void;
 }
 
 export function SharedIncomeForm({ incomeToEdit, onSave }: SharedIncomeFormProps) {
-  const [description, setDescription] = useState(incomeToEdit?.description || '');
-  const [amount, setAmount] = useState<string>(incomeToEdit?.total_amount?.toString() || '');
-  
-  const [date, setDate] = useState<Date | undefined>(undefined);
-
-  useEffect(() => {
-    if (incomeToEdit?.date) {
-      setDate(new Date(incomeToEdit.date));
-    } else {
-      setDate(new Date());
-    }
-  }, [incomeToEdit?.date]);
-
-  const handleDateChange = React.useCallback((newDate: Date | undefined) => {
-    setDate(newDate);
-  }, []);
-  
-  const [category, setCategory] = useState(incomeToEdit?.category || '');
-  const [selectedFriend, setSelectedFriend] = useState<string>(incomeToEdit?.shared_with_user_id || '');
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const { toast } = useToast();
+
+  const form = useForm<SharedIncomeFormValues>({
+    resolver: zodResolver(sharedIncomeSchema),
+    defaultValues: incomeToEdit ? {
+      description: incomeToEdit.description,
+      total_amount: incomeToEdit.total_amount.toString(),
+      date: new Date(incomeToEdit.date),
+      category: incomeToEdit.category || "",
+      shared_with_user_id: incomeToEdit.shared_with_user_id,
+    } : {
+      description: "",
+      total_amount: "",
+      date: new Date(),
+      category: "",
+      shared_with_user_id: "",
+    },
+  });
 
   const userCurrencyCode = getUserCurrencyPreference();
   const userCurrency = CURRENCIES[userCurrencyCode];
@@ -75,47 +89,36 @@ export function SharedIncomeForm({ incomeToEdit, onSave }: SharedIncomeFormProps
     fetchFriends();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!description || !amount || !date || !selectedFriend) {
-      toast({
-        title: 'Erro',
-        description: 'Por favor, preencha todos os campos obrigatórios.',
-        variant: "destructive",
-      });
-      return;
+  useEffect(() => {
+    async function fetchCategories() {
+      const customCategories = await getCategories('income');
+      const customCategoryNames = customCategories.map(c => c.name);
+      const combined = [...new Set([...INCOME_TAGS, ...customCategoryNames])];
+      setCategories(combined);
     }
+    fetchCategories();
+  }, []);
 
+  const onSubmit = async (values: SharedIncomeFormValues) => {
     try {
       const formData = new FormData();
-      formData.append("description", description);
-      formData.append("total_amount", amount);
-      formData.append("date", safeFormatDateForSubmission(date));
-      formData.append("category", category || '');
-      formData.append("shared_with_user_id", selectedFriend);
+      formData.append("description", values.description);
+      formData.append("total_amount", values.total_amount);
+      formData.append("date", values.date.toISOString().split("T")[0]);
+      formData.append("category", values.category || '');
+      formData.append("shared_with_user_id", values.shared_with_user_id);
 
       if (incomeToEdit) {
-        
         await updateSharedIncome(incomeToEdit.id, formData);
-        
         toast({
           title: 'Renda compartilhada atualizada com sucesso!',
         });
       } else {
-        
         await addSharedIncome(formData);
-        
         toast({
           title: 'Renda compartilhada criada com sucesso!',
         });
-      }
-
-      if (!incomeToEdit) {
-        setDescription('');
-        setAmount('');
-        setDate(new Date());
-        setCategory('');
-        setSelectedFriend('');
+        form.reset();
       }
       onSave?.();
     } catch (error) {
@@ -128,100 +131,132 @@ export function SharedIncomeForm({ incomeToEdit, onSave }: SharedIncomeFormProps
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid gap-2">
-        <label htmlFor="description" className="text-sm font-medium">Descrição</label>
-        <Input
-          id="description"
-          placeholder="Salário freelancer"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-          className="h-10"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descrição</FormLabel>
+              <FormControl>
+                <Input placeholder="Salário freelancer" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="grid gap-2">
-        <label htmlFor="amount" className="text-sm font-medium">Valor Total</label>
-        <CurrencyInput
-          id="amount"
-          placeholder={userCurrency.symbol + " 0,00"}
-          value={amount}
-          onValueChange={(value) => setAmount(value || "")}
-          required
-          className="h-10"
-          currencyCode={userCurrencyCode}
+        <FormField
+          control={form.control}
+          name="total_amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Valor Total</FormLabel>
+              <FormControl>
+                <CurrencyInput
+                  placeholder={userCurrency.symbol + " 0,00"}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  currencyCode={userCurrencyCode}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="grid gap-2">
-        <label htmlFor="date" className="text-sm font-medium">Data</label>
-        <DatePicker value={date} onChange={handleDateChange} />
-      </div>
-      <div className="grid gap-2">
-        <label htmlFor="category" className="text-sm font-medium">Categoria (Opcional)</label>
-        <Select onValueChange={setCategory} value={category}>
-          <SelectTrigger className="h-10">
-            <SelectValue placeholder="Selecione uma categoria" />
-          </SelectTrigger>
-          <SelectContent>
-            {INCOME_TAGS.map((tag) => (
-              <SelectItem key={tag} value={tag}>
-                {tag}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid gap-2">
-        <label htmlFor="friend" className="text-sm font-medium">Compartilhar com</label>
-        {friends.length === 0 ? (
-          <div className="flex items-center justify-center p-4 border rounded-lg bg-muted/50">
-            <div className="text-center">
-              <p className="text-sm font-medium text-muted-foreground">Nenhum amigo disponível</p>
-              <p className="text-xs text-muted-foreground mt-1">Adicione amigos na página de Amigos</p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-2 max-h-40 overflow-y-auto border rounded-lg p-2">
-            {friends.map((friend) => (
-              <div
-                key={friend.id}
-                onClick={() => setSelectedFriend(friend.id)}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-all duration-200",
-                  selectedFriend === friend.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "hover:bg-accent hover:text-accent-foreground"
-                )}
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={friend.avatar_url || "/placeholder-user.jpg"} alt={friend.display_name || friend.email} />
-                  <AvatarFallback className="text-xs font-medium">
-                    {(friend.display_name || friend.email).charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col flex-1 min-w-0">
-                  <span className="font-medium text-sm truncate">
-                    {friend.display_name || 'Usuário'}
-                  </span>
-                  <span className={cn(
-                    "text-xs truncate",
-                    selectedFriend === friend.id ? "text-primary-foreground/70" : "text-muted-foreground"
-                  )}>
-                    {friend.email}
-                  </span>
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Data</FormLabel>
+              <DatePicker value={field.value} onChange={field.onChange} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Categoria (Opcional)</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((tag) => (
+                    <SelectItem key={tag} value={tag}>
+                      {tag}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="shared_with_user_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Compartilhar com</FormLabel>
+              {friends.length === 0 ? (
+                <div className="flex items-center justify-center p-4 border rounded-lg bg-muted/50">
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-muted-foreground">Nenhum amigo disponível</p>
+                    <p className="text-xs text-muted-foreground mt-1">Adicione amigos na página de Amigos</p>
+                  </div>
                 </div>
-                {selectedFriend === friend.id && (
-                  <div className="w-1.5 h-1.5 bg-primary-foreground rounded-full flex-shrink-0" />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      <Button type="submit" className="w-full">
-        
-        {incomeToEdit ? 'Atualizar Renda Compartilhada' : 'Registrar Renda Compartilhada'}
-      </Button>
-    </form>
+              ) : (
+                <div className="grid gap-2 max-h-40 overflow-y-auto border rounded-lg p-2">
+                  {friends.map((friend) => (
+                    <div
+                      key={friend.id}
+                      onClick={() => field.onChange(friend.id)}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-all duration-200",
+                        field.value === friend.id
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={friend.avatar_url || "/placeholder-user.jpg"} alt={friend.display_name || friend.email} />
+                        <AvatarFallback className="text-xs font-medium">
+                          {(friend.display_name || friend.email).charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <span className="font-medium text-sm truncate">
+                          {friend.display_name || 'Usuário'}
+                        </span>
+                        <span className={cn(
+                          "text-xs truncate",
+                          field.value === friend.id ? "text-primary-foreground/70" : "text-muted-foreground"
+                        )}>
+                          {friend.email}
+                        </span>
+                      </div>
+                      {field.value === friend.id && (
+                        <div className="w-1.5 h-1.5 bg-primary-foreground rounded-full flex-shrink-0" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full">
+          {incomeToEdit ? 'Atualizar Renda Compartilhada' : 'Registrar Renda Compartilhada'}
+        </Button>
+      </form>
+    </Form>
   );
 }

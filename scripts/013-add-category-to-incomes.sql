@@ -1,0 +1,1 @@
+ALTER TABLE incomes ADD COLUMN category VARCHAR(255);

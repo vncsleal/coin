@@ -1,8 +1,9 @@
-
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { ProfileSettings } from "@/components/profile-settings"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CategoryManager } from "@/components/category-manager"
+import { getCategories } from "@/app/actions/categories"
 
 export default async function ProfilePage() {
   const { userId } = await auth()
@@ -11,6 +12,9 @@ export default async function ProfilePage() {
   if (!userId || !user) {
     redirect("/sign-in")
   }
+
+  const expenseCategories = await getCategories('expense')
+  const incomeCategories = await getCategories('income')
 
   return (
     <div className="space-y-6">
@@ -51,7 +55,21 @@ export default async function ProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <CategoryManager 
+          initialCategories={expenseCategories} 
+          type="expense" 
+          title="Categorias de Despesa"
+          description="Gerencie suas categorias de despesa"
+        />
+        <CategoryManager 
+          initialCategories={incomeCategories} 
+          type="income" 
+          title="Categorias de Renda"
+          description="Gerencie suas categorias de renda"
+        />
+      </div>
     </div>
   )
 }
-
