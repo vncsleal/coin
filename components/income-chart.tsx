@@ -1,7 +1,8 @@
-"use client"
+'use client'
 
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { formatCurrency } from "@/lib/currency"
+import { BarChart } from "lucide-react"
 
 interface IncomeChartProps {
   data: { date: string; amount: number }[]
@@ -9,9 +10,19 @@ interface IncomeChartProps {
 }
 
 export function IncomeChart({ data, showAmounts = true }: IncomeChartProps) {
+  if (data.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[350px]">
+        <BarChart className="h-16 w-16 text-muted-foreground" />
+        <p className="text-muted-foreground font-medium text-lg mt-4">Sem dados para exibir</p>
+        <p className="text-sm text-muted-foreground mt-2">Adicione rendas para ver o gráfico.</p>
+      </div>
+    )
+  }
+
   return (
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
+      <RechartsBarChart data={data}>
         <XAxis
           dataKey="date"
           stroke="#888888"
@@ -54,7 +65,7 @@ export function IncomeChart({ data, showAmounts = true }: IncomeChartProps) {
           }}
         />
         <Bar dataKey="amount" fill="#22c55e" radius={[4, 4, 0, 0]} />
-      </BarChart>
+      </RechartsBarChart>
     </ResponsiveContainer>
   )
 }

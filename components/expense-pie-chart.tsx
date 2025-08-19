@@ -1,7 +1,8 @@
-"use client"
+'use client'
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
+import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts"
 import { formatCurrency } from "@/lib/currency"
+import { PieChart } from "lucide-react"
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8", "#82CA9D"]
 
@@ -11,9 +12,19 @@ interface ExpensePieChartProps {
 }
 
 export function ExpensePieChart({ data, showAmounts = true }: ExpensePieChartProps) {
+  if (data.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[300px]">
+        <PieChart className="h-16 w-16 text-muted-foreground" />
+        <p className="text-muted-foreground font-medium text-lg mt-4">Sem dados para exibir</p>
+        <p className="text-sm text-muted-foreground mt-2">Adicione despesas para ver o gráfico.</p>
+      </div>
+    )
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
+      <RechartsPieChart>
         <Pie
           data={data}
           cx="50%"
@@ -33,7 +44,7 @@ export function ExpensePieChart({ data, showAmounts = true }: ExpensePieChartPro
           const payload = entry.payload as { tag: string; amount: number }
           return `${payload.tag} (${showAmounts ? formatCurrency(payload.amount) : "••••••"})`
         }} />
-      </PieChart>
+      </RechartsPieChart>
     </ResponsiveContainer>
   )
 }
