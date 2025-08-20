@@ -5,7 +5,17 @@ import {
   ThemeProvider as NextThemesProvider,
   type ThemeProviderProps,
 } from 'next-themes'
+import { availableThemes } from '@/lib/themes'
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+  const themes = availableThemes.map(theme => theme.name)
+  
+  return (
+    <NextThemesProvider 
+      themes={themes}
+      {...props}
+    >
+      {children}
+    </NextThemesProvider>
+  )
 }

@@ -3,7 +3,7 @@ export const CURRENCIES = {
   BRL: {
     code: 'BRL',
     symbol: 'R$',
-    name: 'Brazilian Real',
+    name: 'Real',
     locale: 'pt-BR',
     decimals: 2
   },

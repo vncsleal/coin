@@ -1,6 +1,5 @@
 "use client"
 
-import { useTheme } from "next-themes"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -10,9 +9,13 @@ import { useToast } from "@/hooks/use-toast"
 import { getAvailableCurrencies, DEFAULT_CURRENCY, CurrencyCode } from "@/lib/currency"
 import { saveUserCurrencyPreference, getUserCurrencyPreference } from "@/lib/client-preferences"
 import { useEffect } from "react"
+import { Separator } from "@/components/ui/separator"
 
-export function ProfileSettings() {
-  const { theme, setTheme } = useTheme()
+interface ProfileSettingsProps {
+  compact?: boolean
+}
+
+export function ProfileSettings({ compact = false }: ProfileSettingsProps) {
   const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CURRENCY)
   const [notifications, setNotifications] = useState(true)
   const { toast } = useToast()
@@ -35,37 +38,66 @@ export function ProfileSettings() {
     setCurrency(value as CurrencyCode)
   }
 
+  if (compact) {
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="currency">Moeda Padrão</Label>
+          <Select value={currency} onValueChange={handleCurrencyChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableCurrencies.map((curr) => (
+                <SelectItem key={curr.code} value={curr.code}>
+                  {curr.displayName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="notifications">Notificações por Email</Label>
+          <Switch id="notifications" checked={notifications} onCheckedChange={setNotifications} />
+        </div>
+
+        <Button onClick={handleSave} className="w-full">
+          Salvar Preferências
+        </Button>
+      </div>
+    )
+  }
+
+  // Original full version with theme preview grid
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="currency">Moeda Padrão</Label>
-        <Select value={currency} onValueChange={handleCurrencyChange}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {availableCurrencies.map((curr) => (
-              <SelectItem key={curr.code} value={curr.code}>
-                {curr.displayName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="currency">Moeda Padrão</Label>
+          <Select value={currency} onValueChange={handleCurrencyChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableCurrencies.map((curr) => (
+                <SelectItem key={curr.code} value={curr.code}>
+                  {curr.displayName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div className="flex items-center justify-between">
-        <Label htmlFor="notifications">Notificações por Email</Label>
-        <Switch id="notifications" checked={notifications} onCheckedChange={setNotifications} />
-      </div>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="notifications">Notificações por Email</Label>
+          <Switch id="notifications" checked={notifications} onCheckedChange={setNotifications} />
+        </div>
 
-      <div className="flex items-center justify-between">
-        <Label htmlFor="darkMode">Modo Escuro</Label>
-        <Switch id="darkMode" checked={theme === "dark"} onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")} />
+        <Button onClick={handleSave} className="w-full">
+          Salvar Preferências
+        </Button>
       </div>
-
-      <Button onClick={handleSave} className="w-full">
-        Salvar Preferências
-      </Button>
     </div>
   )
 }
