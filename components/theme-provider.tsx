@@ -13,6 +13,8 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider 
       themes={themes}
+      defaultTheme="light"
+      storageKey="user_theme_preference"
       {...props}
     >
       {children}

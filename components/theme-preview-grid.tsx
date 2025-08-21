@@ -4,6 +4,7 @@ import { useTheme } from "next-themes"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { availableThemes, type Theme } from "@/lib/themes"
+import { useToast } from "@/hooks/use-toast"
 import { Check } from "lucide-react"
 
 interface ThemePreviewProps {
@@ -42,6 +43,15 @@ function ThemePreview({ theme, isSelected, onSelect }: ThemePreviewProps) {
 
 export function ThemePreviewGrid() {
   const { theme, setTheme } = useTheme()
+  const { toast } = useToast()
+
+  const handleThemeSelect = (themeName: string) => {
+    setTheme(themeName)
+    toast({
+      title: "Tema alterado",
+      description: `Tema "${availableThemes.find(t => t.name === themeName)?.label}" aplicado e salvo com sucesso.`,
+    })
+  }
 
   return (
     <div className="space-y-4">
@@ -57,7 +67,7 @@ export function ThemePreviewGrid() {
             key={themeOption.name}
             theme={themeOption}
             isSelected={theme === themeOption.name}
-            onSelect={() => setTheme(themeOption.name)}
+            onSelect={() => handleThemeSelect(themeOption.name)}
           />
         ))}
       </div>

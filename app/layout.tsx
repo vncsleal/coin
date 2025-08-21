@@ -72,7 +72,7 @@ export default function RootLayout({
     <ClerkProvider localization={ptBR}>
       <html lang="pt-BR" suppressHydrationWarning>
         <body className={inter.className}>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+          <ThemeProvider attribute="class" enableSystem={false} disableTransitionOnChange>
             <SplashScreenWrapper>
               {children}
             </SplashScreenWrapper>
