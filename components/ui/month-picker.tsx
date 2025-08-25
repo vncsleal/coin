@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface MonthPickerProps {
-  date: Date
+  month: number
+  year: number
   className?: string
 }
 
@@ -20,14 +21,11 @@ const months = [
   "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
 ]
 
-export function MonthPicker({ date, className }: MonthPickerProps) {
+export function MonthPicker({ month: selectedMonth, year: selectedYear, className }: MonthPickerProps) {
   const router = useRouter()
   const currentDate = new Date()
   const currentMonth = currentDate.getMonth() + 1
   const currentYear = currentDate.getFullYear()
-  
-  const selectedMonth = date.getMonth() + 1
-  const selectedYear = date.getFullYear()
   
   const isCurrentMonth = selectedMonth === currentMonth && selectedYear === currentYear
 

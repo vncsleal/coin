@@ -146,7 +146,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
           <p className="text-sm sm:text-base text-muted-foreground">Visão geral da sua atividade financeira</p>
         </div>
         <div className="w-full lg:w-auto">
-          <MonthPicker date={new Date(year, month - 1)} />
+          <MonthPicker month={month} year={year} />
         </div>
       </div>
       <DashboardClient stats={stats} />
