@@ -1,11 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Users, ArrowRightLeft, PiggyBank } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
-import { getSharedPainelStats } from '@/app/actions/shared-expenses';
 
-export async function SharedExpensesPainel() {
-  const stats = await getSharedPainelStats();
+interface SharedExpensesPainelProps {
+  painelStats: {
+    totalSpent: number;
+    totalPaidByMe: number;
+    myDuePortion: number;
+    balance: number;
+  };
+}
 
+export function SharedExpensesPainel({ painelStats: stats }: SharedExpensesPainelProps) {
   const balanceColorClass = stats.balance >= 0 ? "text-green-500" : "text-red-500";
 
   return (

@@ -114,7 +114,7 @@ export async function deleteSharedExpense(id: string) {
   revalidatePath("/dashboard")
 }
 
-export async function getSharedPainelStats() {
+export async function getSharedPainelStats(month: number, year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -128,7 +128,9 @@ export async function getSharedPainelStats() {
           se.shared_with_user_id,
           se.status
         FROM shared_expenses se
-        WHERE se.paid_by_user_id = ${userId} OR se.shared_with_user_id = ${userId}
+        WHERE (se.paid_by_user_id = ${userId} OR se.shared_with_user_id = ${userId})
+        AND EXTRACT(MONTH FROM se.date) = ${month}
+        AND EXTRACT(YEAR FROM se.date) = ${year}
       )
       SELECT
         COALESCE(SUM(total_amount), 0) AS "totalSpent",
@@ -146,7 +148,7 @@ export async function getSharedPainelStats() {
   }
 }
 
-export async function getSharedExpenses() {
+export async function getSharedExpenses(month: number, year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -167,7 +169,9 @@ export async function getSharedExpenses() {
       FROM shared_expenses se
       JOIN users pbu ON pbu.id = se.paid_by_user_id
       JOIN users swu ON swu.id = se.shared_with_user_id
-      WHERE se.paid_by_user_id = ${userId} OR se.shared_with_user_id = ${userId}
+      WHERE (se.paid_by_user_id = ${userId} OR se.shared_with_user_id = ${userId})
+      AND EXTRACT(MONTH FROM se.date) = ${month}
+      AND EXTRACT(YEAR FROM se.date) = ${year}
       ORDER BY se.date DESC
     `;
 
@@ -185,7 +189,7 @@ export async function getSharedExpenses() {
   }[]
 }
 
-export async function getMonthlySharedExpensesChartData() {
+export async function getMonthlySharedExpensesChartData(year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -196,7 +200,8 @@ export async function getMonthlySharedExpensesChartData() {
       TO_CHAR(date, 'YYYY-MM') as month,
       SUM(total_amount / 2) as total
     FROM shared_expenses
-    WHERE paid_by_user_id = ${userId} OR shared_with_user_id = ${userId}
+    WHERE (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+    AND EXTRACT(YEAR FROM date) = ${year}
     GROUP BY month
     ORDER BY month;
   `;
@@ -207,7 +212,7 @@ export async function getMonthlySharedExpensesChartData() {
   }[];
 }
 
-export async function getSharedExpensesByCategoryData() {
+export async function getSharedExpensesByCategoryData(month: number, year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -225,7 +230,9 @@ export async function getSharedExpensesByCategoryData() {
             ELSE 0
           END AS my_share_amount
         FROM shared_expenses
-        WHERE paid_by_user_id = ${userId} OR shared_with_user_id = ${userId}
+        WHERE (paid_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+        AND EXTRACT(MONTH FROM date) = ${month}
+        AND EXTRACT(YEAR FROM date) = ${year}
       ),
       category_aggregated_data AS (
         SELECT

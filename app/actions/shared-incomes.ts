@@ -114,7 +114,7 @@ export async function deleteSharedIncome(id: string) {
   revalidatePath("/dashboard")
 }
 
-export async function getSharedIncomes() {
+export async function getSharedIncomes(month: number, year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -135,7 +135,9 @@ export async function getSharedIncomes() {
       FROM shared_incomes si
       JOIN users rbu ON rbu.id = si.received_by_user_id
       JOIN users swu ON swu.id = si.shared_with_user_id
-      WHERE si.received_by_user_id = ${userId} OR si.shared_with_user_id = ${userId}
+      WHERE (si.received_by_user_id = ${userId} OR si.shared_with_user_id = ${userId})
+      AND EXTRACT(MONTH FROM si.date) = ${month}
+      AND EXTRACT(YEAR FROM si.date) = ${year}
       ORDER BY si.date DESC
     `;
 
@@ -153,7 +155,7 @@ export async function getSharedIncomes() {
   }[]
 }
 
-export async function getMonthlySharedIncomesChartData() {
+export async function getMonthlySharedIncomesChartData(year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -164,7 +166,8 @@ export async function getMonthlySharedIncomesChartData() {
       TO_CHAR(date, 'YYYY-MM') as month,
       SUM(total_amount / 2) as total
     FROM shared_incomes
-    WHERE received_by_user_id = ${userId} OR shared_with_user_id = ${userId}
+    WHERE (received_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+    AND EXTRACT(YEAR FROM date) = ${year}
     GROUP BY month
     ORDER BY month;
   `;
@@ -175,7 +178,7 @@ export async function getMonthlySharedIncomesChartData() {
   }[];
 }
 
-export async function getSharedIncomesByCategoryData() {
+export async function getSharedIncomesByCategoryData(month: number, year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -193,7 +196,9 @@ export async function getSharedIncomesByCategoryData() {
             ELSE 0
           END AS my_share_amount
         FROM shared_incomes
-        WHERE received_by_user_id = ${userId} OR shared_with_user_id = ${userId}
+        WHERE (received_by_user_id = ${userId} OR shared_with_user_id = ${userId})
+        AND EXTRACT(MONTH FROM date) = ${month}
+        AND EXTRACT(YEAR FROM date) = ${year}
       ),
       category_aggregated_data AS (
         SELECT
@@ -227,7 +232,7 @@ export async function getSharedIncomesByCategoryData() {
   }[];
 }
 
-export async function getSharedPainelStats() {
+export async function getSharedPainelStats(month: number, year: number) {
   const { userId } = await auth()
   if (!userId) {
     throw new Error("Unauthorized")
@@ -240,7 +245,9 @@ export async function getSharedPainelStats() {
           si.received_by_user_id,
           si.shared_with_user_id
         FROM shared_incomes si
-        WHERE si.received_by_user_id = ${userId} OR si.shared_with_user_id = ${userId}
+        WHERE (si.received_by_user_id = ${userId} OR si.shared_with_user_id = ${userId})
+        AND EXTRACT(MONTH FROM si.date) = ${month}
+        AND EXTRACT(YEAR FROM si.date) = ${year}
       )
       SELECT
         COALESCE(SUM(total_amount), 0) AS "totalJointSavings",

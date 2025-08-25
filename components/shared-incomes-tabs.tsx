@@ -80,17 +80,6 @@ export function SharedIncomesTabs({
     router.replace(`${window.location.pathname}?${params.toString()}`);
   }, [debouncedSearchQuery, selectedCategory, searchParams, router]);
 
-  const refetchData = async () => {
-    const incomes = await getSharedIncomes();
-    setSharedIncomes(incomes);
-    const monthlyData = await getMonthlySharedIncomesChartData();
-    setMonthlySharedIncomes(monthlyData);
-    const categoryData = await getSharedIncomesByCategoryData();
-    setSharedIncomesByCategory(categoryData);
-    const newPainelStats = await getSharedPainelStats();
-    setPainelStats(newPainelStats);
-  };
-
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
     const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
     try {
@@ -99,7 +88,6 @@ export function SharedIncomesTabs({
         title: 'Status da renda atualizado!',
         description: `A renda foi marcada como ${newStatus === 'settled' ? 'liquidada' : 'não liquidada'}.`,
       });
-      refetchData();
     } catch (error) {
       console.error('Error toggling status:', error);
       toast({
@@ -125,7 +113,6 @@ export function SharedIncomesTabs({
         description: `${settledCount} rendas liquidadas com sucesso!`,
       });
       setSelectedIncomes([]); // Clear selection
-      refetchData();
     } catch (error) {
       console.error('Error batch settling incomes:', error);
       toast({
@@ -143,7 +130,6 @@ export function SharedIncomesTabs({
         title: 'Sucesso',
         description: 'Renda compartilhada excluída com sucesso!',
       });
-      refetchData();
     } catch (error) {
       console.error('Error deleting shared income:', error);
       toast({
@@ -226,7 +212,7 @@ export function SharedIncomesTabs({
             <CardDescription>Adicione uma renda que será dividida igualmente com um amigo.</CardDescription>
           </CardHeader>
           <CardContent>
-            <SharedIncomeForm onSave={refetchData} />
+            <SharedIncomeForm />
           </CardContent>
         </Card>
       </TabsContent>

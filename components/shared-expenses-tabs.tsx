@@ -82,17 +82,6 @@ export function SharedExpensesTabs({
     router.replace(`${window.location.pathname}?${params.toString()}`);
   }, [debouncedSearchQuery, selectedCategory, searchParams, router]);
 
-  const refetchData = async () => {
-    const expenses = await getSharedExpenses();
-    setSharedExpenses(expenses);
-    const monthlyData = await getMonthlySharedExpensesChartData();
-    setMonthlySharedExpenses(monthlyData);
-    const categoryData = await getSharedExpensesByCategoryData();
-    setSharedExpensesByCategory(categoryData);
-    const newPainelStats = await getSharedPainelStats();
-    setPainelStats(newPainelStats);
-  };
-
   const handleToggleStatus = async (id: string, currentStatus: 'unsettled' | 'settled') => {
     const newStatus = currentStatus === 'settled' ? 'unsettled' : 'settled';
     try {
@@ -101,7 +90,6 @@ export function SharedExpensesTabs({
         title: 'Status da despesa atualizado!',
         description: `A despesa foi marcada como ${newStatus === 'settled' ? 'liquidada' : 'não liquidada'}.`,
       });
-      refetchData();
     } catch (error) {
       console.error('Error toggling status:', error);
       toast({
@@ -127,7 +115,6 @@ export function SharedExpensesTabs({
         description: `${settledCount} despesas liquidadas com sucesso!`,
       });
       setSelectedExpenses([]); // Clear selection
-      refetchData();
     } catch (error) {
       console.error('Error batch settling expenses:', error);
       toast({
@@ -145,7 +132,6 @@ export function SharedExpensesTabs({
         title: 'Sucesso',
         description: 'Despesa compartilhada excluída com sucesso!',
       });
-      refetchData();
     } catch (error) {
       console.error('Error deleting shared expense:', error);
       toast({
@@ -229,7 +215,7 @@ export function SharedExpensesTabs({
             <CardDescription>Adicione uma despesa que será dividida igualmente com um amigo.</CardDescription>
           </CardHeader>
           <CardContent>
-            <SharedExpenseForm onSave={refetchData} />
+            <SharedExpenseForm />
           </CardContent>
         </Card>
       </TabsContent>

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface MonthPickerProps {
   month: number
   year: number
+  path: string
   className?: string
 }
 
@@ -21,7 +22,7 @@ const months = [
   "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
 ]
 
-export function MonthPicker({ month: selectedMonth, year: selectedYear, className }: MonthPickerProps) {
+export function MonthPicker({ month: selectedMonth, year: selectedYear, path, className }: MonthPickerProps) {
   const router = useRouter()
   const currentDate = new Date()
   const currentMonth = currentDate.getMonth() + 1
@@ -31,15 +32,15 @@ export function MonthPicker({ month: selectedMonth, year: selectedYear, classNam
 
   const handleMonthChange = (month: string, year?: number) => {
     const newYear = year || selectedYear
-    router.push(`/dashboard?month=${month}&year=${newYear}`)
+    router.push(`${path}?month=${month}&year=${newYear}`)
   }
 
   const handleYearChange = (year: string) => {
-    router.push(`/dashboard?month=${selectedMonth}&year=${year}`)
+    router.push(`${path}?month=${selectedMonth}&year=${year}`)
   }
 
   const goToCurrentMonth = () => {
-    router.push(`/dashboard?month=${currentMonth}&year=${currentYear}`)
+    router.push(`${path}?month=${currentMonth}&year=${currentYear}`)
   }
 
   const goToPreviousMonth = () => {
