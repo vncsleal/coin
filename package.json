@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "latest",
+    "@ai-sdk/groq": "^1.2.9",
     "@clerk/localizations": "^3.18.1",
     "@clerk/nextjs": "latest",
     "@hookform/resolvers": "^3.9.1",

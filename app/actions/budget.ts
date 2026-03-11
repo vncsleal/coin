@@ -13,8 +13,6 @@ export async function setBudget(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
-
   const validatedFields = setBudgetSchema.safeParse({
     amount: formData.get("amount"),
   });

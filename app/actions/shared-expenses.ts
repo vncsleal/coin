@@ -12,8 +12,6 @@ export async function addSharedExpense(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
-
   const validatedFields = addSharedExpenseSchema.safeParse({
     description: formData.get("description"),
     total_amount: formData.get("total_amount"),
@@ -58,8 +56,6 @@ export async function updateSharedExpense(id: string, formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
-
   const validatedFields = updateSharedExpenseSchema.safeParse({
     id,
     description: formData.get("description"),
@@ -96,8 +92,6 @@ export async function deleteSharedExpense(id: string) {
   if (!userId) {
     throw new Error("Unauthorized")
   }
-
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
   const validatedFields = deleteSharedExpenseSchema.safeParse({ id });
 

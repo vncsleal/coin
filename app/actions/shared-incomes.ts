@@ -12,8 +12,6 @@ export async function addSharedIncome(formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
-
   const validatedFields = addSharedIncomeSchema.safeParse({
     description: formData.get("description"),
     total_amount: formData.get("total_amount"),
@@ -58,8 +56,6 @@ export async function updateSharedIncome(id: string, formData: FormData) {
     throw new Error("Unauthorized")
   }
 
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
-
   const validatedFields = updateSharedIncomeSchema.safeParse({
     id,
     description: formData.get("description"),
@@ -96,8 +92,6 @@ export async function deleteSharedIncome(id: string) {
   if (!userId) {
     throw new Error("Unauthorized")
   }
-
-  await sql.query(`SET LOCAL "auth.user_id" = '${userId}';`);
 
   const validatedFields = deleteSharedIncomeSchema.safeParse({ id });
 
